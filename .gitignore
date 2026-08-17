@@ -1,0 +1,15 @@
+# Ignore huge datasets and archives to prevent git errors
+*.tar.gz
+*.txt
+*.log
+
+# Ignore raw data folders
+raw/
+datasets/raw/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Ignore tokenizer outputs/models if they exceed github limits (though 30k vocab is usually fine)
+# We will NOT ignore .json files because the tokenizer vocabulary must be uploaded!
