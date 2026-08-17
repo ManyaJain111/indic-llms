@@ -51,11 +51,11 @@ def main():
                     source_stats[source_id]["lines"] += 1
                     source_stats[source_id]["whitespace_tokens"] += len(line.split())
                     r = rng.random()
-                    if r < 0.01:
+                    if r < 0.05:
                         f_test.write(line + "\n")
                         test_lines += 1
                         source_stats[source_id]["splits"]["test"] += 1
-                    elif r < 0.02:
+                    elif r < 0.10:
                         f_val.write(line + "\n")
                         val_lines += 1
                         source_stats[source_id]["splits"]["val"] += 1

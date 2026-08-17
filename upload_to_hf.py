@@ -20,18 +20,7 @@ try:
 except Exception as e:
     print(f"Error creating repos: {e}")
 
-print("Uploading Hindi dataset...")
-try:
-    api_hindi.upload_file(
-        path_or_fileobj="/home/manya/LMA/hindi_submission_phase1.tar.gz",
-        path_in_repo="hindi_submission_phase1.tar.gz",
-        repo_id=hindi_repo,
-        repo_type="dataset",
-        token=token_hindi
-    )
-    print("Hindi dataset uploaded successfully!")
-except Exception as e:
-    print(f"Error uploading Hindi: {e}")
+# Hindi already uploaded successfully!
 
 print("Uploading Nepali dataset...")
 try:
