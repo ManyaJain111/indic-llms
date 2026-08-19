@@ -9,7 +9,6 @@ Due to the massive scale of the corpora (approx. ~500M words / 14GB total), the 
 * **Model H (Hindi) Dataset Archive:** [https://huggingface.co/datasets/manyajain111/hindi-lma-corpus](https://huggingface.co/datasets/manyajain111/hindi-lma-corpus)
 * **Model L (Nepali) Dataset Archive:** [https://huggingface.co/datasets/manyajain111/nepali-lma-corpus](https://huggingface.co/datasets/manyajain111/nepali-lma-corpus)
 
-*(Note: These datasets are marked as Private per the project requirements. Please ensure you have requested access or are logged into the appropriate HuggingFace account to view them).*
 
 ## Repository Structure
 
