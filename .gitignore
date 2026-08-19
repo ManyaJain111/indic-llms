@@ -1,15 +1,32 @@
-# Ignore huge datasets and archives to prevent git errors
+# Raw scraped data and large corpus files
 *.tar.gz
-*.txt
 *.log
+*.bz2
+*.xml
 
-# Ignore raw data folders
-raw/
-datasets/raw/
+# Large dataset split files (hosted on HuggingFace)
+hindi/datasets/train.txt
+hindi/datasets/val.txt
+hindi/datasets/test.txt
+nepali/datasets/train.txt
+nepali/datasets/val.txt
+nepali/datasets/test.txt
+
+# Raw data folders
+hindi/datasets/raw/
+nepali/datasets/raw/
+hindi/collection/hindi_scraper_data/
+hindi/preprocessing/final_corpus/
 
 # Python caches
 __pycache__/
 *.pyc
+*.pyo
 
-# Ignore tokenizer outputs/models if they exceed github limits (though 30k vocab is usually fine)
-# We will NOT ignore .json files because the tokenizer vocabulary must be uploaded!
+# Environment / secrets
+.env
+*.env
+
+# Editor / OS
+.DS_Store
+*.swp
