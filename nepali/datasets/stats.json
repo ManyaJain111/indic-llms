@@ -1,0 +1,43 @@
+{
+  "total_words_post_cleaning": 513019586,
+  "train_words": 461505584,
+  "val_words": 25802084,
+  "test_words": 25711918,
+  "split_ratio": "90/5/5",
+  "split_seed": 42,
+  "sources": {
+    "iriis_nepali": {
+      "path": "/home/manya/LMA/nepali/datasets/raw/iriis_nepali_data.txt",
+      "collection_type": "downloaded",
+      "lines": 2027648,
+      "whitespace_tokens": 400000000,
+      "splits": {
+        "train": 1824725,
+        "val": 101637,
+        "test": 101286
+      }
+    },
+    "nepali_wikipedia": {
+      "path": "/home/manya/LMA/nepali/datasets/raw/wikipedia_nepalese_data.txt",
+      "collection_type": "downloaded",
+      "lines": 399961,
+      "whitespace_tokens": 7479341,
+      "splits": {
+        "train": 359527,
+        "val": 20184,
+        "test": 20250
+      }
+    },
+    "nepali_news_scrape": {
+      "path": "/home/manya/LMA/nepali/datasets/raw/scraper_output/nepali_news_data.txt",
+      "collection_type": "manual",
+      "lines": 4729327,
+      "whitespace_tokens": 107100815,
+      "splits": {
+        "train": 4256122,
+        "val": 237277,
+        "test": 235928
+      }
+    }
+  }
+}
