@@ -65,7 +65,6 @@ Raw corpora are too large for git (~14GB total). Cleaned train/val/test splits a
 | Hindi (Model H) | [manyajain111/hindi-lma-corpus](https://huggingface.co/datasets/manyajain111/hindi-lma-corpus) | 90/5/5 |
 | Nepali (Model L) | [manyajain111/nepali-lma-corpus](https://huggingface.co/datasets/manyajain111/nepali-lma-corpus) | 90/5/5 |
 
-> **Access:** Datasets are private. Please contact the repository owner to request access, or use the scripts below to reproduce from scratch.
 
 ---
 
