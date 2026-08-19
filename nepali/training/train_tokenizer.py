@@ -5,6 +5,7 @@ import argparse
 import collections
 import heapq
 import json
+import pickle
 import re
 import string
 import time
@@ -156,6 +157,10 @@ class CustomBPETokenizer:
         }
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    def save_pkl(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(pickle.dumps(self))
+
     def save_vocabulary(self, path):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.vocab, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -228,7 +233,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--vocab-size", type=int, default=37000)
     parser.add_argument("--min-frequency", type=int, default=2)
-    parser.add_argument("--max-word-types", type=int, default=10000)
+    parser.add_argument("--max-word-types", type=int, default=200000)
     parser.add_argument("--max-lines", type=int, default=0, help="Training-line cap; 0 uses the full corpus")
     parser.add_argument("--train-file", type=Path, default=base_dir / "datasets" / "train.txt")
     parser.add_argument("--test-file", type=Path, default=base_dir / "datasets" / "test.txt")
@@ -236,6 +241,11 @@ def main():
     parser.add_argument("--vocab-output", type=Path, default=base_dir / "models" / "nepali_vocabulary.json")
     parser.add_argument("--report-output", type=Path, default=base_dir / "reports" / "nepali_tokenizer_statistics.json")
     args = parser.parse_args()
+
+    args.output = args.output.with_name(f"{args.output.stem}_{args.vocab_size}{args.output.suffix}")
+    args.vocab_output = args.vocab_output.with_name(f"{args.vocab_output.stem}_{args.vocab_size}{args.vocab_output.suffix}")
+    args.report_output = args.report_output.with_name(f"{args.report_output.stem}_{args.vocab_size}{args.report_output.suffix}")
+    output_pkl = args.output.with_suffix(".pkl")
 
     if args.vocab_size > MAX_VOCAB_SIZE:
         parser.error(f"--vocab-size cannot exceed {MAX_VOCAB_SIZE:,}")
@@ -246,8 +256,9 @@ def main():
     tokenizer.train(iter_lines(args.train_file, max_lines), args.min_frequency, args.max_word_types)
     print(f"Training completed in {time.time() - started_at:.1f}s")
     tokenizer.save(args.output)
+    tokenizer.save_pkl(output_pkl)
     tokenizer.save_vocabulary(args.vocab_output)
-    print(f"Saved tokenizer to {args.output}")
+    print(f"Saved tokenizer to {args.output} and {output_pkl}")
     print(f"Saved vocabulary to {args.vocab_output}")
     metrics = evaluate(tokenizer, args.test_file)
     metrics["training"] = {

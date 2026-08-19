@@ -14,7 +14,7 @@ Key differences from the naive version:
   - Frequency floor to drop hapax words from pair statistics (they add cost,
     not signal, at 500M-token scale).
 """
-import json, re, collections, time, argparse, string
+import json, re, collections, time, argparse, string, pickle, heapq
 from pathlib import Path
 from tqdm import tqdm
 
@@ -64,17 +64,28 @@ class CustomBPETokenizer:
         # --- 3. incremental merges ---
         num_merges = max(0, target_vocab_size - 256)
         pbar = tqdm(total=num_merges, desc="BPE merges")
+        heap = [(-count, pair) for pair, count in pair_counts.items()]
+        heapq.heapify(heap)
+
         for m in range(num_merges):
-            if not pair_counts:
+            while heap:
+                neg_count, best = heapq.heappop(heap)
+                if -neg_count == pair_counts.get(best, 0):
+                    break
+            else:
                 print("No pairs left to merge, stopping early.")
                 break
-            best = max(pair_counts, key=pair_counts.get)
-            if pair_counts[best] < 2:
+            
+            if -neg_count < 2:
                 break
+                
             merged_tok = best[0] + best[1]
             self.merges.append((best, merged_tok))
 
-            affected = list(pair_index.get(best, ()))
+            affected = list(pair_index.pop(best, ()))
+            pair_counts.pop(best, None)
+            changed_pairs = set()
+
             for idx in affected:
                 word, freq = words[idx], freqs[idx]
 
@@ -82,9 +93,11 @@ class CustomBPETokenizer:
                 for i in range(len(word) - 1):
                     p = (word[i], word[i + 1])
                     pair_counts[p] -= freq
+                    pair_index[p].discard(idx)
+                    changed_pairs.add(p)
                     if pair_counts[p] <= 0:
                         pair_counts.pop(p, None)
-                    pair_index[p].discard(idx)
+                        pair_index.pop(p, None)
 
                 # apply merge
                 new_word, i = [], 0
@@ -102,9 +115,12 @@ class CustomBPETokenizer:
                     p = (new_word[i], new_word[i + 1])
                     pair_counts[p] += freq
                     pair_index[p].add(idx)
+                    changed_pairs.add(p)
 
-            pair_counts.pop(best, None)
-            pair_index.pop(best, None)
+            for p in changed_pairs:
+                if p in pair_counts:
+                    heapq.heappush(heap, (-pair_counts[p], p))
+
             pbar.update(1)
             if (m + 1) % 500 == 0:
                 pbar.write(f"Merge {m + 1}/{num_merges}: {best} -> {merged_tok!r}")
@@ -150,6 +166,10 @@ class CustomBPETokenizer:
         }
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def save_pkl(self, out_path):
+        with open(out_path, "wb") as f:
+            pickle.dump(self, f)
 
     def load(self, in_path):
         with open(in_path, "r", encoding="utf-8") as f:
@@ -224,6 +244,12 @@ def main():
     ap.add_argument("--max-eval-lines", type=int, default=10000, help="Held-out line cap; 0 evaluates all lines")
     args = ap.parse_args()
 
+    # Append vocab size to filenames automatically
+    args.model = args.model.with_name(f"{args.model.stem}_{args.vocab_size}{args.model.suffix}")
+    args.vocab_output = args.vocab_output.with_name(f"{args.vocab_output.stem}_{args.vocab_size}{args.vocab_output.suffix}")
+    args.report_output = args.report_output.with_name(f"{args.report_output.stem}_{args.vocab_size}{args.report_output.suffix}")
+    model_pkl = args.model.with_suffix(".pkl")
+
     tokenizer = CustomBPETokenizer(vocab_size=args.vocab_size)
     if args.evaluate_only:
         tokenizer.load(args.model)
@@ -237,7 +263,8 @@ def main():
         tokenizer.train(iter_corpus(files, max_lines=args.max_lines), min_freq=args.min_freq)
         print(f"Training completed in {time.time() - start:.2f}s")
         tokenizer.save(args.model)
-        print(f"Saved tokenizer to {args.model}")
+        tokenizer.save_pkl(model_pkl)
+        print(f"Saved tokenizer to {args.model} and {model_pkl}")
 
     args.vocab_output.parent.mkdir(exist_ok=True, parents=True)
     args.vocab_output.write_text(json.dumps(tokenizer.vocab, ensure_ascii=False, indent=2), encoding="utf-8")

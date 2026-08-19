@@ -43,10 +43,10 @@ Both models use completely independent monolingual corpora with dedicated train,
 * **Cleaning Steps:** We applied cross-split exact deduplication, whitespace normalization to remove excess gaps, and Unicode NFC normalization. A strict Devanagari purity filter was also applied.
 * **Requirement Compliance (Tokens & Split):**
   * **Dataset Splits (90/5/5):**
-    * *Train:* 462,910,635 words
-    * *Validation:* 25,881,021 words
-    * *Test:* 25,788,500 words
-  * **Total Post-Cleaning Words:** 514,580,156 words *(Note: The raw source collection was 514,580,156 words).*
+    * *Train:* 461,505,584 words
+    * *Validation:* 25,802,084 words
+    * *Test:* 25,711,918 words
+  * **Total Post-Cleaning Words:** 513,019,586 words *(Note: The raw source collection was 514,580,156 words. Approximately 1.56M words were removed during deduplication and cleaning).*
   * **Estimated Tokenizer Tokens:** ~618,599,016 tokens *(using fertility rate of 1.2058)*
   * **Status:** The Nepali dataset successfully meets both the 500M total token requirement and the ≥20% manual collection requirement. Specifically, **22.27%** of the raw dataset (114.5M words) was sourced through manual collection, safely exceeding the 20% minimum.
 
@@ -55,6 +55,13 @@ Both models use completely independent monolingual corpora with dedicated train,
 ## 1.3 Tokenizer Training
 
 Separate tokenizers were trained from scratch for each language. Pretrained tokenizers and shared vocabularies were strictly avoided. The vocabulary sizes (32,000 for Hindi and 37,000 for Nepali) were selected specifically because they achieved an optimal balance: a low fertility rate (~1.205 tokens per word) while ensuring a near-zero unknown-token rate on the held-out test texts.
+
+### Training Methodology & Sequence
+Training tokenizers on massive 500M+ token corpora (10GB+ of text) presents significant memory constraints. To bypass this and build the tokenizers from scratch, we implemented the following specialized sequential pipeline:
+1. **Corpus Streaming:** Rather than loading the entire corpus into RAM, the training script streams the `train.txt` file line-by-line using a generator.
+2. **Frequency Counting & Pruning:** We calculate absolute word frequencies across the entire dataset and strictly prune words falling below a minimum frequency threshold. This eliminates *hapax legomena* (typos, extremely rare noisy strings) which dramatically improves the signal-to-noise ratio before BPE merging begins.
+3. **Incremental Pair-Count Updates:** To avoid O(N²) time complexity during merge steps, our implementation maps pair occurrences to specific word indices. When a BPE merge occurs, it only updates the pair frequencies of the specific words affected by that merge, rather than recalculating the entire vocabulary matrix.
+4. **Vocabulary Finalization:** The script continuously applies the most frequent byte/character pair merges until the exact target vocabulary sizes (32k and 37k) are reached. The ordered merge lists and final token-ID mappings are then exported to JSON config files.
 
 ### Tokenizer Architecture Differences
 To better handle the unique properties of our two corpora, we deliberately chose two different BPE architectures:
@@ -73,8 +80,8 @@ To better handle the unique properties of our two corpora, we deliberately chose
   4. ` है` (18,975)
   5. `,` (18,000)
 * **Tokenization Example:**
-  * *Text:* मैं बंदूक नकलनेवल हूँ।
-  * *Token IDs:* `[1458, 8944, 9138, 313, 1016, 2094, 284]`
+  * *Text:* भारत एक महान देश है।
+  * *Token IDs:* `[3354, 366, 2583, 678, 289, 284]`
 
 ### Model L: Nepali Tokenizer Statistics
 * **Vocabulary Size:** 37,000
@@ -88,5 +95,5 @@ To better handle the unique properties of our two corpora, we deliberately chose
   4. ` छ` (94,568)
   5. ` र` (89,894)
 * **Tokenization Example:**
-  * *Text:* कश्मीरी का अर्थ हो सकता हैः
-  * *Token IDs:* `[273, 1986, 9232, 334, 1430, 347, 732, 6632]`
+  * *Text:* नेपाल एउटा सुन्दर देश हो।
+  * *Token IDs:* `[1276, 951, 3834, 501, 201, 84]`
