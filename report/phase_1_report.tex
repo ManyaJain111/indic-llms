@@ -57,7 +57,7 @@ Manual & News scrape & 360{,}205 \\
 Manual & PIB releases & 5{,}885 \\
 \bottomrule
 \end{tabular}
-\caption{Hindi corpus sources and word counts (raw, pre-cleaning).}
+\caption{Hindi corpus sources and word counts (raw, pre-cleaning). The news scrape targets 5 major portals: Amar Ujala, Dainik Bhaskar, Live Hindustan, Navbharat Times, and Patrika.}
 \end{table}
 
 The data was cleaned using Unicode NFC normalization, exact-content deduplication, and removal of non-Devanagari (English) characters to keep the corpus script-pure.
@@ -88,11 +88,11 @@ The Nepali corpus was built with the manual-collection requirement as the primar
 \textbf{Category} & \textbf{Source} & \textbf{Word Count} \\
 \midrule
 Downloaded & IRIIS Nepali & 400{,}000{,}000 \\
-Manual & News scrape (43 portals) & 107{,}100{,}815 \\
+Manual & News scrape (16 portals) & 107{,}100{,}815 \\
 Manual & Nepali Wikipedia & 7{,}479{,}341 \\
 \bottomrule
 \end{tabular}
-\caption{Nepali corpus sources and word counts (raw, pre-cleaning). News data was collected from 43 high-traffic Nepali news portals, respecting robots.txt.}
+\caption{Nepali corpus sources and word counts (raw, pre-cleaning). News and article data was collected from 16 portals: Sahityapost, Nepali Sahitya Ghar, Samakalin Sahitya, Thuprai, Pustakalaya, TechLekh, TechPana, ICT Frame, Edusanjal, TyroCity, CollegeNP, Swasthya Khabar, Swasthya Nepal, Nepali Australian, Gorkhapatra Sahitya, and Shikshya.}
 \end{table}
 
 Cleaning steps mirror those used for Hindi: cross-split exact deduplication, whitespace normalization, Unicode NFC normalization, and a Devanagari purity filter.
