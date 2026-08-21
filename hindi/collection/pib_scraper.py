@@ -5,24 +5,15 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-# Headers to mimic a real browser and request Hindi content
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept-Language": "hi,hi-IN;q=0.9,en-US;q=0.8,en;q=0.7"
 }
 
-# --- CONFIGURATION ---
-# PRID is a single global auto-incrementing ID across ALL PIB releases and
-# languages -- it's not tied to a per-day or per-region listing. Rather than
-# discovering IDs from the homepage's small "latest releases" widget (which
-# only ever exposes ~15 items), we iterate a PRID range directly and let
-# scrape_pib_hindi_release() skip anything invalid or not translated to Hindi.
-#
-# Set START_PRID to a recent, known-valid PRID (check today's homepage --
-# https://www.pib.gov.in/indexd.aspx?reg=3&lang=2 -- for a current example)
-# and NUM_TO_SCRAPE to how far back you want to walk.
+
 START_PRID = 2299325
-NUM_TO_SCRAPE = 2000   # walking backwards this many PRIDs from START_PRID
+NUM_TO_SCRAPE = 2000   
 
 
 def clean_hindi_text(text: str) -> str:
@@ -99,8 +90,7 @@ def scrape_pib_hindi_release(prid: int) -> dict | None:
         else:
             body_text = ""
 
-        # PRID + lang=2 is not a reliable Hindi filter (see is_hindi_text
-        # docstring) -- verify the actual script content before accepting.
+
         if not is_hindi_text(title + " " + body_text):
             return None
 
@@ -139,7 +129,6 @@ if __name__ == "__main__":
             misses += 1
             print(f"    [--] PRID {prid}: no Hindi release", end="\r")
 
-        # Respectful delay between requests
         time.sleep(1.5)
 
         # Periodic checkpoint so a long run isn't all-or-nothing
