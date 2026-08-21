@@ -86,7 +86,7 @@ def download_and_purify(output_filename="clean_hindi_subtitles.txt"):
         os.remove(zip_path)
         
     print("\n" + "="*40)
-    print("📊 DATASET PURIFICATION RESULTS")
+    print(" DATASET PURIFICATION RESULTS")
     print("="*40)
     print(f"Pristine Lines Saved: {kept_lines:,}")
     print(f"Corrupted Lines Cut:  {discarded_lines:,}")
