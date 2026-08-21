@@ -1,20 +1,4 @@
-"""
-Wikipedia Corpus Scraper
-=========================
-Two methods to extract clean article text from Wikipedia for corpus building:
 
-  1. DUMP-BASED (recommended) — downloads the official compressed XML dump
-     and extracts clean text locally. Fast, no load on Wikipedia's servers,
-     gets you the ENTIRE wiki in one go.
-
-  2. API-BASED — pulls individual articles live via the MediaWiki API.
-     Useful for smaller/targeted pulls, specific categories, or wikis where
-     you don't want the full dump.
-
-Usage:
-    python wikipedia_scraper.py dump --lang ne --out ./ne_wiki_corpus.jsonl
-    python wikipedia_scraper.py api  --lang ne --out ./ne_wiki_corpus.jsonl --limit 5000
-"""
 
 import argparse
 import bz2
@@ -28,29 +12,6 @@ from xml.etree import ElementTree as ET
 import mwparserfromhell
 import requests
 
-# ----------------------------------------------------------------------
-# Shared: wikitext -> plain text cleaning
-# ----------------------------------------------------------------------
-#
-# NOTE: an earlier version of this script used hand-rolled regexes to strip
-# wiki markup. That approach silently fails on infoboxes and other deeply
-# NESTED templates (a template containing a template containing a template,
-# which is exactly what country/geography infoboxes look like) — regex
-# cannot correctly match nested braces, so the raw "|leader_name1 = ..."
-# style parameter lines leak straight into the output.
-#
-# mwparserfromhell is the standard library for this (used by Wikimedia
-# tooling itself) — it actually parses the wikitext structure instead of
-# pattern-matching it, so nested templates, tables, and refs are stripped
-# correctly regardless of nesting depth.
-
-# A few infobox/template parameter values are still worth keeping as plain
-# text (e.g. "national_anthem = सयौँ थुँगा फूलका हामी" has real prose in it),
-# but the vast majority of infobox content is structured metadata (leader
-# names, area figures, GDP numbers) that reads as noise in a language-model
-# training corpus. We drop ALL templates wholesale — this loses a small
-# amount of prose buried in infoboxes, but it's the correct tradeoff for
-# corpus cleanliness over completeness.
 
 RE_MULTI_NEWLINE = re.compile(r"\n{3,}")
 RE_MULTI_SPACE = re.compile(r"[ \t]{2,}")
@@ -65,14 +26,8 @@ def clean_wikitext(text: str) -> str:
 
     wikicode = mwparserfromhell.parse(text)
 
-    # strip_code() removes templates, tables, refs, comments, file/category
-    # links, and converts headings/wikilinks/bold-italic to plain text —
-    # all in one correctly-nesting-aware pass.
     plain = wikicode.strip_code(normalize=True, collapse=True)
 
-    # strip_code keeps stray "Category:xxx" lines in some MediaWiki versions
-    # since categories are technically wikilinks, not templates — clean up
-    # any that slip through.
     plain = RE_CATEGORY_LINE.sub("", plain)
 
     plain = RE_MULTI_SPACE.sub(" ", plain)
@@ -90,9 +45,7 @@ def word_count(text: str) -> int:
     return len(text.split())
 
 
-# Separator between articles in the plain-text output — makes it easy to
-# skim/inspect in any text editor while still being able to split articles
-# back out programmatically later if needed.
+# Separator between articles in the plain-text output.
 ARTICLE_SEPARATOR = "\n\n" + ("=" * 80) + "\n\n"
 
 
@@ -100,27 +53,15 @@ def format_article_txt(title: str, text: str) -> str:
     return f"TITLE: {title}\n\n{text}"
 
 
-# ----------------------------------------------------------------------
-# Method 1: Dump-based extraction
-# ----------------------------------------------------------------------
-
+# Dump-based extraction.
 DUMP_INDEX_URL = "https://dumps.wikimedia.org/{lang}wiki/latest/{lang}wiki-latest-pages-articles.xml.bz2"
 
-# MediaWiki export XML namespace (changes rarely; this covers current dumps)
+# MediaWiki export XML namespace.
 MW_NS = "{http://www.mediawiki.org/xml/export-0.11/}"
 
 
 def download_dump(lang: str, dest: Path) -> Path:
-    """Download the latest pages-articles XML dump (bz2-compressed) for a
-    given Wikipedia language code, e.g. 'ne' for Nepali, 'as' for Assamese.
-    Streams to disk so we don't hold multi-GB files in memory.
-
-    Wikimedia REQUIRES a descriptive User-Agent on every request (including
-    dump downloads) or it returns 403 Forbidden. Generic agents like the
-    requests library default, curl, python-urllib, etc. are explicitly
-    rejected. Format: <client>/<version> (<contact info>)
-    See: https://meta.wikimedia.org/wiki/User-Agent_policy
-    Edit the contact email below to your own before running at scale."""
+    """Download the latest pages-articles XML dump for a target Wikipedia language."""
     url = DUMP_INDEX_URL.format(lang=lang)
     headers = {
         "User-Agent": "LMA-corpus-research-bot/1.0 (contact: your_email@example.com)"
@@ -146,9 +87,7 @@ def download_dump(lang: str, dest: Path) -> Path:
 
 
 def iter_dump_articles(dump_path: Path):
-    """Stream-parse a bz2 XML dump and yield (title, wikitext) for each page,
-    without ever loading the whole (multi-GB uncompressed) file into memory.
-    Uses iterparse so memory stays flat regardless of dump size."""
+    """Stream a bz2 XML dump and yield (title, wikitext) for each article."""
     with bz2.open(dump_path, "rb") as f:
         context = ET.iterparse(f, events=("end",))
         for _, elem in context:
@@ -158,13 +97,12 @@ def iter_dump_articles(dump_path: Path):
                 title_elem = elem.find(f"{MW_NS}title")
                 revision = elem.find(f"{MW_NS}revision")
 
-                # ns == "0" means main article namespace (skip Talk:, User:, etc.)
+                # Only keep the main article namespace.
                 if ns_elem is not None and ns_elem.text == "0" and revision is not None:
                     text_elem = revision.find(f"{MW_NS}text")
                     if title_elem is not None and text_elem is not None and text_elem.text:
                         yield title_elem.text, text_elem.text
 
-                # Free memory as we go — critical for multi-GB dumps
                 elem.clear()
 
 
@@ -228,13 +166,10 @@ def run_dump_extraction(lang: str, out_path: Path, keep_dump: bool = False,
         print(f"Removed dump file {dump_path} (pass --keep-dump to retain it)")
 
 
-# ----------------------------------------------------------------------
-# Method 2: Live API-based extraction
-# ----------------------------------------------------------------------
+# Live API-based extraction.
 
 def api_get_all_titles(lang: str, limit: int):
-    """Enumerate article titles via the MediaWiki 'allpages' API, paging
-    through results. Namespace 0 = main articles only."""
+    """Enumerate article titles via the MediaWiki allpages API."""
     session = requests.Session()
     session.headers.update({"User-Agent": "corpus-research-bot/1.0 (contact: you@email.com)"})
     api_url = f"https://{lang}.wikipedia.org/w/api.php"
@@ -341,34 +276,9 @@ def run_api_extraction(lang: str, out_path: Path, limit: int, min_words: int = 3
     print(f"\nDone. {total_articles} articles, {total_words:,} words -> {out_path}")
 
 
-# ----------------------------------------------------------------------
-# Method 3: Purity cleaning — strip English/non-Nepali words + special chars
-# ----------------------------------------------------------------------
-#
-# Runs as a POST-PROCESSING pass over an already-scraped .txt file (dump or
-# api output). Keeps: Devanagari script, digits (both Devanagari ०-९ and
-# Latin 0-9 — "digits are fine" per spec), whitespace, and basic Nepali
-# sentence punctuation (। ॥). Drops: whole words containing any Latin
-# letters (English contamination, code-mixed tokens, stray URLs/emails),
-# and strips remaining special characters (@#$%^&*, quotes, brackets, etc.)
-# character-by-character from what's left.
-#
-# Two-stage approach, and the order matters:
-#   1. WORD-level filter first — a token like "COVID-19" or "iPhone8" is
-#      English contamination even though it contains digits; dropping the
-#      whole word (not just the English letters inside it) avoids leaving
-#      behind mangled fragments like "-19" or "8" floating in the text.
-#   2. CHAR-level cleanup second — for the words that survive (pure
-#      Nepali/digit tokens), strip any remaining stray special characters
-#      that regex word-splitting wouldn't have caught (e.g. a Devanagari
-#      word with a stray "*" stuck to it from wiki markup residue).
-
 LATIN_LETTER = re.compile(r"[A-Za-z]")
 
-# Keep: Devanagari block (includes Devanagari digits ०-९ already),
-# Latin digits 0-9, and Nepali punctuation danda/double-danda (। ॥).
-# Also keep basic sentence punctuation , . ! ? and common connector "-"
-# since those appear naturally in normal Nepali prose (dates, lists, etc.)
+
 ALLOWED_CHARS = re.compile(r"[^\u0900-\u097F0-9।॥,.\-!?\s]")
 
 RE_TITLE_LINE = re.compile(r"^TITLE:.*$", re.MULTILINE)
