@@ -1,13 +1,4 @@
-"""
-Hindi News Corpus Scraper
-============================
-Crawls multiple Hindi news sites to build a large text corpus (target:
-100M+ words).
 
-Usage:
-    # crawl all configured sites until 100M words collected
-    python hindi_news_scraper.py --target-words 100000000
-"""
 
 import argparse
 import hashlib
