@@ -1,28 +1,3 @@
-"""
-Nepali News Corpus Scraper
-============================
-Crawls multiple Nepali news sites to build a large text corpus (target:
-50M+ words). Unlike Wikipedia, news sites don't offer a bulk dump, so this
-does the full pipeline live:
-
-    robots.txt check -> sitemap discovery -> article URL collection
-    -> polite fetch (rate-limited per domain) -> trafilatura extraction
-    -> dedup -> purity cleaning (optional) -> write to .txt
-
-Resumable: keeps a state file of already-processed URLs, so re-running
-after an interruption picks up where it left off instead of re-fetching
-everything.
-
-Usage:
-    # crawl all configured sites until 50M words collected
-    python nepali_news_scraper.py --target-words 50000000
-
-    # crawl just a couple of sites, useful for testing first
-    python nepali_news_scraper.py --sites ekantipur,setopati --target-words 1000000
-
-    # resume an interrupted run (uses the same --out/--state files)
-    python nepali_news_scraper.py --target-words 50000000 --resume
-"""
 
 import argparse
 import hashlib
