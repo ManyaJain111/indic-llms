@@ -1,24 +1,4 @@
-#!/usr/bin/env python3
-"""
-Corpus collection: streams monolingual text from a large hosted corpus
-until a target word count is hit, writing raw text to disk (one
-document/line per line, untouched — cleaning is a separate deliverable).
 
-Requires: pip install datasets
-
-Usage:
-  # Hindi from IndicCorpV2 (recommended default)
-  python collect_corpus.py --source indiccorp --lang-split hin_Deva \
-      --target-words 200000000 --out data/hindi/raw.txt
-
-  # Fallback / supplement: Sangraha verified subset
-  python collect_corpus.py --source sangraha --lang-code hin \
-      --target-words 200000000 --out data/hindi/raw_sangraha.txt
-
-  # Later, for Model L (swap --lang-split / --lang-code to the target language)
-  python collect_corpus.py --source indiccorp --lang-split <lang>_<Script> \
-      --target-words 200000000 --out data/model_l/raw.txt
-"""
 import argparse
 import os
 import sys
