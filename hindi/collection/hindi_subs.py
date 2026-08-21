@@ -10,21 +10,19 @@ def is_clean_hindi_line(line: str) -> bool:
     if not line:
         return False
         
-    # 1. Reject if line contains ANY Latin characters (A-Z, a-z)
+
     if re.search(r'[a-zA-Z]', line):
         return False
 
-    # 2. Extract Devanagari characters
     devanagari_chars = re.findall(r'[\u0900-\u097F]', line)
     if len(devanagari_chars) < 5:
-        return False  # Skip tiny fragments or pure punctuation
+        return False  
 
-    # 3. Count Devanagari Matras (Vowels) to detect legacy encoding corruption
+
     matras = re.findall(r'[\u093E-\u094C\u0902]', line)
     matra_ratio = len(matras) / len(devanagari_chars)
     
-    # Clean Hindi text has a matra ratio of ~0.25 to 0.40. 
-    # Corrupted text (missing vowels) drops below 0.15.
+
     if matra_ratio < 0.18:
         return False
 
@@ -81,7 +79,7 @@ def download_and_purify(output_filename="clean_hindi_subtitles.txt"):
                         
                     pbar.update(1)
                 
-    # Clean up the 100MB+ zip file from your hard drive
+  
     if os.path.exists(zip_path):
         os.remove(zip_path)
         
