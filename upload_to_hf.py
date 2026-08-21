@@ -20,7 +20,7 @@ try:
 except Exception as e:
     print(f"Error creating repos: {e}")
 
-# Hindi already uploaded successfully!
+
 
 print("Uploading Nepali dataset...")
 try:
