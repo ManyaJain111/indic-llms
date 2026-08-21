@@ -28,29 +28,7 @@ from xml.etree import ElementTree as ET
 import mwparserfromhell
 import requests
 
-# ----------------------------------------------------------------------
-# Shared: wikitext -> plain text cleaning
-# ----------------------------------------------------------------------
-#
-# NOTE: an earlier version of this script used hand-rolled regexes to strip
-# wiki markup. That approach silently fails on infoboxes and other deeply
-# NESTED templates (a template containing a template containing a template,
-# which is exactly what country/geography infoboxes look like) — regex
-# cannot correctly match nested braces, so the raw "|leader_name1 = ..."
-# style parameter lines leak straight into the output.
-#
-# mwparserfromhell is the standard library for this (used by Wikimedia
-# tooling itself) — it actually parses the wikitext structure instead of
-# pattern-matching it, so nested templates, tables, and refs are stripped
-# correctly regardless of nesting depth.
 
-# A few infobox/template parameter values are still worth keeping as plain
-# text (e.g. "national_anthem = सयौँ थुँगा फूलका हामी" has real prose in it),
-# but the vast majority of infobox content is structured metadata (leader
-# names, area figures, GDP numbers) that reads as noise in a language-model
-# training corpus. We drop ALL templates wholesale — this loses a small
-# amount of prose buried in infoboxes, but it's the correct tradeoff for
-# corpus cleanliness over completeness.
 
 RE_MULTI_NEWLINE = re.compile(r"\n{3,}")
 RE_MULTI_SPACE = re.compile(r"[ \t]{2,}")
@@ -65,14 +43,10 @@ def clean_wikitext(text: str) -> str:
 
     wikicode = mwparserfromhell.parse(text)
 
-    # strip_code() removes templates, tables, refs, comments, file/category
-    # links, and converts headings/wikilinks/bold-italic to plain text —
-    # all in one correctly-nesting-aware pass.
+
     plain = wikicode.strip_code(normalize=True, collapse=True)
 
-    # strip_code keeps stray "Category:xxx" lines in some MediaWiki versions
-    # since categories are technically wikilinks, not templates — clean up
-    # any that slip through.
+
     plain = RE_CATEGORY_LINE.sub("", plain)
 
     plain = RE_MULTI_SPACE.sub(" ", plain)
@@ -89,10 +63,6 @@ def is_redirect_or_disambig(wikitext: str) -> bool:
 def word_count(text: str) -> int:
     return len(text.split())
 
-
-# Separator between articles in the plain-text output — makes it easy to
-# skim/inspect in any text editor while still being able to split articles
-# back out programmatically later if needed.
 ARTICLE_SEPARATOR = "\n\n" + ("=" * 80) + "\n\n"
 
 
@@ -100,9 +70,7 @@ def format_article_txt(title: str, text: str) -> str:
     return f"TITLE: {title}\n\n{text}"
 
 
-# ----------------------------------------------------------------------
-# Method 1: Dump-based extraction
-# ----------------------------------------------------------------------
+
 
 DUMP_INDEX_URL = "https://dumps.wikimedia.org/{lang}wiki/latest/{lang}wiki-latest-pages-articles.xml.bz2"
 
@@ -228,9 +196,7 @@ def run_dump_extraction(lang: str, out_path: Path, keep_dump: bool = False,
         print(f"Removed dump file {dump_path} (pass --keep-dump to retain it)")
 
 
-# ----------------------------------------------------------------------
-# Method 2: Live API-based extraction
-# ----------------------------------------------------------------------
+
 
 def api_get_all_titles(lang: str, limit: int):
     """Enumerate article titles via the MediaWiki 'allpages' API, paging
@@ -264,7 +230,7 @@ def api_get_all_titles(lang: str, limit: int):
         if not apcontinue:
             break
 
-        time.sleep(0.2)  # be polite to the live API
+        time.sleep(0.2)  
 
     return titles[:limit]
 
@@ -341,34 +307,11 @@ def run_api_extraction(lang: str, out_path: Path, limit: int, min_words: int = 3
     print(f"\nDone. {total_articles} articles, {total_words:,} words -> {out_path}")
 
 
-# ----------------------------------------------------------------------
-# Method 3: Purity cleaning — strip English/non-Nepali words + special chars
-# ----------------------------------------------------------------------
-#
-# Runs as a POST-PROCESSING pass over an already-scraped .txt file (dump or
-# api output). Keeps: Devanagari script, digits (both Devanagari ०-९ and
-# Latin 0-9 — "digits are fine" per spec), whitespace, and basic Nepali
-# sentence punctuation (। ॥). Drops: whole words containing any Latin
-# letters (English contamination, code-mixed tokens, stray URLs/emails),
-# and strips remaining special characters (@#$%^&*, quotes, brackets, etc.)
-# character-by-character from what's left.
-#
-# Two-stage approach, and the order matters:
-#   1. WORD-level filter first — a token like "COVID-19" or "iPhone8" is
-#      English contamination even though it contains digits; dropping the
-#      whole word (not just the English letters inside it) avoids leaving
-#      behind mangled fragments like "-19" or "8" floating in the text.
-#   2. CHAR-level cleanup second — for the words that survive (pure
-#      Nepali/digit tokens), strip any remaining stray special characters
-#      that regex word-splitting wouldn't have caught (e.g. a Devanagari
-#      word with a stray "*" stuck to it from wiki markup residue).
+
 
 LATIN_LETTER = re.compile(r"[A-Za-z]")
 
-# Keep: Devanagari block (includes Devanagari digits ०-९ already),
-# Latin digits 0-9, and Nepali punctuation danda/double-danda (। ॥).
-# Also keep basic sentence punctuation , . ! ? and common connector "-"
-# since those appear naturally in normal Nepali prose (dates, lists, etc.)
+
 ALLOWED_CHARS = re.compile(r"[^\u0900-\u097F0-9।॥,.\-!?\s]")
 
 RE_TITLE_LINE = re.compile(r"^TITLE:.*$", re.MULTILINE)
@@ -391,8 +334,7 @@ def clean_nepali_purity(text: str) -> str:
 
     cleaned_lines = []
     for line in text.split("\n"):
-        # Preserve TITLE: headers and blank lines / separators as-is so the
-        # output file structure (article boundaries) stays intact.
+
         if line.startswith("TITLE:") or not line.strip() or set(line.strip()) == {"="}:
             cleaned_lines.append(line)
             continue
@@ -401,8 +343,7 @@ def clean_nepali_purity(text: str) -> str:
         kept_words = [w for w in words if is_clean_nepali_word(w)]
         line = " ".join(kept_words)
 
-        # Character-level pass: strip any remaining special characters from
-        # what's left (stray punctuation/symbols not caught by the word filter).
+
         line = ALLOWED_CHARS.sub("", line)
         line = RE_MULTI_SPACE.sub(" ", line).strip()
 
