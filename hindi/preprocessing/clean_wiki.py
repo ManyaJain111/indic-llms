@@ -16,7 +16,7 @@ def clean_text(text: str) -> str:
     # Remove all English alphabets (uppercase and lowercase)
     cleaned = re.sub(r'[a-zA-Z]+', '', text)
     
-    # Remove multiple spaces that might have been left behind
+
     cleaned = re.sub(r'[ \t]+', ' ', cleaned)
     
     # Remove multiple blank lines
@@ -79,7 +79,7 @@ def main():
                     print(f"Processed {total_files} files, {total_articles} articles so far...")
 
     print("=" * 50)
-    print("✅ Done!")
+    print(" Done!")
     print(f"Total files processed: {total_files}")
     print(f"Total articles cleaned and saved: {total_articles}")
     print(f"Cleaned corpus is available at: {OUTPUT_FILE}")
