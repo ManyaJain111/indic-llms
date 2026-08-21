@@ -153,11 +153,6 @@ def get_sites_to_scrape(args, cfg: dict) -> list[str]:
 def print_banner():
     print(
         "\n"
-        "╔══════════════════════════════════════════════════════╗\n"
-        "║        🇮🇳  Hindi News Scraper  हिंदी न्यूज़ स्क्रेपर      ║\n"
-        "║  Dainik Bhaskar · Amar Ujala · Navbharat Times      ║\n"
-        "║  Live Hindustan · Patrika                            ║\n"
-        "╚══════════════════════════════════════════════════════╝\n"
     )
 
 
@@ -186,7 +181,7 @@ def main():
         # ── Stats mode ─────────────────────────────────────────────────────────
         if args.stats:
             stats = db.stats()
-            print(f"\n📊 Database Statistics — {db_path}")
+            print(f"\n Database Statistics — {db_path}")
             print(f"   Total articles : {stats['total']:,}")
             print(f"\n   By source:")
             for src, cnt in sorted(stats["by_source"].items()):
@@ -222,7 +217,7 @@ def main():
                 continue
 
             logger.info(f"\n{'─'*50}")
-            logger.info(f"🗞  Scraping: {site_cfg['name']}")
+            logger.info(f"  Scraping: {site_cfg['name']}")
 
             scraper = ScraperClass(site_cfg, global_cfg)
             per_site_limit = args.per_site_limit
@@ -248,14 +243,14 @@ def main():
             total_collected += inserted
 
             logger.info(
-                f"✅ {site_cfg['name']}: scraped={len(articles)}, "
+                f" {site_cfg['name']}: scraped={len(articles)}, "
                 f"unique={len(unique)}, saved={inserted}"
             )
 
         # ── Post-scrape export ─────────────────────────────────────────────────
         logger.info(f"\n{'─'*50}")
-        logger.info(f"🏁 Total newly saved articles: {total_collected:,}")
-        logger.info(f"🗄  Total in DB: {db.total():,}")
+        logger.info(f" Total newly saved articles: {total_collected:,}")
+        logger.info(f"  Total in DB: {db.total():,}")
 
         if args.format:
             _export(db, output_dir, args.format)
@@ -273,7 +268,7 @@ def _export(db: ArticleDB, output_dir: Path, formats: list[str]):
             db.export_json(str(path))
         elif fmt == "csv":
             db.export_csv(str(path))
-        print(f"  📄 Exported → {path.resolve()}")
+        print(f"  Exported → {path.resolve()}")
 
 
 if __name__ == "__main__":
