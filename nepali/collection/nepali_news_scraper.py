@@ -71,37 +71,24 @@ def dprint(*args, **kwargs):
     if DEBUG:
         print(*args, **kwargs)
 
-# IMPORTANT: set this to a real contact before running at any real scale.
-# Same requirement as Wikipedia — legitimate identification is both good
-# practice and what keeps you from getting IP-blocked by news sites' bot
-# protection.
+
 USER_AGENT = "LMA-corpus-research-bot/1.0 (contact: your_email@example.com; research use)"
 
-# Minimum seconds between requests to the SAME domain.
 DEFAULT_DELAY = 0.01
 
-# Paths that are almost never articles — skip early without fetching.
 SKIP_PATH_PATTERNS = re.compile(
     r"/(tag|tags|author|authors|search|video|videos|"
     r"gallery|photo|photos|live|epaper|advertise|about|contact|privacy|rss)(/|$)",
     re.IGNORECASE,
 )
 
-# Some sites split their sitemap by taxonomy TYPE (authors, tags, categories,
-# members) rather than by content — each of these is often itself paginated
-# into dozens of numbered files (authors-1.xml ... authors-59.xml). None of
-# these ever contain actual article text (they're archive/index listings),
-# so don't recurse into them even when discovered as nested .xml sitemaps —
-# this avoids wasting hundreds of requests chasing dead ends.
+
 SKIP_SITEMAP_NAME_PATTERN = re.compile(
     r"/(author|authors|tag|tags|member|members)(-\d+)?\.xml$",
     re.IGNORECASE,
 )
 
 
-# ----------------------------------------------------------------------
-# Robots.txt handling
-# ----------------------------------------------------------------------
 
 def load_robots(base_url: str, session: requests.Session) -> urllib.robotparser.RobotFileParser:
     """Fetch and parse robots.txt using OUR session (with proper UA), since
@@ -114,8 +101,7 @@ def load_robots(base_url: str, session: requests.Session) -> urllib.robotparser.
         if resp.status_code == 200:
             rp.parse(resp.text.splitlines())
         else:
-            # No robots.txt or inaccessible — treat as allow-all, but still
-            # crawl politely via our own rate limiting.
+
             rp.parse([])
     except requests.RequestException:
         rp.parse([])
@@ -151,24 +137,12 @@ def extract_links(html: str, base_url: str, current_url: str) -> list:
     return links
 
 
-# ----------------------------------------------------------------------
-# Article fetch + extraction
-# ----------------------------------------------------------------------
-
-
 
 def word_count(text: str) -> int:
     return len(text.split())
 
 
-# ----------------------------------------------------------------------
-# Dedup
-# ----------------------------------------------------------------------
-#
-# News sites constantly syndicate wire content (PTI/ANI-style) and
-# republish near-identical stories. A simple normalized-content hash
-# catches exact/near-exact duplicates cheaply, without needing a heavier
-# MinHash/LSH setup — sufficient for corpus-building purposes here.
+
 
 RE_WS = re.compile(r"\s+")
 
@@ -178,9 +152,6 @@ def content_fingerprint(text: str) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
-# ----------------------------------------------------------------------
-# Purity cleaning (same approach as the Wikipedia scraper's 'clean' mode)
-# ----------------------------------------------------------------------
 
 LATIN_LETTER = re.compile(r"[A-Za-z]")
 ALLOWED_CHARS = re.compile(r"[^\u0900-\u097F0-9।॥,.\-!?\s]")
@@ -212,10 +183,6 @@ def clean_nepali_purity(text: str) -> str:
     return result.strip()
 
 
-# ----------------------------------------------------------------------
-# State management (resumability)
-# ----------------------------------------------------------------------
-
 def load_state(state_path: Path) -> dict:
     if state_path.exists():
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -231,9 +198,6 @@ def save_state(state_path: Path, state: dict):
     state_path.write_text(json.dumps(state), encoding="utf-8")
 
 
-# ----------------------------------------------------------------------
-# Main crawl loop
-# ----------------------------------------------------------------------
 
 ARTICLE_SEPARATOR = "\n\n" + ("=" * 80) + "\n\n"
 
@@ -251,7 +215,7 @@ def scrape_site_worker(site_name, base_url, target_words, min_words, delay, appl
     global global_processed_urls, global_seen_hashes
     
     session = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True})
-    # session.headers.update({"User-Agent": USER_AGENT})
+
     
     robots = load_robots(base_url, session)
     crawl_delay = robots.crawl_delay(USER_AGENT) or delay
@@ -317,8 +281,7 @@ def scrape_site_worker(site_name, base_url, target_words, min_words, delay, appl
                 if resp.status_code != 200:
                     continue
                 html = resp.text
-                
-                # Detect Cloudflare JS challenge returning 200 OK
+
                 if "Just a moment..." in html or "<title>Just a moment...</title>" in html:
                     if url == base_url:
                         print(f"\n  [IP BLOCKED] {site_name} is blocking this server (Cloudflare Challenge).")
@@ -466,9 +429,6 @@ def run_crawl(site_names: list, out_path: Path, state_path: Path,
         print(f"Note: fell short of {target_words:,} word target.")
 
 
-# ----------------------------------------------------------------------
-# CLI
-# ----------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(description="Nepali news corpus scraper")
