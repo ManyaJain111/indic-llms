@@ -19,17 +19,21 @@ class CustomBPETokenizer:
         return [self.byte_to_char[b] for b in w.encode("utf-8")]
 
     def encode(self, text):
+        if not hasattr(self, 'cache'):
+            self.cache = {}
         ids = []
         for w in WORD_PAT.findall(text):
-            symbols = self._word_to_symbols(w)
-            while len(symbols) > 1:
-                pairs = [(symbols[i], symbols[i + 1]) for i in range(len(symbols) - 1)]
-                ranked = [(self.merge_ranks[p], i) for i, p in enumerate(pairs) if p in self.merge_ranks]
-                if not ranked:
-                    break
-                _, i = min(ranked)
-                symbols = symbols[:i] + [symbols[i] + symbols[i + 1]] + symbols[i + 2:]
-            ids.extend(self.vocab.get(s, -1) for s in symbols)
+            if w not in self.cache:
+                symbols = self._word_to_symbols(w)
+                while len(symbols) > 1:
+                    pairs = [(symbols[i], symbols[i + 1]) for i in range(len(symbols) - 1)]
+                    ranked = [(self.merge_ranks[p], i) for i, p in enumerate(pairs) if p in self.merge_ranks]
+                    if not ranked:
+                        break
+                    _, i = min(ranked)
+                    symbols = symbols[:i] + [symbols[i] + symbols[i + 1]] + symbols[i + 2:]
+                self.cache[w] = [self.vocab.get(s, 0) for s in symbols]
+            ids.extend(self.cache[w])
         return ids
 
     def decode(self, ids):
