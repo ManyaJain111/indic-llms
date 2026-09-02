@@ -46,9 +46,8 @@ def evaluate_ppl_bpb(model, val_loader, device, tokenizer, num_batches=200):
 
             # Count UTF-8 bytes for every target token to get true BPB
             flat_ids = y.view(-1).cpu().tolist()
-            for tok_id in flat_ids:
-                decoded = tokenizer.decode([tok_id])
-                total_bytes += len(decoded.encode('utf-8'))
+            decoded_text = tokenizer.decode(flat_ids)
+            total_bytes += len(decoded_text.encode('utf-8'))
 
     avg_loss = total_loss_nats / total_tokens if total_tokens > 0 else 0.0
     ppl = math.exp(min(avg_loss, 20))  # clamp to avoid overflow pre-convergence

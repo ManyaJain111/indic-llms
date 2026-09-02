@@ -37,11 +37,20 @@ class CustomBPETokenizer:
         return ids
 
     def decode(self, ids):
-        id_to_tok = {v: k for k, v in self.vocab.items()}
+        if getattr(self, 'id_to_tok', None) is None:
+            self.id_to_tok = {v: k for k, v in self.vocab.items()}
+            
         byte_arr = bytearray()
         for i in ids:
-            for ch in id_to_tok.get(i, ""):
-                byte_arr.append(self.char_to_byte[ch])
+            for ch in self.id_to_tok.get(i, ""):
+                try:
+                    byte_arr.append(self.char_to_byte[ch])
+                except KeyError:
+                    # For Character-Level BPEs (like Nepali) that don't map to bytes
+                    byte_arr.extend(ch.encode("utf-8"))
+        
+        # If byte_arr was built from utf-8 bytes (Hindi), decode it.
+        # If it was built directly from characters (Nepali), it's already utf-8 bytes so decode still works!
         return bytes(byte_arr).decode("utf-8", errors="replace")
 
     def load(self, in_path):
