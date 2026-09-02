@@ -35,6 +35,7 @@ def train():
     parser.add_argument("--save_steps", type=int, default=5000)
     parser.add_argument("--val_steps", type=int, default=1000)
     parser.add_argument("--val_batches", type=int, default=100)
+    parser.add_argument("--resume", type=str, default=None, help="Path to checkpoint to resume from (or 'latest')")
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -55,8 +56,23 @@ def train():
     # Optimizer & Scheduler
     optimizer = AdamW(model.parameters(), lr=args.learning_rate, weight_decay=0.1, betas=(0.9, 0.95))
     scheduler = get_cosine_schedule_with_warmup(optimizer, args.warmup_steps, args.max_steps)
-    # Use the non-deprecated API (torch >= 2.x)
     scaler = torch.amp.GradScaler('cuda', enabled=(device.type == 'cuda'))
+    
+    start_step = 0
+
+    # Auto-resume from latest checkpoint if requested or present
+    ckpt_path = args.resume
+    if ckpt_path == "latest" or (ckpt_path is None and os.path.exists(os.path.join(args.output_dir, "latest.pt"))):
+        ckpt_path = os.path.join(args.output_dir, "latest.pt")
+    
+    if ckpt_path and os.path.exists(ckpt_path):
+        print(f"🔄 Resuming training from checkpoint: {ckpt_path}")
+        checkpoint = torch.load(ckpt_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_step = checkpoint['step']
+        print(f"✅ Resumed at step {start_step}")
     
     # Data loaders
     train_loader = get_dataloader(args.dataset, tokenizer, config["context_len"], split="train", batch_size=args.batch_size)
@@ -66,13 +82,14 @@ def train():
 
     # CSV log file for loss curves
     log_path = os.path.join(args.output_dir, "train_log.csv")
-    log_file = open(log_path, "w", newline="")
+    log_file = open(log_path, "a" if start_step > 0 else "w", newline="")
     log_writer = csv.writer(log_file)
-    log_writer.writerow(["step", "train_loss", "val_loss", "val_ppl", "lr"])
+    if start_step == 0:
+        log_writer.writerow(["step", "train_loss", "val_loss", "val_ppl", "lr"])
     
     # Training Loop
-    step = 0
-    pbar = tqdm(total=args.max_steps, desc="Training")
+    step = start_step
+    pbar = tqdm(total=args.max_steps, initial=start_step, desc="Training")
     
     while step < args.max_steps:
         model.train()
@@ -141,6 +158,7 @@ def train():
                 'config': config
             }
             torch.save(checkpoint, os.path.join(args.output_dir, f"ckpt_{step}.pt"))
+            torch.save(checkpoint, os.path.join(args.output_dir, "latest.pt"))
             
     pbar.close()
     log_file.close()
