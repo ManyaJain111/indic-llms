@@ -30,4 +30,4 @@ class LMAIterableDataset(IterableDataset):
 
 def get_dataloader(hf_dataset_path, tokenizer, context_len, split="train", batch_size=8, max_tokens=None):
     ds = LMAIterableDataset(hf_dataset_path, tokenizer, context_len, split=split, max_tokens=max_tokens)
-    return torch.utils.data.DataLoader(ds, batch_size=batch_size, num_workers=2, pin_memory=True)
+    return torch.utils.data.DataLoader(ds, batch_size=batch_size, num_workers=0, pin_memory=False)
