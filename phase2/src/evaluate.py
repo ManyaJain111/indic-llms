@@ -32,7 +32,7 @@ def evaluate_ppl_bpb(model, val_loader, device, tokenizer, num_batches=200):
 
     val_iter = iter(val_loader)
     with torch.no_grad():
-        for i in range(num_batches):
+        for i in tqdm(range(num_batches), desc="Evaluating PPL/BPB"):
             try:
                 x, y = next(val_iter)
             except StopIteration:
@@ -79,7 +79,7 @@ def evaluate_generation(model, tokenizer, device, test_prefixes, references):
 
     # --- Greedy decoding first (deterministic argmax, no temperature) ---
     greedy_generations = []
-    for prefix in test_prefixes:
+    for prefix in tqdm(test_prefixes, desc="Greedy Generation"):
         enc = tokenizer.encode(prefix)
         if not enc:
             enc = [1]
@@ -106,7 +106,7 @@ def evaluate_generation(model, tokenizer, device, test_prefixes, references):
     # --- Temperature sampling ---
     for temp in [0.5, 1.0, 1.5]:
         generations = []
-        for prefix in test_prefixes:
+        for prefix in tqdm(test_prefixes, desc=f"Sampling Temp {temp}"):
             enc = tokenizer.encode(prefix)
             if not enc:
                 enc = [1]  # fallback to a safe token id
