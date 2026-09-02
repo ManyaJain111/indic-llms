@@ -51,7 +51,16 @@ def train():
     
     # Model setup
     model = GPTLanguageModel(**config).to(device)
-    print(f"Total parameters: {sum(p.numel() for p in model.parameters()) / 1e6:.2f} M")
+    
+    if torch.cuda.device_count() > 1:
+        print(f"🚀 Using {torch.cuda.device_count()} GPUs with DataParallel!")
+        model = torch.nn.DataParallel(model)
+        
+    # Function to get inner model state dict (handles DataParallel)
+    def get_model_state_dict(m):
+        return m.module.state_dict() if hasattr(m, 'module') else m.state_dict()
+
+    print(f"Total parameters: {sum(p.numel() for p in (model.module.parameters() if hasattr(model, 'module') else model.parameters())) / 1e6:.2f} M")
     
     # Optimizer & Scheduler
     optimizer = AdamW(model.parameters(), lr=args.learning_rate, weight_decay=0.1, betas=(0.9, 0.95))
@@ -68,7 +77,10 @@ def train():
     if ckpt_path and os.path.exists(ckpt_path):
         print(f"🔄 Resuming training from checkpoint: {ckpt_path}")
         checkpoint = torch.load(ckpt_path, map_location=device)
-        model.load_state_dict(checkpoint['model_state_dict'])
+        if hasattr(model, 'module'):
+            model.module.load_state_dict(checkpoint['model_state_dict'])
+        else:
+            model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
         start_step = checkpoint['step']
@@ -107,6 +119,9 @@ def train():
             
             with torch.amp.autocast('cuda', enabled=(device.type == 'cuda')):
                 logits, loss = model(x, targets=y)
+                # If DataParallel, loss is a vector (one per GPU), take the mean
+                if loss.dim() > 0:
+                    loss = loss.mean()
                 loss = loss / args.grad_accum
                 
             scaler.scale(loss).backward()
@@ -141,6 +156,8 @@ def train():
                     vx, vy = vx.to(device), vy.to(device)
                     with torch.amp.autocast('cuda', enabled=(device.type == 'cuda')):
                         _, vl = model(vx, targets=vy)
+                        if vl.dim() > 0:
+                            vl = vl.mean()
                     val_loss += vl.item()
             val_loss /= min(args.val_batches, i + 1)
             val_ppl = math.exp(min(val_loss, 20))
@@ -152,7 +169,7 @@ def train():
         if step % args.save_steps == 0:
             checkpoint = {
                 'step': step,
-                'model_state_dict': model.state_dict(),
+                'model_state_dict': get_model_state_dict(model),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
                 'config': config
@@ -166,7 +183,7 @@ def train():
     # Save final model
     torch.save({
         'step': step,
-        'model_state_dict': model.state_dict(),
+        'model_state_dict': get_model_state_dict(model),
         'config': config
     }, os.path.join(args.output_dir, "model_final.pt"))
     print("Training complete!")
