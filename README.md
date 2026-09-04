@@ -101,3 +101,18 @@ python src/evaluate.py \
 ## 📊 Summary of Evaluation Metrics
 
 The final evaluation metrics, generated samples, and attention visualization heatmaps are stored under `reports/hindi/` and `reports/nepali/`.
+
+---
+
+## 📋 Phase 2 Deliverables Mapping (Grading Rubric)
+
+This repository is explicitly structured to satisfy all 8 Phase 2 deliverables:
+
+1. **Transformer Implementation:** See `src/model.py` for the from-scratch Decoder (MHA, positional embeddings, causal mask).
+2. **Model Configurations:** See `config/model_h_config.json` and `config/model_l_config.json`.
+3. **Parameter Counts & Training Scripts:** See `src/train.py` and the standalone `notebooks/` folder. Checkpoints are located in `checkpoints/`.
+4. **Training Logs & Curves:** See the `notebooks/` and local `train_log.csv` files generated in the checkpoints directory.
+5. **Evaluation Metrics (PPL, BPB, BLEU, etc.):** See `reports/hindi/results.json`, `reports/nepali/intrinsic_metrics.json`, and `reports/nepali/generation_quality.json`.
+6. **Generated Samples & Diversity Stats:** See `reports/hindi/generated_samples.json`, `reports/nepali/generation_samples.json`, and `reports/nepali/diversity_metrics.json`.
+7. **Attention Heatmaps & Summaries:** See the PNG images and `attention_stats` JSON files within the `reports/hindi/` and `reports/nepali/` directories.
+8. **Resource Comparison Write-up:** (Addressed in the final submitted report/notebooks).
