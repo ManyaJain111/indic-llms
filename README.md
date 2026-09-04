@@ -1,25 +1,101 @@
-# Language Models and Agents - Phase 1 Submission
+# Phase 2: Decoder-Only Language Model Pretraining (Hindi & Nepali)
 
-This repository contains the Phase 1 implementation of two independent decoder-only Transformer language models (Model H for Hindi, Model L for Nepali).
+This repository contains the code, configurations, notebooks, and evaluation reports for pretraining and evaluating ~25M parameter decoder-only Transformer models (GPT architecture) from scratch on Hindi and Nepali corpora.
 
-## Project Links (Datasets & Archives)
+---
 
-Due to the massive scale of the corpora (approx. ~500M words / 14GB total), the datasets and checkpoints have been packaged and securely hosted on HuggingFace as required by the submission guidelines.
+## 📁 Repository Structure
 
-* **Model H (Hindi) Dataset Archive:** [https://huggingface.co/datasets/manyajain111/hindi-lma-corpus](https://huggingface.co/datasets/manyajain111/hindi-lma-corpus)
-* **Model L (Nepali) Dataset Archive:** [https://huggingface.co/datasets/manyajain111/nepali-lma-corpus](https://huggingface.co/datasets/manyajain111/nepali-lma-corpus)
+```
+.
+├── config/                  # Model architectures and hyperparameter configurations
+│   ├── model_h_config.json  # Hindi GPT model config (~24.3M parameters)
+│   └── model_l_config.json  # Nepali GPT model config (~24.3M parameters)
+├── src/                     # Core PyTorch source implementation
+│   ├── model.py             # From-scratch Decoder-only Transformer implementation
+│   ├── dataset.py           # Memory-mapped binary dataset loader
+│   ├── train.py             # Pretraining script (DataParallel, LR schedule, checkpointing)
+│   ├── evaluate.py          # Comprehensive evaluation pipeline (PPL, BPB, BLEU, ROUGE, Attention)
+│   └── tokenizer_wrapper.py # BPE Tokenizer wrapper with memoization caching
+├── tokenizers/              # Custom 16k vocabulary BPE tokenizers
+│   ├── hindi_tokenizer_16000.json
+│   └── nepali_tokenizer_16000.json
+├── notebooks/               # Standalone Kaggle pretraining & evaluation notebooks
+│   ├── hindi_training.ipynb     # Standalone Hindi pretraining notebook (up to 60k steps)
+│   ├── hindi_evaluation.ipynb   # Standalone Hindi evaluation notebook
+│   └── nepali.ipynb         # End-to-end Nepali pretraining & evaluation notebook
+├── reports/                 # Output metrics, generation samples, and attention plots
+│   ├── hindi/               # Hindi evaluation metrics, generated samples, & attention maps
+│   └── nepali/              # Nepali evaluation metrics, generated samples, & attention maps
+├── phase1/                  # Phase 1 data collection, scrapers, and tokenizer training
+├── requirements.txt         # Project dependencies
+└── README.md                # Project documentation
+```
 
+---
 
-## Repository Structure
+## 🛠️ Requirements & Installation
 
-As per the rubric, the repository is strictly divided by language:
-* `hindi/` - Contains all data collection, tokenization, and pipeline code for Model H.
-* `nepali/` - Contains all data collection, tokenization, and pipeline code for Model L.
-* `report/` - Contains the master Phase 1 Dataset and Tokenizer statistics report.
-## Reproduction Steps
+Install the required Python packages:
 
-1. **Setup Environment**: Install dependencies from `requirements.txt`.
-2. **Dataset**: Run `hindi/preprocessing/prepare_dataset.py` and `nepali/preprocessing/prepare_dataset.py` to recreate splits. Alternatively, download the cleaned data from HuggingFace.
-3. **Tokenizer Training**: Run `hindi/training/train_tokenizer.py` and `nepali/training/train_tokenizer.py`.
+```bash
+pip install -r requirements.txt
+```
 
-The final trained tokenizer files and vocabularies are available directly in the repository under `hindi/models/` and `nepali/models/`. The final statistical evaluations are under `hindi/reports/` and `nepali/reports/`.
+---
+
+## 🚀 Pretraining & Evaluation Workflow
+
+### 1. Pretraining
+
+To run pretraining locally or on a server for **Hindi**:
+
+```bash
+python src/train.py \
+    --config config/model_h_config.json \
+    --tokenizer tokenizers/hindi_tokenizer_16000.json \
+    --dataset manyajain111/hindi-lma-corpus \
+    --output_dir checkpoints/hindi \
+    --batch_size 16 --grad_accum 4 \
+    --max_steps 30000 --save_steps 1000 --val_steps 1000
+```
+
+To run pretraining for **Nepali**:
+
+```bash
+python src/train.py \
+    --config config/model_l_config.json \
+    --tokenizer tokenizers/nepali_tokenizer_16000.json \
+    --dataset manyajain111/nepali-lma-corpus \
+    --output_dir checkpoints/nepali \
+    --batch_size 16 --grad_accum 4 \
+    --max_steps 30000 --save_steps 1000 --val_steps 1000
+```
+
+### 2. Evaluation
+
+To evaluate the trained model on test data, generate text samples, and visualize attention heatmaps:
+
+```bash
+# Hindi Evaluation
+python src/evaluate.py \
+    --checkpoint checkpoints/hindi/model_final.pt \
+    --tokenizer tokenizers/hindi_tokenizer_16000.json \
+    --dataset manyajain111/hindi-lma-corpus \
+    --language hindi \
+    --output_dir reports/hindi
+
+# Nepali Evaluation
+python src/evaluate.py \
+    --checkpoint checkpoints/nepali/model_final.pt \
+    --tokenizer tokenizers/nepali_tokenizer_16000.json \
+    --dataset manyajain111/nepali-lma-corpus \
+    --language nepali \
+    --output_dir reports/nepali
+```
+
+---
+
+## 📊 Summary of Evaluation Metrics
+
+The final evaluation metrics, generated samples, and attention visualization heatmaps are stored under `reports/hindi/` and `reports/nepali/`.

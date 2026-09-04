@@ -1,15 +1,35 @@
-# Ignore huge datasets and archives to prevent git errors
+# Python / PyCache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Checkpoints and Big Weights
+checkpoints/
+*.pt
+*.pth
+*.bin
+
+# Datasets and Extracted Archives
+lma_extracted/
 *.tar.gz
 *.txt
+*.state.json
+
+# Environment / Logs
+.env
+.venv
+env/
+venv/
 *.log
+.idea/
+.vscode/
 
-# Ignore raw data folders
-raw/
-datasets/raw/
+# Jupyter / OS
+.ipynb_checkpoints/
+.DS_Store
 
-# Python caches
-__pycache__/
-*.pyc
-
-# Ignore tokenizer outputs/models if they exceed github limits (though 30k vocab is usually fine)
-# We will NOT ignore .json files because the tokenizer vocabulary must be uploaded!
+# Large files
+*.zip
+*.crdownload
+phase2/
