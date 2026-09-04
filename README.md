@@ -21,8 +21,9 @@ This repository contains the code, configurations, notebooks, and evaluation rep
 │   ├── hindi_tokenizer_16000.json
 │   └── nepali_tokenizer_16000.json
 ├── notebooks/               # Standalone Kaggle pretraining & evaluation notebooks
-│   ├── hindi_training.ipynb     # Standalone Hindi pretraining notebook (up to 60k steps)
-│   ├── hindi_evaluation.ipynb   # Standalone Hindi evaluation notebook
+│   ├── hindi_training_part1.ipynb   # Hindi pretraining (0-30k steps)
+│   ├── hindi_training_part2.ipynb   # Hindi pretraining (30k-60k steps)
+│   ├── hindi_evaluation.ipynb       # Standalone Hindi evaluation notebook
 │   └── nepali.ipynb         # End-to-end Nepali pretraining & evaluation notebook
 ├── reports/                 # Output metrics, generation samples, and attention plots
 │   ├── hindi/               # Hindi evaluation metrics, generated samples, & attention maps
