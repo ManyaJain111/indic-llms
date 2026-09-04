@@ -24,7 +24,8 @@ This repository contains the code, configurations, notebooks, and evaluation rep
 │   ├── hindi_training_part1.ipynb   # Hindi pretraining (0-30k steps)
 │   ├── hindi_training_part2.ipynb   # Hindi pretraining (30k-60k steps)
 │   ├── hindi_evaluation.ipynb       # Standalone Hindi evaluation notebook
-│   └── nepali.ipynb         # End-to-end Nepali pretraining & evaluation notebook
+│   ├── nepali_training.ipynb        # Nepali pretraining notebook
+│   └── nepali_evaluation.ipynb      # Standalone Nepali evaluation notebook
 ├── reports/                 # Output metrics, generation samples, and attention plots
 │   ├── hindi/               # Hindi evaluation metrics, generated samples, & attention maps
 │   └── nepali/              # Nepali evaluation metrics, generated samples, & attention maps
