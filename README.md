@@ -8,28 +8,30 @@ This repository contains the code, configurations, notebooks, and evaluation rep
 
 ```
 .
-├── config/                  # Model architectures and hyperparameter configurations
-│   ├── model_h_config.json  # Hindi GPT model config (~24.3M parameters)
-│   └── model_l_config.json  # Nepali GPT model config (~24.3M parameters)
-├── src/                     # Core PyTorch source implementation
-│   ├── model.py             # From-scratch Decoder-only Transformer implementation
-│   ├── dataset.py           # Memory-mapped binary dataset loader
-│   ├── train.py             # Pretraining script (DataParallel, LR schedule, checkpointing)
-│   ├── evaluate.py          # Comprehensive evaluation pipeline (PPL, BPB, BLEU, ROUGE, Attention)
-│   └── tokenizer_wrapper.py # BPE Tokenizer wrapper with memoization caching
-├── tokenizers/              # Custom 16k vocabulary BPE tokenizers
-│   ├── hindi_tokenizer_16000.json
-│   └── nepali_tokenizer_16000.json
-├── notebooks/               # Standalone Kaggle pretraining & evaluation notebooks
-│   ├── hindi_training_part1.ipynb   # Hindi pretraining (0-30k steps)
-│   ├── hindi_training_part2.ipynb   # Hindi pretraining (30k-60k steps)
-│   ├── hindi_evaluation.ipynb       # Standalone Hindi evaluation notebook
-│   ├── nepali_training.ipynb        # Nepali pretraining notebook
-│   └── nepali_evaluation.ipynb      # Standalone Nepali evaluation notebook
-├── reports/                 # Output metrics, generation samples, and attention plots
-│   ├── hindi/               # Hindi evaluation metrics, generated samples, & attention maps
-│   └── nepali/              # Nepali evaluation metrics, generated samples, & attention maps
 ├── phase1/                  # Phase 1 data collection, scrapers, and tokenizer training
+├── phase2/                  # Phase 2 implementation, models, and evaluation
+│   ├── config/              # Model architectures and hyperparameter configurations
+│   │   ├── model_h_config.json  # Hindi GPT model config (~24.3M parameters)
+│   │   └── model_l_config.json  # Nepali GPT model config (~24.3M parameters)
+│   ├── src/                 # Core PyTorch source implementation
+│   │   ├── model.py         # From-scratch Decoder-only Transformer implementation
+│   │   ├── dataset.py       # Memory-mapped binary dataset loader
+│   │   ├── train.py         # Pretraining script (DataParallel, LR schedule, checkpointing)
+│   │   ├── evaluate.py      # Comprehensive evaluation pipeline (PPL, BPB, BLEU, ROUGE, Attention)
+│   │   └── tokenizer_wrapper.py # BPE Tokenizer wrapper with memoization caching
+│   ├── tokenizers/          # Custom 16k vocabulary BPE tokenizers
+│   │   ├── hindi_tokenizer_16000.json
+│   │   └── nepali_tokenizer_16000.json
+│   ├── notebooks/           # Standalone Kaggle pretraining & evaluation notebooks
+│   │   ├── hindi_training_part1.ipynb   # Hindi pretraining (0-30k steps)
+│   │   ├── hindi_training_part2.ipynb   # Hindi pretraining (30k-60k steps)
+│   │   ├── hindi_evaluation.ipynb       # Standalone Hindi evaluation notebook
+│   │   ├── nepali_training.ipynb        # Nepali pretraining notebook
+│   │   └── nepali_evaluation.ipynb      # Standalone Nepali evaluation notebook
+│   ├── reports/             # Output metrics, generation samples, and attention plots
+│   │   ├── hindi/           # Hindi evaluation metrics, generated samples, & attention maps
+│   │   └── nepali/          # Nepali evaluation metrics, generated samples, & attention maps
+│   └── requirements.txt     # Project dependencies
 ├── requirements.txt         # Project dependencies
 └── README.md                # Project documentation
 ```
@@ -41,6 +43,7 @@ This repository contains the code, configurations, notebooks, and evaluation rep
 Install the required Python packages:
 
 ```bash
+cd phase2
 pip install -r requirements.txt
 ```
 
@@ -53,6 +56,7 @@ pip install -r requirements.txt
 To run pretraining locally or on a server for **Hindi**:
 
 ```bash
+cd phase2
 python src/train.py \
     --config config/model_h_config.json \
     --tokenizer tokenizers/hindi_tokenizer_16000.json \
@@ -65,6 +69,7 @@ python src/train.py \
 To run pretraining for **Nepali**:
 
 ```bash
+cd phase2
 python src/train.py \
     --config config/model_l_config.json \
     --tokenizer tokenizers/nepali_tokenizer_16000.json \
@@ -79,6 +84,8 @@ python src/train.py \
 To evaluate the trained model on test data, generate text samples, and visualize attention heatmaps:
 
 ```bash
+cd phase2
+
 # Hindi Evaluation
 python src/evaluate.py \
     --checkpoint checkpoints/hindi/model_final.pt \
@@ -100,7 +107,7 @@ python src/evaluate.py \
 
 ## 📊 Summary of Evaluation Metrics
 
-The final evaluation metrics, generated samples, and attention visualization heatmaps are stored under `reports/hindi/` and `reports/nepali/`.
+The final evaluation metrics, generated samples, and attention visualization heatmaps are stored under `phase2/reports/hindi/` and `phase2/reports/nepali/`.
 
 ---
 
@@ -108,11 +115,11 @@ The final evaluation metrics, generated samples, and attention visualization hea
 
 This repository is explicitly structured to satisfy all 8 Phase 2 deliverables:
 
-1. **Transformer Implementation:** See `src/model.py` for the from-scratch Decoder (MHA, positional embeddings, causal mask).
-2. **Model Configurations:** See `config/model_h_config.json` and `config/model_l_config.json`.
-3. **Parameter Counts & Training Scripts:** See `src/train.py` and the standalone `notebooks/` folder. Checkpoints are located in `checkpoints/`.
-4. **Training Logs & Curves:** See the `notebooks/` and local `train_log.csv` files generated in the checkpoints directory.
-5. **Evaluation Metrics (PPL, BPB, BLEU, etc.):** See `reports/hindi/results.json`, `reports/nepali/intrinsic_metrics.json`, and `reports/nepali/generation_quality.json`.
-6. **Generated Samples & Diversity Stats:** See `reports/hindi/generated_samples.json`, `reports/nepali/generation_samples.json`, and `reports/nepali/diversity_metrics.json`.
-7. **Attention Heatmaps & Summaries:** See the PNG images and `attention_stats` JSON files within the `reports/hindi/` and `reports/nepali/` directories.
+1. **Transformer Implementation:** See `phase2/src/model.py` for the from-scratch Decoder (MHA, positional embeddings, causal mask).
+2. **Model Configurations:** See `phase2/config/model_h_config.json` and `phase2/config/model_l_config.json`.
+3. **Parameter Counts & Training Scripts:** See `phase2/src/train.py` and the standalone `phase2/notebooks/` folder. Checkpoints are located in `phase2/checkpoints/`.
+4. **Training Logs & Curves:** See the `phase2/notebooks/` and local `train_log.csv` files generated in the checkpoints directory.
+5. **Evaluation Metrics (PPL, BPB, BLEU, etc.):** See `phase2/reports/hindi/results.json`, `phase2/reports/nepali/intrinsic_metrics.json`, and `phase2/reports/nepali/generation_quality.json`.
+6. **Generated Samples & Diversity Stats:** See `phase2/reports/hindi/generated_samples.json`, `phase2/reports/nepali/generation_samples.json`, and `phase2/reports/nepali/diversity_metrics.json`.
+7. **Attention Heatmaps & Summaries:** See the PNG images and `attention_stats` JSON files within the `phase2/reports/hindi/` and `phase2/reports/nepali/` directories.
 8. **Resource Comparison Write-up:** (Addressed in the final submitted report/notebooks).
