@@ -56,6 +56,26 @@ phase2/
 
 ---
 
+## Model Checkpoints (Downloads)
+
+
+The pretrained weights and configurations for both Model H and Model L have been uploaded to Hugging Face.
+
+
+- **Hugging Face Repository**: [https://huggingface.co/manyajain111/lma-phase2](https://huggingface.co/manyajain111/lma-phase2)
+
+
+Includes:
+
+- `hindi_checkpoints/model_final.pt` (Hindi final checkpoint)
+
+- `nepali_checkpoints/model_final.pt` (Nepali final checkpoint)
+
+- Model configurations and vocabulary logs
+
+
+---
+
 ## 3. Reproduction Instructions
 
 ### Environment Setup
