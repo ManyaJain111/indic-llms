@@ -1,0 +1,20 @@
+# Ignore virtual environments
+.venv/
+venv/
+env/
+
+# Ignore large model and checkpoint files to avoid GitHub limits
+**/*.pt
+**/*.bin
+**/*.zip
+*.log
+
+# Ignore python cache
+__pycache__/
+*.pyc
+
+# Ignore temp tex files
+*.aux
+*.out
+*.log
+texput.log

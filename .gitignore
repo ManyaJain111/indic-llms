@@ -1,15 +1,27 @@
-# Ignore huge datasets and archives to prevent git errors
-*.tar.gz
-*.txt
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Large checkpoints / binaries
+**/*.pt
+**/*.bin
+**/*.zip
 *.log
 
-# Ignore raw data folders
-raw/
-datasets/raw/
-
-# Python caches
+# Python cache
 __pycache__/
 *.pyc
 
-# Ignore tokenizer outputs/models if they exceed github limits (though 30k vocab is usually fine)
-# We will NOT ignore .json files because the tokenizer vocabulary must be uploaded!
+# LaTeX build artifacts
+*.aux
+*.out
+*.log
+texput.log
+
+# Scratch and upload scripts
+upload_*.py
+test_load.py
+*.zip
+.env
+hindi_scraper_data/
