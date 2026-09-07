@@ -1,0 +1,22 @@
+{
+  "greedy": {
+    "repetition_rate": 0.2659,
+    "distinct_1": 0.427,
+    "distinct_2": 0.6215
+  },
+  "temp_0.5": {
+    "repetition_rate": 0.1012,
+    "distinct_1": 0.4605,
+    "distinct_2": 0.7336
+  },
+  "temp_1.0": {
+    "repetition_rate": 0.0267,
+    "distinct_1": 0.6838,
+    "distinct_2": 0.9313
+  },
+  "temp_1.5": {
+    "repetition_rate": 0.0,
+    "distinct_1": 0.9447,
+    "distinct_2": 1.0
+  }
+}

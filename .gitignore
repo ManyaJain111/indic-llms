@@ -1,34 +1,27 @@
-# Python / PyCache
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Checkpoints and Big Weights
-checkpoints/
-*.pt
-*.pth
-*.bin
-
-# Datasets and Extracted Archives
-lma_extracted/
-*.tar.gz
-*.txt
-*.state.json
-
-# Environment / Logs
-.env
-.venv
-env/
+# Virtual environments
+.venv/
 venv/
+env/
+
+# Large checkpoints / binaries
+**/*.pt
+**/*.bin
+**/*.zip
 *.log
-.idea/
-.vscode/
 
-# Jupyter / OS
-.ipynb_checkpoints/
-.DS_Store
+# Python cache
+__pycache__/
+*.pyc
 
-# Large files
+# LaTeX build artifacts
+*.aux
+*.out
+*.log
+texput.log
+
+# Scratch and upload scripts
+upload_*.py
+test_load.py
 *.zip
-*.crdownload
+.env
+hindi_scraper_data/
