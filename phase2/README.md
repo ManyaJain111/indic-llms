@@ -66,13 +66,10 @@ The pretrained weights and configurations for both Model H and Model L have been
 
 
 Includes:
-
-- `hindi_checkpoints/model_final.pt` (Hindi final checkpoint)
-
-- `nepali_checkpoints/model_final.pt` (Nepali final checkpoint)
-
-- Model configurations and vocabulary logs
-
+- `hindi/`: `model_final.pt` (weights), `config.json` (architecture), `tokenizer.json` (vocab 16k)
+- `nepali/`: `model_final.pt` (weights), `config.json` (architecture), `tokenizer.json` (vocab 16.24k)
+- `model.py`: PyTorch model implementation for direct loading and inference
+- Model Card: Comprehensive usage documentation and evaluation benchmarks
 
 ---
 
