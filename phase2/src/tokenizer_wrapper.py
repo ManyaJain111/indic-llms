@@ -46,11 +46,8 @@ class CustomBPETokenizer:
                 try:
                     byte_arr.append(self.char_to_byte[ch])
                 except KeyError:
-                    # For Character-Level BPEs (like Nepali) that don't map to bytes
                     byte_arr.extend(ch.encode("utf-8"))
         
-        # If byte_arr was built from utf-8 bytes (Hindi), decode it.
-        # If it was built directly from characters (Nepali), it's already utf-8 bytes so decode still works!
         return bytes(byte_arr).decode("utf-8", errors="replace")
 
     def load(self, in_path):

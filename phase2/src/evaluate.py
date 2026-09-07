@@ -9,7 +9,7 @@ from tqdm import tqdm
 import sacrebleu
 from rouge_score import rouge_scorer
 import matplotlib
-matplotlib.use('Agg')  # non-interactive backend for Kaggle/headless
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -44,14 +44,12 @@ def evaluate_ppl_bpb(model, val_loader, device, tokenizer, num_batches=200):
             total_loss_nats += loss.item() * n_toks
             total_tokens += n_toks
 
-            # Count UTF-8 bytes for every target token to get true BPB
             flat_ids = y.view(-1).cpu().tolist()
             decoded_text = tokenizer.decode(flat_ids)
             total_bytes += len(decoded_text.encode('utf-8'))
 
     avg_loss = total_loss_nats / total_tokens if total_tokens > 0 else 0.0
-    ppl = math.exp(min(avg_loss, 20))  # clamp to avoid overflow pre-convergence
-    # True BPB: nats -> bits, then normalise by bytes per token
+    ppl = math.exp(min(avg_loss, 20))
     avg_bytes_per_token = total_bytes / total_tokens if total_tokens > 0 else 1.0
     bpb = (avg_loss / math.log(2)) / avg_bytes_per_token
 
@@ -77,7 +75,6 @@ def evaluate_generation(model, tokenizer, device, test_prefixes, references):
 
     results = {}
 
-    # --- Greedy decoding first (deterministic argmax, no temperature) ---
     greedy_generations = []
     for prefix in tqdm(test_prefixes, desc="Greedy Generation"):
         enc = tokenizer.encode(prefix)
@@ -103,20 +100,18 @@ def evaluate_generation(model, tokenizer, device, test_prefixes, references):
         'repetition_rate_4gram': round(rep_g, 4), 'generations': greedy_generations,
     }
 
-    # --- Temperature sampling ---
     for temp in [0.5, 1.0, 1.5]:
         generations = []
         for prefix in tqdm(test_prefixes, desc=f"Sampling Temp {temp}"):
             enc = tokenizer.encode(prefix)
             if not enc:
-                enc = [1]  # fallback to a safe token id
+                enc = [1]
             x = torch.tensor([enc], dtype=torch.long).to(device)
             with torch.no_grad():
                 gen_idx = model.generate(x, max_new_tokens=50, temperature=temp)
             gen_text = tokenizer.decode(gen_idx[0].cpu().tolist())
             generations.append(gen_text)
 
-        # sacrebleu expects List[str] hypotheses and List[List[str]] references
         bleu = sacrebleu.corpus_bleu(generations, [references]).score
         chrf = sacrebleu.corpus_chrf(generations, [references]).score
 
@@ -124,14 +119,12 @@ def evaluate_generation(model, tokenizer, device, test_prefixes, references):
                          for ref, gen in zip(references, generations)]
         rougeL = sum(rougeL_scores) / len(rougeL_scores) if rougeL_scores else 0.0
 
-        # Diversity: Distinct-1, Distinct-2
         all_words = [w for gen in generations for w in gen.split()]
         total_w = len(all_words)
         dist1 = len(set(all_words)) / total_w if total_w > 0 else 0.0
         bigrams_all = list(zip(all_words, all_words[1:]))
         dist2 = len(set(bigrams_all)) / len(bigrams_all) if bigrams_all else 0.0
 
-        # Repetition rate (4-gram)
         rep_rates = [compute_repetition_rate(gen, n=4) for gen in generations]
         rep_rate = sum(rep_rates) / len(rep_rates) if rep_rates else 0.0
 
@@ -156,17 +149,14 @@ def compute_attention_stats(attention_maps):
     entropy_table = []
     distance_table = []
     for layer_idx, attn in enumerate(attention_maps):
-        # attn: (B, n_heads, T, T)
-        attn_np = attn[0].detach().cpu().numpy()  # (n_heads, T, T)
+        attn_np = attn[0].detach().cpu().numpy()
         n_heads, T, _ = attn_np.shape
         ent_row, dist_row = [], []
         for h in range(n_heads):
-            weights = attn_np[h]  # (T, T)
-            # Entropy: H = -sum(w * log(w+eps)) averaged over queries
+            weights = attn_np[h]
             eps = 1e-9
             ent = -np.sum(weights * np.log(weights + eps), axis=-1).mean()
             ent_row.append(float(ent))
-            # Mean attention distance: for each query position q, sum_k |q-k| * w[q,k]
             positions = np.arange(T)
             dists = []
             for q in range(T):
@@ -194,10 +184,9 @@ def plot_attention(model, tokenizer, device, text, save_dir):
     n_layers = len(attention_maps)
     n_heads = attention_maps[0].shape[1]
 
-    # --- Heatmaps: early layer, middle layer, late layer ---
     layer_indices = sorted(set([0, n_layers // 2, n_layers - 1]))
     for layer_idx in layer_indices:
-        attn = attention_maps[layer_idx][0].detach().cpu().numpy()  # (n_heads, T, T)
+        attn = attention_maps[layer_idx][0].detach().cpu().numpy()
         cols = min(n_heads, 4)
         fig, axes = plt.subplots(1, cols, figsize=(5 * cols, 5))
         if cols == 1:
@@ -216,10 +205,8 @@ def plot_attention(model, tokenizer, device, text, save_dir):
         plt.savefig(os.path.join(save_dir, f'attn_layer{layer_idx}.png'), dpi=150)
         plt.close()
 
-    # --- Entropy and distance tables ---
     entropy_table, distance_table = compute_attention_stats(attention_maps)
 
-    # Plot entropy heatmap (layers x heads)
     fig, axes = plt.subplots(1, 2, figsize=(14, 4))
     sns.heatmap(np.array(entropy_table), ax=axes[0], cmap='magma',
                 xticklabels=[f'H{h}' for h in range(n_heads)],
@@ -268,7 +255,6 @@ def main():
     model.eval()
     print(f'Loaded model: {sum(p.numel() for p in model.parameters())/1e6:.2f}M params')
 
-    # --- PPL / BPB ---
     val_loader = get_dataloader(args.dataset, tokenizer, config['context_len'],
                                 split='test', batch_size=4)
     loss, ppl, bpb, avg_bytes_per_tok = evaluate_ppl_bpb(
@@ -276,7 +262,6 @@ def main():
     print(f'\nTest Loss: {loss:.4f} nats | PPL: {ppl:.2f} | BPB: {bpb:.4f} | '
           f'avg bytes/tok: {avg_bytes_per_tok:.2f}')
 
-    # --- Language-specific test prefixes ---
     if args.language == 'hindi':
         prefixes = ['मैं आज', 'भारत के', 'वह एक', 'सरकार ने', 'देश में']
         references = ['मैं आज बाजार गया था।', 'भारत के प्रधानमंत्री ने कहा',
@@ -284,7 +269,7 @@ def main():
                       'सरकार ने नई नीति की घोषणा की।',
                       'देश में लोकतंत्र की स्थापना हुई।']
         attn_text = 'मैं आज बाजार गया था।'
-    else:  # nepali
+    else:
         prefixes = ['म आज', 'नेपालको', 'उनले भने', 'सरकारले', 'देशमा']
         references = ['म आज बजार गएको थिएँ।', 'नेपालको प्रधानमन्त्रीले भने',
                       'उनले भने कि यो राम्रो छ।',
@@ -292,7 +277,6 @@ def main():
                       'देशमा प्रजातन्त्रको स्थापना भयो।']
         attn_text = 'म आज बजार गएको थिएँ।'
 
-    # --- Generation metrics ---
     gen_results = evaluate_generation(model, tokenizer, device, prefixes, references)
     print('\nGeneration Metrics:')
     for temp, res in gen_results.items():
@@ -301,17 +285,14 @@ def main():
               f'Dist-2={res["Distinct-2"]:.4f} rep={res["repetition_rate_4gram"]:.4f}')
         print(f'    Sample generation: {res["generations"][0][:120]}')
 
-    # --- Attention analysis ---
     attn_stats = plot_attention(model, tokenizer, device, attn_text, args.output_dir)
 
-    # --- Save all results ---
     serialisable_gen = {}
     for temp, res in gen_results.items():
         r = dict(res)
-        r.pop('generations', None)  # strip raw text from main JSON, save separately
+        r.pop('generations', None)
         serialisable_gen[str(temp)] = r
 
-    # Save generated samples separately
     with open(os.path.join(args.output_dir, 'generated_samples.json'), 'w', encoding='utf-8') as f:
         json.dump({str(t): res['generations'] for t, res in gen_results.items()},
                   f, ensure_ascii=False, indent=2)

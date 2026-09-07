@@ -66,7 +66,6 @@ def main():
 
     print("Re-computing ROUGE-L with whitespace tokeniser (pure Python LCS)...\n")
     
-    # Load existing quality file to preserve BLEU/chrF
     with open(quality_path, encoding='utf-8') as f:
         gen_quality = json.load(f)
 

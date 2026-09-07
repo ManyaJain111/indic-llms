@@ -63,7 +63,6 @@ if __name__ == '__main__':
         "काठमाडौं उपत्यकामा आज बिहान"
     ]
     
-    # Generate for Hindi
     h_samples = run_sampling_for_language(
         'hindi',
         'checkpoints/hindi/model_final.pt',
@@ -71,7 +70,6 @@ if __name__ == '__main__':
         hindi_prompts
     )
     
-    # Generate for Nepali
     n_samples = run_sampling_for_language(
         'nepali',
         'checkpoints/nepali/model_final.pt',
