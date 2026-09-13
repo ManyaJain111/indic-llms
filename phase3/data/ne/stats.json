@@ -2,68 +2,70 @@
   "train": {
     "n": 6300,
     "type_counts": {
-      "direct_value_more": 779,
-      "direct_value_less": 626,
-      "transitive_relation": 592,
-      "order_3way_max": 531,
-      "order_3way_min": 498,
-      "transitive_chain_4way": 544,
-      "order_4way_rank": 445,
-      "threshold_comparison": 388,
-      "difference_comparison": 345,
-      "temporal_ordering": 427,
-      "rule_classification": 353,
-      "contradiction_detection": 390,
-      "multistep_if_then": 382
+      "multistep_if_then": 385,
+      "direct_value_more": 776,
+      "transitive_relation": 636,
+      "rule_classification": 356,
+      "order_3way_max": 500,
+      "temporal_ordering": 393,
+      "direct_value_less": 633,
+      "transitive_chain_4way": 532,
+      "order_4way_rank": 420,
+      "difference_comparison": 398,
+      "order_3way_min": 515,
+      "threshold_comparison": 368,
+      "contradiction_detection": 388
     },
-    "source_counts": {
-      "ncert_translated": 15,
-      "llm_augmented": 4360,
-      "template": 1925
+    "tier_counts": {
+      "3": 1522,
+      "1": 1777,
+      "2": 3001
     }
   },
   "val": {
     "n": 1350,
     "type_counts": {
-      "rule_classification": 87,
+      "rule_classification": 93,
       "direct_value_less": 132,
-      "temporal_ordering": 79,
-      "order_3way_max": 116,
-      "contradiction_detection": 73,
-      "order_3way_min": 106,
-      "direct_value_more": 168,
-      "multistep_if_then": 80,
-      "order_4way_rank": 108,
-      "transitive_chain_4way": 124,
-      "difference_comparison": 78,
-      "threshold_comparison": 77,
-      "transitive_relation": 122
+      "temporal_ordering": 82,
+      "order_3way_max": 120,
+      "order_3way_min": 92,
+      "direct_value_more": 161,
+      "multistep_if_then": 68,
+      "difference_comparison": 82,
+      "transitive_relation": 135,
+      "order_4way_rank": 110,
+      "contradiction_detection": 81,
+      "threshold_comparison": 70,
+      "transitive_chain_4way": 124
     },
-    "source_counts": {
-      "llm_augmented": 920,
-      "template": 430
+    "tier_counts": {
+      "3": 324,
+      "1": 363,
+      "2": 663
     }
   },
   "test": {
     "n": 1350,
     "type_counts": {
-      "direct_value_more": 179,
-      "difference_comparison": 82,
-      "threshold_comparison": 69,
-      "order_3way_max": 114,
-      "rule_classification": 85,
-      "multistep_if_then": 86,
-      "transitive_relation": 150,
-      "transitive_chain_4way": 111,
-      "order_4way_rank": 105,
-      "order_3way_min": 114,
-      "direct_value_less": 124,
-      "contradiction_detection": 69,
-      "temporal_ordering": 62
+      "direct_value_more": 173,
+      "difference_comparison": 97,
+      "threshold_comparison": 90,
+      "order_3way_max": 109,
+      "transitive_relation": 148,
+      "direct_value_less": 130,
+      "rule_classification": 86,
+      "contradiction_detection": 71,
+      "multistep_if_then": 79,
+      "order_3way_min": 103,
+      "temporal_ordering": 60,
+      "transitive_chain_4way": 118,
+      "order_4way_rank": 86
     },
-    "source_counts": {
-      "template": 417,
-      "llm_augmented": 933
+    "tier_counts": {
+      "1": 393,
+      "2": 661,
+      "3": 296
     }
   }
 }

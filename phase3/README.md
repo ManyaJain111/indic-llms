@@ -1,36 +1,38 @@
-# Synthetic Comparative-Reasoning Dataset (Model H / Model L, Phase 3)
+# Synthetic Comparative & Structural Reasoning Dataset (Model H / Model L, Phase 3)
 
-Programmatically generated & NCERT Exemplar-seeded finetuning corpus for transitive/comparative
-reasoning, in Hindi (Model H) and Nepali (Model L). Total size: **9,000 items per language**
-(6,300 train, 1,350 val, 1,350 test). No external reasoning benchmark was used — ground truth is
+Clean, programmatic, grammar-based synthetic reasoning corpus for transitive and comparative
+reasoning in Hindi (Model H) and Nepali (Model L). Total size: **9,000 items per language**
+(6,300 train, 1,350 val, 1,350 test). Zero external scraping or forced MCQs — ground truth is
 constructed and programmatically verified for 100% of examples.
 
 ## Files & Structure
 
 ```
 phase3/
-├── generate_6k_dataset.py       # Full dataset generator (NCERT seeds + LLM augmentation + templates)
-├── ingest_ncert.py              # NCERT problem extraction script (Physics, Economics, Bio)
-├── llm_augmentation.py          # Gemini-based few-shot translation and augmentation
-├── evaluate_diversity.py        # Evaluates distinct trigram ratio & diversity improvement
-├── merge_datasets.py            # Dataset merging & stats calculator
-├── vocab_hi.py                  # Hindi entity pools, attributes, templates
-├── vocab_ne.py                  # Nepali entity pools, attributes, templates
+├── generate_reasoning_dataset.py # Clean grammar-based programmatic generator with difficulty tiers
+├── evaluate_diversity.py         # Evaluates distinct trigram ratio & lexical diversity
+├── merge_datasets.py             # Dataset merging & stats calculator
+├── vocab_hi.py                   # Hindi entity pools, attributes, templates
+├── vocab_ne.py                   # Nepali entity pools, attributes, templates
 └── data/
-    ├── seeds/
-    │   ├── ncert_seeds_hi.jsonl # 15 authentic NCERT exemplar seeds (Hindi)
-    │   └── ncert_seeds_ne.jsonl # 15 authentic NCERT exemplar seeds (Nepali)
     ├── hi/
-    │   ├── train.jsonl          # 6,300 records (Model H train)
-    │   ├── val.jsonl            # 1,350 records (Model H val)
-    │   ├── test.jsonl           # 1,350 records (Model H test)
-    │   └── stats.json           # Breakdown by question type & source
+    │   ├── train.jsonl           # 6,300 records (Model H train)
+    │   ├── val.jsonl             # 1,350 records (Model H val)
+    │   ├── test.jsonl            # 1,350 records (Model H test)
+    │   └── stats.json            # Breakdown by question type & difficulty tier
     └── ne/
-        ├── train.jsonl          # 6,300 records (Model L train)
-        ├── val.jsonl            # 1,350 records (Model L val)
-        ├── test.jsonl           # 1,350 records (Model L test)
-        └── stats.json           # Breakdown by question type & source
+        ├── train.jsonl           # 6,300 records (Model L train)
+        ├── val.jsonl             # 1,350 records (Model L val)
+        ├── test.jsonl            # 1,350 records (Model L test)
+        └── stats.json            # Breakdown by question type & difficulty tier
 ```
+
+## Scientific Ontology & Difficulty Tiers
+
+The dataset is organized across **3 explicit cognitive difficulty tiers**:
+- **Tier 1: Direct Pairwise Comparison (30%)** — 1-hop numeric comparison across authentic physical quantities (e.g. force, speed, density).
+- **Tier 2: Transitive / Ordering / Superlative (45%)** — 2 to 4-hop relational chaining ($A > B > C > D$), rankings, and gap intervals.
+- **Tier 3: Structural & Deductive Reasoning (25%)** — Contradiction detection, rule-based classification, multi-step if-then implications, and temporal event ordering.
 
 ## Leakage Avoidance & Governed Entity Namespaces
 
