@@ -1,0 +1,234 @@
+# -*- coding: utf-8 -*-
+"""
+Vocabulary, entity pools and templates for the Nepali (Model L) synthetic
+reasoning dataset. Same 70/15/15 held-out split mechanism as vocab_hi.py.
+"""
+
+import random
+
+_SPLIT_SEED = 20260913
+
+# ---------------------------------------------------------------------------
+# Entity name pools
+# ---------------------------------------------------------------------------
+
+PERSON_NAMES = [
+    "राम", "सीता", "हरि", "गीता", "विकास", "अनिता", "श्याम", "कमला",
+    "बिनोद", "सुनिता", "रमेश", "सरिता", "दिपक", "सन्तोषी", "प्रकाश", "पूजा",
+    "निर्मल", "सुजाता", "गोपाल", "मीना", "कृष्ण", "लक्ष्मी", "मोहन", "रीता",
+    "सुरेश", "बिमला", "अर्जुन", "सपना", "दिलिप", "उमा", "राजु", "कान्छी",
+    "यम", "सरस्वती", "विष्णु", "पार्वती", "नारायण", "रुक्मणी", "इन्द्र", "गंगा",
+    "केदार", "जानकी", "टेक", "देवी", "भीम", "सुमन", "बद्री", "कमला देवी",
+    "चन्द्र", "प्रतिमा",
+]
+
+ITEM_NAMES = [
+    "स्याउ", "केरा", "आँप", "अनार", "सुन्तला", "अंगुर", "मेवा", "तरबुजा",
+    "किताब", "कलम", "झोला", "घडी", "कुर्सी", "टेबल", "साइकल", "छाता",
+    "जुत्ता", "टोपी", "कप", "थैलो", "बाकस", "बत्ती", "सिरानी", "कम्बल",
+    "बोतल", "थाल", "चक्कु", "चम्चा", "दराज", "ऐना",
+]
+
+
+def _split(pool, seed_offset):
+    """70/15/15 split that guarantees at least one item per split
+    whenever the pool has >=3 items (needed for small template lists)."""
+    rng = random.Random(_SPLIT_SEED + seed_offset)
+    items = list(pool)
+    rng.shuffle(items)
+    n = len(items)
+    if n >= 3:
+        n_val = max(1, round(n * 0.15))
+        n_test = max(1, round(n * 0.15))
+        n_train = max(1, n - n_val - n_test)
+        # if rounding overshot, trim val/test (never below 1)
+        while n_train + n_val + n_test > n:
+            if n_test > 1:
+                n_test -= 1
+            elif n_val > 1:
+                n_val -= 1
+            else:
+                n_train -= 1
+    else:
+        n_train, n_val, n_test = n, 0, 0
+    return {
+        "train": items[:n_train],
+        "val": items[n_train:n_train + n_val] or items[:1],
+        "test": items[n_train + n_val:n_train + n_val + n_test] or items[-1:],
+    }
+
+
+PERSON_NAMES_SPLIT = _split(PERSON_NAMES, 1)
+ITEM_NAMES_SPLIT = _split(ITEM_NAMES, 2)
+
+GEOGRAPHY_NAMES = [
+    "काठमाडौँ", "पोखरा", "ललितपुर", "विराटनगर", "भरतपुर", "वीरगन्ज", "धरान", "बुटवल",
+    "हेटौँडा", "जनकपुर", "नेपालगन्ज", "धनगढी", "भक्तपुर", "इटहरी", "कास्की", "झापा",
+    "बागमती", "गण्डकी", "लुम्बिनी", "कोशी", "कर्णाली", "सुदूरपश्चिम", "मधेश", "चितवन",
+    "रुपन्देही", "कैलाली", "मोरङ", "सुर्खेत", "पाल्पा", "इलाम", "तनहुँ", "गोर्खा"
+]
+GEOGRAPHY_NAMES_SPLIT = _split(GEOGRAPHY_NAMES, 3)
+
+# Science pool: metals, liquids, vehicles, appliances (no plants — separate pool)
+SCIENCE_NAMES = [
+    "फलाम", "तामा", "सुन", "चाँदी", "एल्युमिनियम", "पित्तल", "जस्ता", "काँस",
+    "सिसा", "पारो", "टिन", "निकल",
+    "पानी", "दूध", "तेल", "पेट्रोल", "डिजेल", "सिरका", "मह", "अल्कोहल",
+    "गाडी", "बस", "रेल", "ट्रक", "मोटरसाइकल",
+    "बत्ती", "हिटर",
+]
+SCIENCE_NAMES_SPLIT = _split(SCIENCE_NAMES, 4)
+
+# Plant pool: used for tree / lifespan domain attributes
+PLANT_NAMES = [
+    "निम", "बर", "पीपल", "सिसौ", "गुलाफ",
+    "आँप", "साल", "चन्दन", "तुलसी", "अशोक", "अर्जुन", "जामुन",
+]
+PLANT_NAMES_SPLIT = _split(PLANT_NAMES, 5)
+
+# ---------------------------------------------------------------------------
+# Attribute configs
+# ---------------------------------------------------------------------------
+
+ATTRIBUTES = [
+    {"name": "उचाइ", "unit": "सेन्टिमिटर", "domain": "person", "lo": 140, "hi": 200},
+    {"name": "उमेर", "unit": "वर्ष", "domain": "person", "lo": 5, "hi": 85},
+    {"name": "मूल्य", "unit": "रुपैयाँ", "domain": "item", "lo": 10, "hi": 4500},
+    {"name": "परिमाण", "unit": "किलोग्राम", "domain": "item", "lo": 1, "hi": 120},
+]
+
+# ---------------------------------------------------------------------------
+# Templates (Nepali uses "को" universally — no gender inflection needed)
+# ---------------------------------------------------------------------------
+
+TEMPLATES_RAW = {
+    "direct_value_more": [
+        "{e1} को {attr} {v1} {unit} छ र {e2} को {attr} {v2} {unit} छ। कसको {attr} बढी छ?",
+        "{e1} को {attr} {v1} {unit} छ, जबकि {e2} को {attr} {v2} {unit} छ। {attr} मा को अगाडि छ?",
+        "{e1}: {v1} {unit}, {e2}: {v2} {unit}। यीमध्ये कसको {attr} बढी छ?",
+        "{e1} र {e2} को {attr} क्रमशः {v1} {unit} र {v2} {unit} छ। कसको {attr} बढी छ, भन्नुहोस्।",
+        "मानौं {e1} को {attr} {v1} {unit} छ र {e2} को {attr} {v2} {unit} छ। बढी {attr} कसको छ?",
+        "{e1} को {attr} {v1} {unit} र {e2} को {attr} {v2} {unit} रेकर्ड गरिएको छ। कसको {attr} बढी छ?",
+    ],
+    "direct_value_less": [
+        "यदि {e1} को {attr} {v1} {unit} छ र {e2} को {attr} {v2} {unit} छ भने, कसको {attr} कम छ?",
+        "{e1} को {attr} {v1} {unit} छ र {e2} को {attr} {v2} {unit} छ। कसको {attr} कम छ?",
+        "{e1}: {v1} {unit}, {e2}: {v2} {unit}। कम {attr} कसको छ?",
+        "{e1} र {e2} को {attr} क्रमशः {v1} {unit} र {v2} {unit} छ। कसको {attr} कम छ, भन्नुहोस्।",
+    ],
+    "transitive_relation": [
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी छ। {e2} को {attr}, {e3} भन्दा बढी छ। तीनैमध्ये सबैभन्दा बढी {attr} कसको छ?", "chain": "gt", "ask": "max"},
+        {"text": "{e1} को {attr}, {e2} भन्दा कम छ। {e2} को {attr}, {e3} भन्दा कम छ। सबैभन्दा बढी {attr} कसको छ?", "chain": "lt", "ask": "max"},
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी छ र {e2} को {attr}, {e3} भन्दा बढी छ। {e1} र {e3} मध्ये कसको {attr} बढी छ?", "chain": "gt", "ask": "cross"},
+        {"text": "यदि {e1}, {attr} मा {e2} भन्दा अगाडि छ र {e2}, {attr} मा {e3} भन्दा अगाडि छ भने, {e1} र {e3} मध्ये को अगाडि छ?", "chain": "gt", "ask": "cross"},
+        {"text": "{e1} को {attr}, {e2} भन्दा कम छ र {e2} को {attr}, {e3} भन्दा कम छ। तीनैमध्ये सबैभन्दा कम {attr} कसको छ?", "chain": "lt", "ask": "min"},
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी छ। {e2} को {attr}, {e3} भन्दा बढी छ। सबैभन्दा कम {attr} कसको छ?", "chain": "gt", "ask": "min"},
+    ],
+    "order_3way_max": [
+        "{e1} को {attr} {v1} {unit}, {e2} को {attr} {v2} {unit}, र {e3} को {attr} {v3} {unit} छ। सबैभन्दा बढी {attr} कसको छ?",
+        "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}। तीनैमध्ये सबैभन्दा बढी {attr} कसको छ?",
+        "{e1}, {e2} र {e3} को {attr} क्रमशः {v1} {unit}, {v2} {unit} र {v3} {unit} छ। सबैभन्दा बढी {attr} कसको छ?",
+    ],
+    "order_3way_min": [
+        "{e1} को {attr} {v1} {unit}, {e2} को {attr} {v2} {unit}, र {e3} को {attr} {v3} {unit} छ। सबैभन्दा कम {attr} कसको छ?",
+        "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}। तीनैमध्ये सबैभन्दा कम {attr} कसको छ?",
+        "{e1}, {e2} र {e3} को {attr} क्रमशः {v1} {unit}, {v2} {unit} र {v3} {unit} छ। सबैभन्दा कम {attr} कसको छ?",
+    ],
+    "transitive_chain_4way": [
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी, {e2} को {attr}, {e3} भन्दा बढी, र {e3} को {attr}, {e4} भन्दा बढी छ। चारैमध्ये सबैभन्दा कम {attr} कसको छ?", "chain": "gt", "ask": "min"},
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी, {e2} को {attr}, {e3} भन्दा बढी, र {e3} को {attr}, {e4} भन्दा बढी छ। सबैभन्दा बढी {attr} कसको छ?", "chain": "gt", "ask": "max"},
+        {"text": "{e1} को {attr}, {e2} भन्दा कम, {e2} को {attr}, {e3} भन्दा कम, र {e3} को {attr}, {e4} भन्दा कम छ। सबैभन्दा बढी {attr} कसको छ?", "chain": "lt", "ask": "max"},
+        {"text": "{e1} को {attr}, {e2} भन्दा बढी, {e2} को {attr}, {e3} भन्दा बढी, र {e3} को {attr}, {e4} भन्दा बढी छ। {e1} र {e4} मध्ये कसको {attr} बढी छ?", "chain": "gt", "ask": "cross_extreme"},
+    ],
+    "order_4way_rank": [
+        {"text": "दिइएको तथ्याङ्कमा {e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}) र {e4} ({v4} {unit}) {attr} छ। दोस्रो सबैभन्दा बढी मान कसको छ?", "rank": "2nd_max"},
+        {"text": "{e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}), र {e4} ({v4} {unit}) {attr} मध्ये दोस्रो सबैभन्दा कम मान कसको छ?", "rank": "2nd_min"},
+    ],
+    "threshold_comparison": [
+        {"text": "मानक सीमा {t} {unit} तोकिएको छ। {e1} को मान {v1} {unit} र {e2} को मान {v2} {unit} छ। कुन चाहिँ मानक सीमा भन्दा बढी छ?", "cond": "above"},
+        {"text": "मानक सीमा {t} {unit} तोकिएको छ। {e1} को मान {v1} {unit} र {e2} को मान {v2} {unit} छ। कुन चाहिँ मानक सीमा भन्दा कम छ?", "cond": "below"},
+    ],
+    "difference_comparison": [
+        {"text": "सन्दर्भ {e1} ({v1} {unit}) को तुलनामा {e2} ({v2} {unit}) र {e3} ({v3} {unit}) {attr} दिइएको छ। सन्दर्भ {e1} बाट कसको अन्तर बढी छ, {e2} को वा {e3} को?", "mode": "larger_gap"},
+        {"text": "सन्दर्भ {e1} ({v1} {unit}) को तुलनामा {e2} ({v2} {unit}) र {e3} ({v3} {unit}) {attr} दिइएको छ। सन्दर्भ {e1} बाट कसको अन्तर कम छ, {e2} को वा {e3} को?", "mode": "smaller_gap"},
+    ],
+    "temporal_ordering": [
+        {"text": "एउटा कार्यक्रममा {e1}, {e2} भन्दा पहिले पुग्यो र {e2}, {e3} भन्दा पहिले पुग्यो। सबैभन्दा पहिले को पुग्यो?", "order": "before", "ask": "first"},
+        {"text": "प्रतियोगितामा {e1}, {e2} पछि सकियो र {e2}, {e3} पछि सकियो। सबैभन्दा पछि को सकियो?", "order": "after", "ask": "last"},
+        {"text": "दौडमा {e1}, {e2} भन्दा पहिले आयो र {e2}, {e3} भन्दा पहिले आयो। सबैभन्दा पछि को आयो?", "order": "before", "ask": "last"},
+        {"text": "कक्षामा {e1}, {e2} पछि उपस्थित भयो र {e2}, {e3} पछि उपस्थित भयो। सबैभन्दा पहिले को उपस्थित भयो?", "order": "after", "ask": "first"},
+    ],
+    "contradiction_detection": [
+        {"text": "भनाइ १: {e1} को {attr}, {e2} भन्दा बढी छ। भनाइ २: {e2} को {attr}, {e1} भन्दा बढी छ। के यी भनाइहरूमा विरोधाभास छ?", "conflict": True},
+        {"text": "भनाइ १: {e1} को {attr}, {e2} भन्दा बढी छ। भनाइ २: {e1} को {attr}, {e2} भन्दा कम छ। के यी दुई भनाइहरू बाझिएका छन्?", "conflict": True},
+        {"text": "भनाइ १: {e1} को {attr}, {e2} भन्दा बढी छ। भनाइ २: {e2} को {attr}, {e1} भन्दा कम छ। के यी भनाइहरूमा विरोधाभास छ?", "conflict": False},
+        {"text": "भनाइ १: {e1} को {attr}, {e2} भन्दा कम छ। भनाइ २: {e2} को {attr}, {e1} भन्दा बढी छ। के यी दुई भनाइहरू सङ्गत छन् (विरोधाभास छैन)?", "conflict": False},
+    ],
+    "rule_classification": [
+        {"text": "वर्गीकरण नियम अनुसार यदि कुनै वस्तुको {attr} {thresh} {unit} भन्दा बढी भएमा 'उच्च वर्ग' मा पर्छ, अन्यथा 'सामान्य वर्ग' मा पर्छ। {e1} को {attr} {val} {unit} छ। {e1} कुन वर्गमा पर्छ?", "high_label": "उच्च वर्ग", "low_label": "सामान्य वर्ग"},
+        {"text": "परीक्षण नियम: {thresh} {unit} भन्दा बढी {attr} भएको वस्तुलाई 'वर्ग क' र {thresh} {unit} वा कमलाई 'वर्ग ख' भनिन्छ। {e1} को {attr} {val} {unit} भेटियो। {e1} कुन वर्गमा पर्छ?", "high_label": "वर्ग क", "low_label": "वर्ग ख"},
+    ],
+    "multistep_if_then": [
+        {"text": "यदि {e1} को {attr}, {e2} भन्दा बढी छ, र {e2} को {attr}, {e3} भन्दा बढी छ भने, {e1} र {e3} मध्ये कसको मान बढी हुन्छ?", "chain": "gt", "ask": "more"},
+        {"text": "यदि {e1} को {attr}, {e2} भन्दा कम छ, र {e2} को {attr}, {e3} भन्दा कम छ भने, {e1} र {e3} मध्ये कसको मान कम हुन्छ?", "chain": "lt", "ask": "less"},
+        {"text": "नियम: यदि {e1} को {attr}, {e2} भन्दा बढी छ र {e2} को {attr}, {e3} भन्दा बढी छ भने, {e1} र {e3} मध्ये सबैभन्दा कम मान कसको हो?", "chain": "gt", "ask": "less"},
+    ],
+}
+
+TEMPLATES_SPLIT = {qtype: _split(tmpls, 100 + i)
+                   for i, (qtype, tmpls) in enumerate(TEMPLATES_RAW.items())}
+
+# ---------------------------------------------------------------------------
+# Answer-sentence rendering (Nepali "को" is gender-neutral)
+# ---------------------------------------------------------------------------
+
+def answer_sentence_single(name, attr, superlative):
+    word = "सबैभन्दा बढी" if superlative == "max" else "सबैभन्दा कम"
+    return f"{name} को {attr} {word} छ।"
+
+
+def answer_sentence_pair(name, attr, comparative):
+    """comparative: 'more' or 'less' (pairwise, not superlative)"""
+    word = "बढी" if comparative == "more" else "कम"
+    return f"{name} को {attr} {word} छ।"
+
+
+def answer_sentence_rank(name, attr, rank):
+    word = "दोस्रो सबैभन्दा बढी" if rank == "2nd_max" else "दोस्रो सबैभन्दा कम"
+    return f"{name} को {attr} {word} छ।"
+
+
+def answer_sentence_threshold(name, attr, cond):
+    word = "बढी" if cond == "above" else "कम"
+    return f"{name} को मान मानक सीमा भन्दा {word} छ।"
+
+
+def answer_sentence_diff(name, attr, mode):
+    word = "बढी" if mode == "larger_gap" else "कम"
+    return f"सन्दर्भको तुलनामा {name} को अन्तर {word} छ।"
+
+
+def answer_sentence_temporal(name, ask):
+    pos = "सबैभन्दा पहिले" if ask == "first" else "सबैभन्दा पछि"
+    return f"{name} {pos} भयो।"
+
+
+def answer_sentence_contradiction(has_conflict):
+    return "हो, यी भनाइहरूमा विरोधाभास छ।" if has_conflict else "होइन, यी भनाइहरूमा विरोधाभास छैन।"
+
+
+def answer_sentence_rule(name, category):
+    return f"{name} '{category}' मा पर्छ।"
+
+
+def answer_sentence_multistep(winner, attr, ask):
+    word = "बढी" if ask == "more" else "कम"
+    return f"{winner} को {attr} {word} हुन्छ।"
+
+
+EQUAL_LABEL = "बराबर"
+
+
+def answer_sentence_equal(attr):
+    return f"दुवैको {attr} बराबर छ।"
+
