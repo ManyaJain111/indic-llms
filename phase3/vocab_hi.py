@@ -160,7 +160,7 @@ TEMPLATES_RAW = {
     "direct_value_more": [
         {
             "text": "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
-            "question": "किसका/किसकी {attr} ज़्यादा है?"
+            "question": "{kiska} {attr} ज़्यादा है?"
         },
         {
             "text": "{e1} {poss} {attr} {v1} {unit} है, जबकि {e2} {poss} {attr} {v2} {unit} है।",
@@ -168,37 +168,37 @@ TEMPLATES_RAW = {
         },
         {
             "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}।",
-            "question": "इनमें से अधिक {attr} किसका/किसकी है?"
+            "question": "इनमें से अधिक {attr} {kiska} है?"
         },
         {
             "text": "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है।",
-            "question": "बताइए किसका/किसकी {attr} ज़्यादा है।"
+            "question": "बताइए {kiska} {attr} ज़्यादा है।"
         },
         {
             "text": "मान लीजिए {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
-            "question": "ज़्यादा {attr} किसका/किसकी है?"
+            "question": "ज़्यादा {attr} {kiska} है?"
         },
         {
-            "text": "{e1} {poss} {attr} {v1} {unit} तथा {e2} {poss} {attr} {v2} {unit} दर्ज़ की गई है।",
-            "question": "किसका/किसकी {attr} ज़्यादा है?"
+            "text": "{e1} {poss} {attr} {v1} {unit} तथा {e2} {poss} {attr} {v2} {unit} {darj} है।",
+            "question": "{kiska} {attr} ज़्यादा है?"
         }
     ],
     "direct_value_less": [
         {
             "text": "यदि {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है,",
-            "question": "तो किसका/किसकी {attr} कम है?"
+            "question": "तो {kiska} {attr} कम है?"
         },
         {
             "text": "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
-            "question": "किसका/किसकी {attr} कम है?"
+            "question": "{kiska} {attr} कम है?"
         },
         {
             "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}।",
-            "question": "कम {attr} किसका/किसकी है?"
+            "question": "कम {attr} {kiska} है?"
         },
         {
             "text": "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है।",
-            "question": "किसका/किसकी {attr} कम है, बताइए।"
+            "question": "{kiska} {attr} कम है, बताइए।"
         }
     ],
     "transitive_relation": [
@@ -206,19 +206,19 @@ TEMPLATES_RAW = {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है।",
             "chain": "gt",
             "ask": "max",
-            "question": "तीनों में सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "तीनों में सबसे ज़्यादा {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से कम है। {e2} {poss} {attr}, {e3} से कम है।",
             "chain": "lt",
             "ask": "max",
-            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "सबसे ज़्यादा {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है और {e2} {poss} {attr}, {e3} से ज़्यादा है।",
             "chain": "gt",
             "ask": "cross",
-            "question": "{e1} और {e3} में से किसका/किसकी {attr} ज़्यादा है?"
+            "question": "{e1} और {e3} में से {kiska} {attr} ज़्यादा है?"
         },
         {
             "text": "यदि {e1}, {attr} में {e2} से आगे है और {e2}, {attr} में {e3} से आगे है,",
@@ -230,41 +230,41 @@ TEMPLATES_RAW = {
             "text": "{e1} {poss} {attr}, {e2} से कम है और {e2} {poss} {attr}, {e3} से कम है।",
             "chain": "lt",
             "ask": "min",
-            "question": "तीनों में सबसे कम {attr} किसका/किसकी है?"
+            "question": "तीनों में सबसे कम {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है।",
             "chain": "gt",
             "ask": "min",
-            "question": "सबसे कम {attr} किसका/किसकी है?"
+            "question": "सबसे कम {attr} {kiska} है?"
         }
     ],
     "order_3way_max": [
         {
             "text": "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है।",
-            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "सबसे ज़्यादा {attr} {kiska} है?"
         },
         {
             "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}।",
-            "question": "तीनों में से सबसे अधिक {attr} किसका/किसकी है?"
+            "question": "तीनों में से सबसे अधिक {attr} {kiska} है?"
         },
         {
             "text": "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है।",
-            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "सबसे ज़्यादा {attr} {kiska} है?"
         }
     ],
     "order_3way_min": [
         {
             "text": "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है।",
-            "question": "सबसे कम {attr} किसका/किसकी है?"
+            "question": "सबसे कम {attr} {kiska} है?"
         },
         {
             "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}।",
-            "question": "तीनों में से सबसे कम {attr} किसका/किसकी है?"
+            "question": "तीनों में से सबसे कम {attr} {kiska} है?"
         },
         {
             "text": "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है।",
-            "question": "सबसे कम {attr} किसका/किसकी है?"
+            "question": "सबसे कम {attr} {kiska} है?"
         }
     ],
     "transitive_chain_4way": [
@@ -272,25 +272,25 @@ TEMPLATES_RAW = {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, और {e3} {poss} {attr}, {e4} से ज़्यादा है।",
             "chain": "gt",
             "ask": "min",
-            "question": "चारों में सबसे कम {attr} किसका/किसकी है?"
+            "question": "चारों में सबसे कम {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है।",
             "chain": "gt",
             "ask": "max",
-            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "सबसे ज़्यादा {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से कम है, {e2} {poss} {attr}, {e3} से कम है, और {e3} {poss} {attr}, {e4} से कम है।",
             "chain": "lt",
             "ask": "max",
-            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+            "question": "सबसे ज़्यादा {attr} {kiska} है?"
         },
         {
             "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है।",
             "chain": "gt",
             "ask": "cross_extreme",
-            "question": "{e1} और {e4} में से किसका/किसकी {attr} ज़्यादा है?"
+            "question": "{e1} और {e4} में से {kiska} {attr} ज़्यादा है?"
         }
     ],
     "order_4way_rank": [
@@ -319,12 +319,12 @@ TEMPLATES_RAW = {
     ],
     "difference_comparison": [
         {
-            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है।",
+            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} {diya} है।",
             "mode": "larger_gap",
             "question": "संदर्भ {e1} से किसका अंतर अधिक है, {e2} का या {e3} का?"
         },
         {
-            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है।",
+            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} {diya} है।",
             "mode": "smaller_gap",
             "question": "संदर्भ {e1} से किसका अंतर कम है, {e2} का या {e3} का?"
         }
@@ -385,7 +385,7 @@ TEMPLATES_RAW = {
             "question": "{e1} किस श्रेणी में आता है?"
         },
         {
-            "text": "परीक्षण नियम: {thresh} {unit} से अधिक {attr} वाले तत्व 'वर्ग ए' कहलाते हैं और {thresh} {unit} या उससे कम वाले तत्व 'वर्ग बी'। {e1} {poss} {attr} {val} {unit} मापा गया।",
+            "text": "परीक्षण नियम: {thresh} {unit} से अधिक {attr} वाले तत्व 'वर्ग ए' कहलाते हैं और {thresh} {unit} या उससे कम वाले तत्व 'वर्ग बी'। {e1} {poss} {attr} {val} {unit} {mapa}।",
             "high_label": "वर्ग ए",
             "low_label": "वर्ग बी",
             "question": "{e1} किस वर्ग का है?"
