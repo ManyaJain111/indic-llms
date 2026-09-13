@@ -158,76 +158,259 @@ ATTRIBUTES = [
 
 TEMPLATES_RAW = {
     "direct_value_more": [
-        "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है। किसका/किसकी {attr} ज़्यादा है?",
-        "{e1} {poss} {attr} {v1} {unit} है, जबकि {e2} {poss} {attr} {v2} {unit} है। {attr} में कौन आगे है?",
-        "{e1}: {v1} {unit}, {e2}: {v2} {unit}। इनमें से अधिक {attr} किसका/किसकी है?",
-        "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है। बताइए किसका/किसकी {attr} ज़्यादा है।",
-        "मान लीजिए {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है। ज़्यादा {attr} किसका/किसकी है?",
-        "{e1} {poss} {attr} {v1} {unit} तथा {e2} {poss} {attr} {v2} {unit} दर्ज़ की गई है। किसका/किसकी {attr} ज़्यादा है?",
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
+            "question": "किसका/किसकी {attr} ज़्यादा है?"
+        },
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit} है, जबकि {e2} {poss} {attr} {v2} {unit} है।",
+            "question": "{attr} में कौन आगे है?"
+        },
+        {
+            "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}।",
+            "question": "इनमें से अधिक {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है।",
+            "question": "बताइए किसका/किसकी {attr} ज़्यादा है।"
+        },
+        {
+            "text": "मान लीजिए {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
+            "question": "ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit} तथा {e2} {poss} {attr} {v2} {unit} दर्ज़ की गई है।",
+            "question": "किसका/किसकी {attr} ज़्यादा है?"
+        }
     ],
     "direct_value_less": [
-        "यदि {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है, तो किसका/किसकी {attr} कम है?",
-        "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है। किसका/किसकी {attr} कम है?",
-        "{e1}: {v1} {unit}, {e2}: {v2} {unit}। कम {attr} किसका/किसकी है?",
-        "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है। किसका/किसकी {attr} कम है, बताइए।",
+        {
+            "text": "यदि {e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है,",
+            "question": "तो किसका/किसकी {attr} कम है?"
+        },
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit} है और {e2} {poss} {attr} {v2} {unit} है।",
+            "question": "किसका/किसकी {attr} कम है?"
+        },
+        {
+            "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}।",
+            "question": "कम {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} और {e2} {poss} {attr} क्रमशः {v1} {unit} और {v2} {unit} है।",
+            "question": "किसका/किसकी {attr} कम है, बताइए।"
+        }
     ],
     "transitive_relation": [
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है। तीनों में सबसे ज़्यादा {attr} किसका/किसकी है?", "chain": "gt", "ask": "max"},
-        {"text": "{e1} {poss} {attr}, {e2} से कम है। {e2} {poss} {attr}, {e3} से कम है। सबसे ज़्यादा {attr} किसका/किसकी है?", "chain": "lt", "ask": "max"},
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है और {e2} {poss} {attr}, {e3} से ज़्यादा है। {e1} और {e3} में से किसका/किसकी {attr} ज़्यादा है?", "chain": "gt", "ask": "cross"},
-        {"text": "यदि {e1}, {attr} में {e2} से आगे है और {e2}, {attr} में {e3} से आगे है, तो {e1} और {e3} में से कौन आगे है?", "chain": "gt", "ask": "cross"},
-        {"text": "{e1} {poss} {attr}, {e2} से कम है और {e2} {poss} {attr}, {e3} से कम है। तीनों में सबसे कम {attr} किसका/किसकी है?", "chain": "lt", "ask": "min"},
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है। सबसे कम {attr} किसका/किसकी है?", "chain": "gt", "ask": "min"},
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "max",
+            "question": "तीनों में सबसे ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से कम है। {e2} {poss} {attr}, {e3} से कम है।",
+            "chain": "lt",
+            "ask": "max",
+            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है और {e2} {poss} {attr}, {e3} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "cross",
+            "question": "{e1} और {e3} में से किसका/किसकी {attr} ज़्यादा है?"
+        },
+        {
+            "text": "यदि {e1}, {attr} में {e2} से आगे है और {e2}, {attr} में {e3} से आगे है,",
+            "chain": "gt",
+            "ask": "cross",
+            "question": "तो {e1} और {e3} में से कौन आगे है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से कम है और {e2} {poss} {attr}, {e3} से कम है।",
+            "chain": "lt",
+            "ask": "min",
+            "question": "तीनों में सबसे कम {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है। {e2} {poss} {attr}, {e3} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "min",
+            "question": "सबसे कम {attr} किसका/किसकी है?"
+        }
     ],
     "order_3way_max": [
-        "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है। सबसे ज़्यादा {attr} किसका/किसकी है?",
-        "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}। तीनों में से सबसे अधिक {attr} किसका/किसकी है?",
-        "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है। सबसे ज़्यादा {attr} किसका/किसकी है?",
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है।",
+            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}।",
+            "question": "तीनों में से सबसे अधिक {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है।",
+            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+        }
     ],
     "order_3way_min": [
-        "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है। सबसे कम {attr} किसका/किसकी है?",
-        "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}। तीनों में से सबसे कम {attr} किसका/किसकी है?",
-        "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है। सबसे कम {attr} किसका/किसकी है?",
+        {
+            "text": "{e1} {poss} {attr} {v1} {unit}, {e2} {poss} {attr} {v2} {unit}, और {e3} {poss} {attr} {v3} {unit} है।",
+            "question": "सबसे कम {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1}: {v1} {unit}, {e2}: {v2} {unit}, {e3}: {v3} {unit}।",
+            "question": "तीनों में से सबसे कम {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1}, {e2} और {e3} {poss} {attr} क्रमशः {v1} {unit}, {v2} {unit} और {v3} {unit} है।",
+            "question": "सबसे कम {attr} किसका/किसकी है?"
+        }
     ],
     "transitive_chain_4way": [
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, और {e3} {poss} {attr}, {e4} से ज़्यादा है। चारों में सबसे कम {attr} किसका/किसकी है?", "chain": "gt", "ask": "min"},
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है। सबसे ज़्यादा {attr} किसका/किसकी है?", "chain": "gt", "ask": "max"},
-        {"text": "{e1} {poss} {attr}, {e2} से कम है, {e2} {poss} {attr}, {e3} से कम है, और {e3} {poss} {attr}, {e4} से कम है। सबसे ज़्यादा {attr} किसका/किसकी है?", "chain": "lt", "ask": "max"},
-        {"text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है। {e1} और {e4} में से किसका/किसकी {attr} ज़्यादा है?", "chain": "gt", "ask": "cross_extreme"},
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, और {e3} {poss} {attr}, {e4} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "min",
+            "question": "चारों में सबसे कम {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "max",
+            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से कम है, {e2} {poss} {attr}, {e3} से कम है, और {e3} {poss} {attr}, {e4} से कम है।",
+            "chain": "lt",
+            "ask": "max",
+            "question": "सबसे ज़्यादा {attr} किसका/किसकी है?"
+        },
+        {
+            "text": "{e1} {poss} {attr}, {e2} से ज़्यादा है, {e2} {poss} {attr}, {e3} से ज़्यादा है, तथा {e3} {poss} {attr}, {e4} से ज़्यादा है।",
+            "chain": "gt",
+            "ask": "cross_extreme",
+            "question": "{e1} और {e4} में से किसका/किसकी {attr} ज़्यादा है?"
+        }
     ],
     "order_4way_rank": [
-        {"text": "दिए गए आंकड़ों में {e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}) और {e4} ({v4} {unit}) {attr} है। दूसरा सबसे अधिक मान किसका है?", "rank": "2nd_max"},
-        {"text": "{e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}), और {e4} ({v4} {unit}) {attr} में से दूसरा सबसे कम मान किसका है?", "rank": "2nd_min"},
+        {
+            "text": "दिए गए आंकड़ों में {e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}) और {e4} ({v4} {unit}) {attr} है।",
+            "rank": "2nd_max",
+            "question": "दूसरा सबसे अधिक मान किसका है?"
+        },
+        {
+            "text": "{e1} ({v1} {unit}), {e2} ({v2} {unit}), {e3} ({v3} {unit}), और {e4} ({v4} {unit}) {attr} में से दूसरा सबसे कम मान किसका है?",
+            "rank": "2nd_min",
+            "question": ""
+        }
     ],
     "threshold_comparison": [
-        {"text": "मानक सीमा {t} {unit} निर्धारित है। {e1} का मान {v1} {unit} और {e2} का मान {v2} {unit} है। कौन-सा मानक सीमा से अधिक है?", "cond": "above"},
-        {"text": "मानक सीमा {t} {unit} तय की गई है। {e1} का मान {v1} {unit} और {e2} का मान {v2} {unit} है। कौन-सा मानक सीमा से कम है?", "cond": "below"},
+        {
+            "text": "मानक सीमा {t} {unit} निर्धारित है। {e1} का मान {v1} {unit} और {e2} का मान {v2} {unit} है।",
+            "cond": "above",
+            "question": "कौन-सा मानक सीमा से अधिक है?"
+        },
+        {
+            "text": "मानक सीमा {t} {unit} तय की गई है। {e1} का मान {v1} {unit} और {e2} का मान {v2} {unit} है।",
+            "cond": "below",
+            "question": "कौन-सा मानक सीमा से कम है?"
+        }
     ],
     "difference_comparison": [
-        {"text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है। संदर्भ {e1} से किसका अंतर अधिक है, {e2} का या {e3} का?", "mode": "larger_gap"},
-        {"text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है। संदर्भ {e1} से किसका अंतर कम है, {e2} का या {e3} का?", "mode": "smaller_gap"},
+        {
+            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है।",
+            "mode": "larger_gap",
+            "question": "संदर्भ {e1} से किसका अंतर अधिक है, {e2} का या {e3} का?"
+        },
+        {
+            "text": "संदर्भ {e1} ({v1} {unit}) की तुलना में {e2} ({v2} {unit}) और {e3} ({v3} {unit}) {attr} दी गई है।",
+            "mode": "smaller_gap",
+            "question": "संदर्भ {e1} से किसका अंतर कम है, {e2} का या {e3} का?"
+        }
     ],
     "temporal_ordering": [
-        {"text": "एक कार्यक्रम में {e1}, {e2} से पहले पहुंचा तथा {e2}, {e3} से पहले पहुंचा। सबसे पहले कौन पहुंचा?", "order": "before", "ask": "first"},
-        {"text": "प्रतियोगिता में {e1}, {e2} के बाद समाप्त हुआ और {e2}, {e3} के बाद समाप्त हुआ। सबसे अंत में कौन समाप्त हुआ?", "order": "after", "ask": "last"},
-        {"text": "दौड़ में {e1}, {e2} से पहले आया और {e2}, {e3} से पहले आया। सबसे अंत में कौन आया?", "order": "before", "ask": "last"},
-        {"text": "कक्षा में {e1}, {e2} के बाद उपस्थित हुआ और {e2}, {e3} के बाद उपस्थित हुआ। सबसे पहले कौन उपस्थित हुआ?", "order": "after", "ask": "first"},
+        {
+            "text": "एक कार्यक्रम में {e1}, {e2} से पहले पहुंचा तथा {e2}, {e3} से पहले पहुंचा।",
+            "order": "before",
+            "ask": "first",
+            "question": "सबसे पहले कौन पहुंचा?"
+        },
+        {
+            "text": "प्रतियोगिता में {e1}, {e2} के बाद समाप्त हुआ और {e2}, {e3} के बाद समाप्त हुआ।",
+            "order": "after",
+            "ask": "last",
+            "question": "सबसे अंत में कौन समाप्त हुआ?"
+        },
+        {
+            "text": "दौड़ में {e1}, {e2} से पहले आया और {e2}, {e3} से पहले आया।",
+            "order": "before",
+            "ask": "last",
+            "question": "सबसे अंत में कौन आया?"
+        },
+        {
+            "text": "कक्षा में {e1}, {e2} के बाद उपस्थित हुआ और {e2}, {e3} के बाद उपस्थित हुआ।",
+            "order": "after",
+            "ask": "first",
+            "question": "सबसे पहले कौन उपस्थित हुआ?"
+        }
     ],
     "contradiction_detection": [
-        {"text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e2} {poss} {attr}, {e1} से अधिक है। क्या इन कथनों में विरोधाभास है?", "conflict": True},
-        {"text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e1} {poss} {attr}, {e2} से कम है। क्या इन दोनों कथनों में विरोधाभास है?", "conflict": True},
-        {"text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e2} {poss} {attr}, {e1} से कम है। क्या इन कथनों में विरोधाभास है?", "conflict": False},
-        {"text": "कथन 1: {e1} {poss} {attr}, {e2} से कम है। कथन 2: {e2} {poss} {attr}, {e1} से अधिक है। क्या ये दोनों कथन संगत हैं (विरोधाभास नहीं है)?", "conflict": False},
+        {
+            "text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e2} {poss} {attr}, {e1} से अधिक है।",
+            "conflict": True,
+            "question": "क्या इन कथनों में विरोधाभास है?"
+        },
+        {
+            "text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e1} {poss} {attr}, {e2} से कम है।",
+            "conflict": True,
+            "question": "क्या इन दोनों कथनों में विरोधाभास है?"
+        },
+        {
+            "text": "कथन 1: {e1} {poss} {attr}, {e2} से अधिक है। कथन 2: {e2} {poss} {attr}, {e1} से कम है।",
+            "conflict": False,
+            "question": "क्या इन कथनों में विरोधाभास है?"
+        },
+        {
+            "text": "कथन 1: {e1} {poss} {attr}, {e2} से कम है। कथन 2: {e2} {poss} {attr}, {e1} से अधिक है।",
+            "conflict": False,
+            "question": "क्या ये दोनों कथन संगत हैं (विरोधाभास नहीं है)?"
+        }
     ],
     "rule_classification": [
-        {"text": "वर्गीकरण नियम के अनुसार यदि किसी का {attr} {thresh} {unit} से अधिक हो, तो वह 'उच्च श्रेणी' में आता है, अन्यथा 'सामान्य श्रेणी' में आता है। {e1} {poss} {attr} {val} {unit} है। {e1} किस श्रेणी में आता है?", "high_label": "उच्च श्रेणी", "low_label": "सामान्य श्रेणी"},
-        {"text": "परीक्षण नियम: {thresh} {unit} से अधिक {attr} वाले तत्व 'वर्ग ए' कहलाते हैं और {thresh} {unit} या उससे कम वाले तत्व 'वर्ग बी'। {e1} {poss} {attr} {val} {unit} मापा गया। {e1} किस वर्ग का है?", "high_label": "वर्ग ए", "low_label": "वर्ग बी"},
+        {
+            "text": "वर्गीकरण नियम के अनुसार यदि किसी का {attr} {thresh} {unit} से अधिक हो, तो वह 'उच्च श्रेणी' में आता है, अन्यथा 'सामान्य श्रेणी' में आता है। {e1} {poss} {attr} {val} {unit} है।",
+            "high_label": "उच्च श्रेणी",
+            "low_label": "सामान्य श्रेणी",
+            "question": "{e1} किस श्रेणी में आता है?"
+        },
+        {
+            "text": "परीक्षण नियम: {thresh} {unit} से अधिक {attr} वाले तत्व 'वर्ग ए' कहलाते हैं और {thresh} {unit} या उससे कम वाले तत्व 'वर्ग बी'। {e1} {poss} {attr} {val} {unit} मापा गया।",
+            "high_label": "वर्ग ए",
+            "low_label": "वर्ग बी",
+            "question": "{e1} किस वर्ग का है?"
+        }
     ],
     "multistep_if_then": [
-        {"text": "यदि {e1} {poss} {attr}, {e2} से अधिक है, और {e2} {poss} {attr}, {e3} से अधिक है, तो {e1} और {e3} में से किसका मान अधिक होगा?", "chain": "gt", "ask": "more"},
-        {"text": "यदि {e1} {poss} {attr}, {e2} से कम है, तथा {e2} {poss} {attr}, {e3} से कम है, तो {e1} और {e3} में से किसका मान कम होगा?", "chain": "lt", "ask": "less"},
-        {"text": "नियम: यदि {e1} {poss} {attr}, {e2} से अधिक है और {e2} {poss} {attr}, {e3} से अधिक है, तो बताएं कि {e1} और {e3} में से सबसे कम मान किसका है?", "chain": "gt", "ask": "less"},
-    ],
+        {
+            "text": "यदि {e1} {poss} {attr}, {e2} से अधिक है, और {e2} {poss} {attr}, {e3} से अधिक है,",
+            "chain": "gt",
+            "ask": "more",
+            "question": "तो {e1} और {e3} में से किसका मान अधिक होगा?"
+        },
+        {
+            "text": "यदि {e1} {poss} {attr}, {e2} से कम है, तथा {e2} {poss} {attr}, {e3} से कम है,",
+            "chain": "lt",
+            "ask": "less",
+            "question": "तो {e1} और {e3} में से किसका मान कम होगा?"
+        },
+        {
+            "text": "नियम: यदि {e1} {poss} {attr}, {e2} से अधिक है और {e2} {poss} {attr}, {e3} से अधिक है,",
+            "chain": "gt",
+            "ask": "less",
+            "question": "तो बताएं कि {e1} और {e3} में से सबसे कम मान किसका है?"
+        }
+    ]
 }
 
 TEMPLATES_SPLIT = {qtype: _split(tmpls, 100 + i)
