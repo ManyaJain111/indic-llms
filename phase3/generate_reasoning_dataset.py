@@ -703,7 +703,7 @@ def build_dataset(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n_train", type=int, default=6300)
+    parser.add_argument("--n_train", type=int, default=30000)
     parser.add_argument("--n_val", type=int, default=1350)
     parser.add_argument("--n_test", type=int, default=1350)
     parser.add_argument("--seed", type=int, default=42)
