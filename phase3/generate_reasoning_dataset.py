@@ -192,7 +192,22 @@ def generate_split(
             continue
 
         prefix = rng.choice(prefixes)
+
         poss = vocab_hi._poss(attr["name"]) if lang == "hi" else "को"
+        
+        kwargs = {"attr": attr["name"], "unit": attr.get("unit", ""), "poss": poss}
+        if lang == "hi":
+            gender = vocab_hi.ATTR_GENDER.get(attr["name"], "f")
+            kwargs["kiska"] = "किसका" if gender == "m" else "किसकी"
+            kwargs["mapa"] = "मापा गया" if gender == "m" else "मापी गई"
+            kwargs["darj"] = "दर्ज़ किया गया" if gender == "m" else "दर्ज़ की गई"
+            kwargs["diya"] = "दिया गया" if gender == "m" else "दी गई"
+        else:
+            kwargs["kiska"] = "कसको"
+            kwargs["mapa"] = "मापन गरियो"
+            kwargs["darj"] = "दर्ता गरियो"
+            kwargs["diya"] = "दिइएको"
+
 
         # --- 1 & 2: direct_value_more / less ---
         if qtype in ["direct_value_more", "direct_value_less"]:
@@ -209,7 +224,7 @@ def generate_split(
 
             direction = "more" if qtype == "direct_value_more" else "less"
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, v1=v1, v2=v2, attr=attr["name"], unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, v1=v1, v2=v2, **kwargs)
             text = f"{prefix}{raw_text}".strip()
 
             if text in seen_prompts: continue
@@ -243,7 +258,7 @@ def generate_split(
                 continue
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, attr=attr["name"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -283,7 +298,7 @@ def generate_split(
             winner = max(vals, key=vals.get) if superlative == "max" else min(vals, key=vals.get)
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, v1=v1, v2=v2, v3=v3, attr=attr["name"], unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, v1=v1, v2=v2, v3=v3, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -309,7 +324,7 @@ def generate_split(
                 continue
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, e4=e4, attr=attr["name"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, e4=e4, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -352,7 +367,7 @@ def generate_split(
             sorted_by_val = sorted(vals.items(), key=lambda x: x[1], reverse=True)
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, e4=e4, v1=v1, v2=v2, v3=v3, v4=v4, attr=attr["name"], unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, e4=e4, v1=v1, v2=v2, v3=v3, v4=v4, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -386,7 +401,7 @@ def generate_split(
             threshold = rng.randint(lo_val + 1, hi_val - 1)
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, v1=v1, v2=v2, t=threshold, attr=attr["name"], unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, v1=v1, v2=v2, t=threshold, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -421,7 +436,7 @@ def generate_split(
                 d3 = abs(v3 - v1)
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, v1=v1, v2=v2, v3=v3, attr=attr["name"], unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, v1=v1, v2=v2, v3=v3, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -454,7 +469,7 @@ def generate_split(
                 continue
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -485,7 +500,7 @@ def generate_split(
                 continue
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, attr=attr["name"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -521,7 +536,7 @@ def generate_split(
             val = rng.choice([rng.randint(attr["lo"], thresh - 1), rng.randint(thresh + 1, attr["hi"])])
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, attr=attr["name"], thresh=thresh, val=val, unit=attr["unit"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, thresh=thresh, val=val, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
@@ -548,7 +563,7 @@ def generate_split(
                 continue
 
             tmpl = rng.choice(vocab.TEMPLATES_SPLIT[qtype][split])
-            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, attr=attr["name"], poss=poss)
+            raw_text = (tmpl["text"] + " " + tmpl["question"]).format(e1=e1, e2=e2, e3=e3, **kwargs)
             text = f"{prefix}{raw_text}".strip()
             if text in seen_prompts: continue
 
