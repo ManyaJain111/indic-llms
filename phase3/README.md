@@ -9,22 +9,23 @@ constructed and programmatically verified for 100% of examples.
 
 ```
 phase3/
-├── generate_reasoning_dataset.py # Clean grammar-based programmatic generator with difficulty tiers
-├── evaluate_diversity.py         # Evaluates distinct trigram ratio & lexical diversity
-├── merge_datasets.py             # Dataset merging & stats calculator
-├── vocab_hi.py                   # Hindi entity pools, attributes, templates
-├── vocab_ne.py                   # Nepali entity pools, attributes, templates
+├── generate_reasoning_dataset.py        # Grammar-based programmatic generator with 3 difficulty tiers
+├── vocab_hi.py                          # Hindi entity pools, attributes, templates
+├── vocab_ne.py                          # Nepali entity pools, attributes, templates
+├── download_models.py                   # Checkpoint fetcher from Hugging Face Hub
+├── download_models.sh                   # Fast CLI downloader
+├── phase3_reasoning_finetuning.ipynb    # End-to-end reasoning finetuning & evaluation notebook
 └── data/
     ├── hi/
-    │   ├── train.jsonl           # 6,300 records (Model H train)
-    │   ├── val.jsonl             # 1,350 records (Model H val)
-    │   ├── test.jsonl            # 1,350 records (Model H test)
-    │   └── stats.json            # Breakdown by question type & difficulty tier
+    │   ├── train.jsonl                  # 6,300 records (Model H train)
+    │   ├── val.jsonl                    # 1,350 records (Model H val)
+    │   ├── test.jsonl                   # 1,350 records (Model H test)
+    │   └── stats.json                   # Breakdown by question type & difficulty tier
     └── ne/
-        ├── train.jsonl           # 6,300 records (Model L train)
-        ├── val.jsonl             # 1,350 records (Model L val)
-        ├── test.jsonl            # 1,350 records (Model L test)
-        └── stats.json            # Breakdown by question type & difficulty tier
+        ├── train.jsonl                  # 6,300 records (Model L train)
+        ├── val.jsonl                    # 1,350 records (Model L val)
+        ├── test.jsonl                   # 1,350 records (Model L test)
+        └── stats.json                   # Breakdown by question type & difficulty tier
 ```
 
 ## Scientific Ontology & Difficulty Tiers
