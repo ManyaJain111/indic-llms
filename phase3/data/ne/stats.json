@@ -1,0 +1,69 @@
+{
+  "train": {
+    "n": 6300,
+    "type_counts": {
+      "direct_value_more": 779,
+      "direct_value_less": 626,
+      "transitive_relation": 592,
+      "order_3way_max": 531,
+      "order_3way_min": 498,
+      "transitive_chain_4way": 544,
+      "order_4way_rank": 445,
+      "threshold_comparison": 388,
+      "difference_comparison": 345,
+      "temporal_ordering": 427,
+      "rule_classification": 353,
+      "contradiction_detection": 390,
+      "multistep_if_then": 382
+    },
+    "source_counts": {
+      "ncert_translated": 15,
+      "llm_augmented": 4360,
+      "template": 1925
+    }
+  },
+  "val": {
+    "n": 1350,
+    "type_counts": {
+      "rule_classification": 87,
+      "direct_value_less": 132,
+      "temporal_ordering": 79,
+      "order_3way_max": 116,
+      "contradiction_detection": 73,
+      "order_3way_min": 106,
+      "direct_value_more": 168,
+      "multistep_if_then": 80,
+      "order_4way_rank": 108,
+      "transitive_chain_4way": 124,
+      "difference_comparison": 78,
+      "threshold_comparison": 77,
+      "transitive_relation": 122
+    },
+    "source_counts": {
+      "llm_augmented": 920,
+      "template": 430
+    }
+  },
+  "test": {
+    "n": 1350,
+    "type_counts": {
+      "direct_value_more": 179,
+      "difference_comparison": 82,
+      "threshold_comparison": 69,
+      "order_3way_max": 114,
+      "rule_classification": 85,
+      "multistep_if_then": 86,
+      "transitive_relation": 150,
+      "transitive_chain_4way": 111,
+      "order_4way_rank": 105,
+      "order_3way_min": 114,
+      "direct_value_less": 124,
+      "contradiction_detection": 69,
+      "temporal_ordering": 62
+    },
+    "source_counts": {
+      "template": 417,
+      "llm_augmented": 933
+    }
+  }
+}

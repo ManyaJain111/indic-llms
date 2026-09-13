@@ -1,0 +1,26 @@
+{
+  "train": {
+    "n": 10,
+    "type_counts": {
+      "transitive_relation": 3,
+      "direct_value_more": 3,
+      "order_3way_max": 2,
+      "order_3way_min": 1,
+      "direct_value_less": 1
+    }
+  },
+  "val": {
+    "n": 2,
+    "type_counts": {
+      "direct_value_more": 1,
+      "transitive_relation": 1
+    }
+  },
+  "test": {
+    "n": 2,
+    "type_counts": {
+      "direct_value_less": 1,
+      "transitive_relation": 1
+    }
+  }
+}
