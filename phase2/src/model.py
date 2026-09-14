@@ -118,7 +118,7 @@ class GPTLanguageModel(nn.Module):
                 attention_maps.append(attn_weights)
                 
         x = self.ln_f(x)
-        logits = self.head(x)
+        logits = torch.nn.functional.linear(x, self.token_emb.weight)
         
         loss = None
         if targets is not None:
