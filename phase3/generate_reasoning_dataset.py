@@ -108,25 +108,9 @@ ONTOLOGY_NE = [
 # Compositional Sentence Grammar Prefixes
 # ---------------------------------------------------------------------------
 
-PREFIXES_HI = [
-    "दिए गए आंकड़ों के अनुसार, ",
-    "प्रयोगशाला प्रेक्षण में देखा गया कि ",
-    "वैज्ञानिक अध्ययन के अनुसार, ",
-    "मान लीजिए ",
-    "तालिका में दर्ज़ तथ्य के अनुसार, ",
-    "तार्किक क्रम के अनुसार, ",
-    ""
-]
+PREFIXES_HI = [""]
 
-PREFIXES_NE = [
-    "दिइएको तथ्याङ्क अनुसार, ",
-    "प्रयोगशाला परीक्षणमा देखियो कि ",
-    "वैज्ञानिक अध्ययन अनुसार, ",
-    "मानौं ",
-    "तालिकामा दर्ता तथ्य अनुसार, ",
-    "तार्किक सम्बन्ध अनुसार, ",
-    ""
-]
+PREFIXES_NE = [""]
 
 def get_entities_for_domain(domain: str, split: str, lang: str) -> List[str]:
     vocab = vocab_hi if lang == "hi" else vocab_ne
@@ -134,24 +118,7 @@ def get_entities_for_domain(domain: str, split: str, lang: str) -> List[str]:
         return vocab.PERSON_NAMES_SPLIT[split]
     elif domain == "item":
         return vocab.ITEM_NAMES_SPLIT[split]
-    elif domain in ("city", "region", "state", "farm", "district"):
-        return vocab.GEOGRAPHY_NAMES_SPLIT[split]
-    elif domain == "tree":
-        pool = vocab.PLANT_NAMES_SPLIT[split]
-        return pool if len(pool) >= 4 else vocab.PERSON_NAMES_SPLIT[split]
-    elif domain in ("organism", "cell"):
-        return vocab.PERSON_NAMES_SPLIT[split]
-    else:
-        return vocab.SCIENCE_NAMES_SPLIT[split]
 
-# ---------------------------------------------------------------------------
-# Generator Engine
-# ---------------------------------------------------------------------------
-
-def generate_split(
-    lang: str,
-    split: str,
-    target_count: int,
     rng: random.Random,
     start_idx: int = 1
 ) -> Tuple[List[Dict], Set[str]]:
@@ -175,11 +142,9 @@ def generate_split(
 
     types = [
         "direct_value_more", "direct_value_less", "transitive_relation",
-        "order_3way_max", "order_3way_min", "transitive_chain_4way",
-        "order_4way_rank", "threshold_comparison", "difference_comparison",
-        "temporal_ordering", "contradiction_detection", "rule_classification", "multistep_if_then"
+        "order_3way_max", "order_3way_min", "transitive_chain_4way"
     ]
-    weights = [0.12, 0.10, 0.10, 0.08, 0.08, 0.09, 0.07, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]
+    weights = [0.30, 0.25, 0.15, 0.10, 0.10, 0.10]
 
     while len(records) < target_count and attempts < target_count * 50:
         attempts += 1

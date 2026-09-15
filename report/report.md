@@ -108,3 +108,6 @@ Attention maps extracted across early (Layer 0), middle (Layer 3), and late (Lay
 1. **Early Layers (Layer 0)**: Exhibit local positional focus (diagonal concentration, lower entropy, short distance ~1.5 - 2.1 positions), attending to immediate preceding tokens and subword constituents.
 2. **Intermediate Layers (Layer 3)**: Develop syntactic specialization, routing representations across phrase and clause boundaries.
 3. **Deep Layers (Layer 5)**: Broader, long-range attention (higher entropy, distance ~2.0 - 2.5 positions), integrating sentence-level context for predictive token modeling.
+
+---
+
