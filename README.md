@@ -46,18 +46,17 @@ The project spans:
 ├── phase3/                               # Phase 3 reasoning dataset generator & notebooks
 │   ├── data/hi/ & data/ne/               # Synthetic reasoning splits (train/val/test JSONL)
 │   ├── generate_reasoning_dataset.py     # Programmatic grammar-based generator
-│   ├── phase3_final.ipynb                # Reasoning finetuning notebook
-│   ├── bonus_training_final.ipynb        # Bonus ablation training notebook
-│   ├── bonus_eval_final.ipynb            # Bonus ablation evaluation notebook
-│   └── report.md                         # Dedicated Phase 3 & Bonus report
-├── report/                               # Reports, loss curves, and attention heatmap assets
+│   ├── notebooks/                        # Phase 3 and Bonus notebooks
+│   │   ├── phase3_reasoning_finetuning.ipynb
+│   │   ├── bonus_training_final.ipynb
+│   │   └── bonus_eval_final.ipynb
+│   └── report/                           # Dedicated Phase 3 report and plots
+│       ├── phase3_report.md
+│       └── phase3_plots/                 # High-resolution attention comparison heatmaps
+├── report/                               # Phase 2 Reports, loss curves, and assets
 │   ├── report.md                         # Full Phase 2 & pretraining evaluation report
-│   ├── phase3_plots/                     # High-resolution attention comparison heatmaps
-│   ├── ablation/                         # Ablation loss curves and attention heatmaps
-│   └── *.csv                             # Training loss logs (Phase 2, Phase 3, Bonus)
-└── README.md                             # Reproduction steps & checkpoint links
-```
-
+│   ├── bonus_report.md                   # Bonus Ablation evaluation report
+│   └── ablation/                         # Ablation loss curves and attention heatmaps
 ---
 
 ## Model Checkpoints & Training Logs
@@ -65,17 +64,20 @@ The project spans:
 All finetuned models, bonus ablation checkpoints, and logs are hosted on [Hugging Face Hub: manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project):
 
 ### 1. Pretrained Checkpoints (Phase 2)
-- **Hindi Pretrained Model H (`model_final.pt`)**: [`pretrained/hindi_model_final.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/pretrained/hindi_model_final.pt)
-- **Nepali Pretrained Model L (`model_final.pt`)**: [`pretrained/nepali_model_final.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/pretrained/nepali_model_final.pt)
-- **Training Logs**: `hindi/train/train_log.csv` and `nepali/train/train_log.csv` on the repo; also on HF at [`logs/hindi_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/hindi_pretrain_log.csv) / [`logs/nepali_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/nepali_pretrain_log.csv).
+Hosted on [Hugging Face Hub: manyajain111/lma-phase2](https://huggingface.co/manyajain111/lma-phase2):
+- **Hindi Pretrained Model H (`model_final.pt`)**: [`hindi/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/hindi/model_final.pt)
+- **Nepali Pretrained Model L (`model_final.pt`)**: [`nepali/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/nepali/model_final.pt)
+- **Pretraining Logs**: `hindi/train/train_log.csv` and `nepali/train/train_log.csv` on the repo; also on HF at [`logs/hindi_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/hindi_pretrain_log.csv) / [`logs/nepali_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/nepali_pretrain_log.csv).
 
 ### 2. Finetuned Reasoning Checkpoints (Phase 3)
-- **Hindi Finetuned Model**: [`finetuned/hindi_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/hindi_model_finetuned.pt)
-- **Nepali Finetuned Model**: [`finetuned/nepali_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/nepali_model_finetuned.pt)
-- **Training Logs**: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv)
+Hosted on [Hugging Face Hub: manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project):
+- **Hindi Finetuned Model**: [`finetuned/hindi_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/hindi_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/hindi/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/hindi))
+- **Nepali Finetuned Model**: [`finetuned/nepali_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/nepali_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/nepali/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/nepali))
+- **Epoch Checkpoints (Hindi)**: [Epoch 1](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_1.pt) · [Epoch 2](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_2.pt) · [Epoch 3](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_3.pt)
+- **Finetuning Training Logs**: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv)
 
 ### 3. Bonus Ablation Checkpoints (No Positional Embeddings)
-All 6 intermediate training checkpoints and the final model are hosted in the `ablation/` directory on Hugging Face:
+All intermediate training checkpoints, final ablated weights, metrics, and visualization plots are hosted in the [`ablation/` directory on Hugging Face](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/ablation):
 - **Final Ablated Checkpoint**: [`ablation/model_ablated.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated.pt)
 - **Step 10,000**: [`ablation/model_ablated_step_10000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_10000.pt)
 - **Step 20,000**: [`ablation/model_ablated_step_20000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_20000.pt)
@@ -83,7 +85,12 @@ All 6 intermediate training checkpoints and the final model are hosted in the `a
 - **Step 40,000**: [`ablation/model_ablated_step_40000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_40000.pt)
 - **Step 50,000**: [`ablation/model_ablated_step_50000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_50000.pt)
 - **Step 60,000**: [`ablation/model_ablated_step_60000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_60000.pt)
-- **Ablation Training Log**: [`logs/bonus_ablation_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/bonus_ablation_log.csv)
+- **Ablation Training Log**: [`ablation/bonus_ablation_train_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/bonus_ablation_train_log.csv) (also at [`logs/bonus_ablation_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/bonus_ablation_log.csv))
+- **Evaluation Results & Metrics**: [`ablation/results.json`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/results.json)
+- **Diagnostic Plots**:
+  - [Loss Curve (`bonus_loss_curve.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/bonus_loss_curve.png)
+  - [Attention Diagnostics (`attn_entropy_distance.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/attn_entropy_distance.png)
+  - [Generation & Diversity Metrics (`generation_diversity_metrics.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/generation_diversity_metrics.png)
 
 ---
 
@@ -141,7 +148,7 @@ python phase2/src/evaluate.py \
    This generates disjoint entity splits in `phase3/data/hi/` and `phase3/data/ne/` with zero leakage across train/val/test.
 
 2. **Finetune the Models**:
-   Open and execute `phase3/phase3_final.ipynb` (or `hindi/train/phase3_final.ipynb`) on Kaggle or a CUDA-enabled GPU.
+   Open and execute `phase3/notebooks/phase3_reasoning_finetuning.ipynb` (or `hindi/train/phase3_reasoning_finetuning.ipynb`) on Kaggle or a CUDA-enabled GPU.
 
 ### 6. Bonus: Positional Embedding Ablation
 To train and evaluate the ablation model where positional embeddings are stripped:

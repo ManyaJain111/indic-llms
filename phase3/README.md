@@ -14,7 +14,8 @@ phase3/
 ├── vocab_ne.py                          # Nepali entity pools, attributes, templates
 ├── download_models.py                   # Checkpoint fetcher from Hugging Face Hub
 ├── download_models.sh                   # Fast CLI downloader
-├── phase3_reasoning_finetuning.ipynb    # End-to-end reasoning finetuning & evaluation notebook
+├── notebooks/
+│   └── phase3_reasoning_finetuning.ipynb    # End-to-end reasoning finetuning & evaluation notebook
 └── data/
     ├── hi/
     │   ├── train.jsonl                  # 6,300 records (Model H train)
