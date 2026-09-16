@@ -18,45 +18,44 @@ The project spans:
 
 ---
 
-## Repository Structure
+### Repository Structure
 
 ```
-├── hindi/                                # Complete Hindi pipeline
-│   ├── config/                           # Model H architecture configuration
-│   ├── data/                             # Train/val/test splits & tokenized memmaps
-│   ├── data_collection/                  # News scrapers, Wikipedia & OSCAR extraction
-│   ├── preprocessing/                    # Devanagari text normalization & filtering
-│   ├── tokenizer/                        # Trained 16k vocabulary and tokenizer JSON/PKL
-│   ├── tokenizer_training/               # Tokenizer training scripts
-│   ├── model/                            # First-principles Transformer implementation
-│   ├── train/                            # Pretraining & Phase 3 finetuning notebooks/scripts
-│   └── eval/                             # Evaluation & attention heatmap scripts
-├── nepali/                               # Complete Nepali pipeline (parallel structure)
-│   ├── config/                           # Model L architecture configuration
-│   ├── data/                             # Train/val/test splits & tokenized memmaps
-│   ├── data_collection/                  # Nepali news & Wikipedia scrapers
-│   ├── preprocessing/                    # Nepali text normalization & cleaning
-│   ├── tokenizer/                        # Trained 16k vocabulary and tokenizer JSON/PKL
-│   ├── tokenizer_training/               # Tokenizer training scripts
-│   ├── model/                            # First-principles Transformer implementation
-│   ├── train/                            # Pretraining & finetuning scripts
-│   └── eval/                             # Evaluation scripts
-├── phase1/                               # Modular Phase 1 datasets, tokenizers, scrapers
-├── phase2/                               # Phase 2 pretraining source code, configs, reports
-├── phase3/                               # Phase 3 reasoning dataset generator & notebooks
-│   ├── data/hi/ & data/ne/               # Synthetic reasoning splits (train/val/test JSONL)
-│   ├── generate_reasoning_dataset.py     # Programmatic grammar-based generator
-│   ├── notebooks/                        # Phase 3 and Bonus notebooks
-│   │   ├── phase3_reasoning_finetuning.ipynb
-│   │   ├── bonus_training_final.ipynb
-│   │   └── bonus_eval_final.ipynb
-│   └── report/                           # Dedicated Phase 3 report and plots
-│       ├── phase3_report.md
-│       └── phase3_plots/                 # High-resolution attention comparison heatmaps
-├── report/                               # Phase 2 Reports, loss curves, and assets
-│   ├── report.md                         # Full Phase 2 & pretraining evaluation report
-│   ├── bonus_report.md                   # Bonus Ablation evaluation report
-│   └── ablation/                         # Ablation loss curves and attention heatmaps
+├── data/                                 # Reasoning datasets
+│   ├── hi/                               # Hindi train/val/test splits & stats
+│   ├── ne/                               # Nepali train/val/test splits & stats
+│   └── simple/                           # Simplified evaluation prompts
+├── notebooks/                            # All project Jupyter notebooks
+│   ├── phase3_reasoning_finetuning.ipynb # Reasoning finetuning loop & evaluation
+│   ├── bonus_training_final.ipynb        # Positional embedding ablation training
+│   └── bonus_eval_final.ipynb            # Ablation evaluation & metrics extraction
+├── scripts/                              # Core Python scripts
+│   ├── generate_reasoning_dataset.py     # Programmatic grammar-based reasoning generator
+│   ├── generate_easy_test.py             # 60-item simplified benchmark generator
+│   ├── vocab_hi.py & vocab_ne.py         # Hindi and Nepali lexicon modules
+│   └── generate_all_plots.py             # Multi-head attention & entropy plotting toolkit
+├── report/                               # Reports, metrics, logs, and plots
+│   ├── individual_project_report.pdf     # Consolidated final PDF submission report
+│   ├── individual_project_report.tex     # Master LaTeX report source
+│   ├── phase3_report.md                  # Detailed Phase 3 report
+│   ├── bonus_report.md                   # Detailed Bonus Ablation report
+│   ├── eval_results.json                 # Comprehensive reasoning evaluation metrics
+│   ├── finetune_log_combined.csv         # Finetuning loss logs
+│   ├── bonus_train_log.csv               # Ablation training loss logs
+│   └── plots/                            # All plots clearly named
+│       ├── phase2_hindi_loss_curve.png
+│       ├── phase2_nepali_loss_curve.png
+│       ├── phase2_comparison_loss_curve.png
+│       ├── phase2_hindi_attn_layer*.png
+│       ├── phase2_nepali_attn_layer*.png
+│       ├── phase3_finetuning_loss_curves.png
+│       ├── phase3_hindi_attn_compare_layer*.png
+│       ├── phase3_nepali_attn_compare_layer*.png
+│       ├── bonus_ablation_loss_curve*.png
+│       ├── bonus_ablation_attn_layer*.png
+│       └── bonus_ablation_generation_diversity.png
+```
+
 ---
 
 ## Model Checkpoints & Training Logs
