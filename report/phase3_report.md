@@ -45,13 +45,17 @@ Both models were independently finetuned on their respective reasoning datasets 
 
 ### Overall Results
 
-| Metric | Model H (Hindi) | Model L (Nepali) |
-|:---|:---|:---|
-| **Pretrained Baseline Accuracy** | 1.04% | 1.93% |
-| **Finetuned Overall Accuracy** | **27.26%** | **26.67%** |
-| **Easy Prompts (60-item test)** | **50.00%** | — |
+| Metric | Model H (Hindi) | Model L (Nepali) | Evaluation Details |
+|:---|:---|:---|:---|
+| **Strict Exact Match (Pretrained)** | 0.00% | 0.00% | Literal equality ($pred = target$) |
+| **Strict Exact Match (Finetuned)** | 0.00% | 0.00% | Literal equality ($pred = target$) |
+| **Substring Match (Pretrained Baseline)** | 1.04% | 1.93% | Substring containment ($target \in pred$) |
+| **Substring Match (Finetuned Overall)** | **27.26%** | **26.67%** | Substring containment ($target \in pred$) |
+| **Easy Prompts (60-item test)** | **50.00%** | — | Simplified binary comparative test |
 
-### Per-Tier Accuracy (Finetuned)
+> **Evaluation Methodology Disclosure**: As recorded in `eval_results.json`, literal strict exact match is 0.0% across all models. Because the model is a causal decoder generating open-ended text after the `उत्तर:` prompt, it continues producing natural language phrases (e.g. `उत्तर: ओडिशा की आय अधिक है।` or continuing repetitive tokens) rather than emitting an isolated single-entity token and immediately halting. Under substring containment scoring (whether the gold entity appears in the generated sentence before the boundary), finetuning increases accuracy from ~1% to 27.26% (Hindi) and 26.67% (Nepali).
+
+### Per-Tier Accuracy (Finetuned — Substring Containment)
 
 | Tier | Hindi | Nepali |
 |:---|:---:|:---:|

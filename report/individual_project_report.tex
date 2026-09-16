@@ -314,29 +314,33 @@ Both models were finetuned independently on their respective language datasets. 
 \begin{table}[H]
 \centering
 \caption{Reasoning Accuracy: Pretrained Baseline vs. Finetuned}
-\begin{tabular}{lcc}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccc}
 \toprule
-\textbf{Metric} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} \\
+\textbf{Metric} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} & \textbf{Evaluation Details} \\
 \midrule
-Pretrained Baseline & 0.50\% & 2.00\% \\
-Finetuned Overall & \textbf{26.60\%} & \textbf{25.20\%} \\
-Easy Prompts (60-item) & \textbf{50.00\%} & --- \\
+Strict Exact Match ($pred = target$) & 0.00\% & 0.00\% & Literal string equality \\
+Finetuned Exact Match                & 0.00\% & 0.00\% & Generates sentence continuation \\
+Pretrained Substring Baseline        & 1.04\% & 1.93\% & Substring extraction chance \\
+Finetuned Substring Overall          & \textbf{27.26\%} & \textbf{26.67\%} & Substring containment ($target \in pred$) \\
+Easy Prompts (60-item)               & \textbf{50.00\%} & --- & Direct 2-choice comparative \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \begin{table}[H]
 \centering
-\caption{Per-Tier Accuracy After Finetuning}
-\begin{tabular}{lcc}
+\caption{Per-Tier Substring Accuracy After Finetuning}
+\begin{tabular}{lccc}
 \toprule
-\textbf{Tier} & \textbf{Hindi} & \textbf{Nepali} \\
+\textbf{Tier} & \textbf{Hindi} & \textbf{Nepali} & \textbf{Description} \\
 \midrule
-Tier 1 (Direct)      & 39.68\% & 33.07\% \\
-Tier 2 (Transitive)  & 15.23\% & 15.45\% \\
-Tier 3 (Structural)  & 37.29\% & 36.22\% \\
+Tier 1 (Direct)      & 38.98\% & 37.50\% & 2-entity value comparisons \\
+Tier 2 (Transitive)  & 18.50\% & 17.45\% & 3-hop and 4-hop relational chaining \\
+Tier 3 (Structural)  & 31.95\% & 34.49\% & Temporal, rule, and contradiction logic \\
 \midrule
-\textbf{Overall} & \textbf{26.60\%} & \textbf{25.20\%} \\
+\textbf{Overall} & \textbf{27.26\%} & \textbf{26.67\%} & 1,350 test items per language \\
 \bottomrule
 \end{tabular}
 \end{table}
