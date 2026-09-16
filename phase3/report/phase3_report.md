@@ -47,17 +47,17 @@ Both models were independently finetuned on their respective reasoning datasets 
 
 | Metric | Model H (Hindi) | Model L (Nepali) |
 |:---|:---|:---|
-| **Pretrained Baseline Accuracy** | 0.50% | 2.00% |
-| **Finetuned Overall Accuracy** | **27.20%** | **26.80%** |
+| **Pretrained Baseline Accuracy** | 1.04% | 1.93% |
+| **Finetuned Overall Accuracy** | **27.26%** | **26.67%** |
 | **Easy Prompts (60-item test)** | **50.00%** | — |
 
 ### Per-Tier Accuracy (Finetuned)
 
 | Tier | Hindi | Nepali |
 |:---|:---:|:---:|
-| **Tier 1 – Direct** | 38.10% | 37.01% |
-| **Tier 2 – Transitive** | 14.84% | 16.26% |
-| **Tier 3 – Structural** | 42.37% | 37.01% |
+| **Tier 1 – Direct** | 38.98% | 37.50% |
+| **Tier 2 – Transitive** | 18.50% | 17.45% |
+| **Tier 3 – Structural** | 31.95% | 34.49% |
 
 **Analysis**: Finetuning on structured data dramatically improved reasoning performance from near 0% to ~27% overall. Tier 3 accuracy paradoxically outperforms Tier 2; this is because many structural types (contradiction_detection, rule_classification) have short, highly constrained label vocabularies (e.g. हाँ/नहीं), making them easier to get by substring match than multi-hop transitive ordering. Tier 2 ordering tasks require the model to resolve a complete multi-entity ranking, which is harder for a 24M-parameter model. The near-identical performance between Hindi and Nepali confirms that the structured reasoning circuits generalize across script/language given equivalent finetuning data.
 
