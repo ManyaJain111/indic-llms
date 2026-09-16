@@ -359,22 +359,14 @@ The near-identical Hindi vs. Nepali numbers confirm the structured circuits gene
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{../phase3/report/phase3_plots/plot_1.png}
-  \caption{Layer 0 (Early): Pre-finetune}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{../phase3/report/phase3_plots/plot_2.png}
-  \caption{Layer 0 (Early): Post-finetune}
-\end{subfigure}
-\caption{Hindi model attention patterns at Layer 0 before and after finetuning.}
+\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/hindi_attn_compare_layer0.png}
+\caption{Hindi model attention patterns at Layer 0 (Early) before and after finetuning.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\textwidth]{../phase3/report/phase3_plots/plot_3.png}
-\caption{Layer 5 comparison (pre vs. post finetune). Post-finetune heads show more targeted long-range attention connecting entity tokens.}
+\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/nepali_attn_compare_layer5.png}
+\caption{Nepali Layer 5 comparison (pre vs. post finetune). Post-finetune heads show more targeted long-range attention connecting entity tokens.}
 \end{figure}
 
 After finetuning, early-layer heads reorganize to concentrate on the comparison operators and entity names. Late-layer heads (Layer 5) show stronger long-range connections between the subject entity and the comparison entity across the sentence, consistent with the model learning to resolve relational queries.
@@ -400,7 +392,7 @@ The Hindi model was retrained from scratch with the positional embedding layer r
 Validation Loss (nats) & 3.6487 & 4.0697 & +11.5\% \\
 Perplexity (PPL)       & 39.11  & 58.54  & +49.7\% \\
 Bits-Per-Byte (BPB)    & 0.5131 & 0.5674 & +10.6\% \\
-BLEU-4                 & ---    & 1.08   & near-zero \\
+BLEU-4                 BLEU-4                 & ---    & 1.08 0.95   BLEU-4                 & ---    & 1.08 1.08   & near-zero \\
 Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 4-gram Repetition      & 26.59\% & 68.52\% & severe \\
 \bottomrule
@@ -431,14 +423,14 @@ Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 \centering
 \begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{ablation/attn_layer0.png}
-  \caption{Standard model: Layer 0 attention}
+  \caption{Ablated model: Layer 0 attention}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{ablation/attn_layer5.png}
   \caption{Ablated model: Layer 5 attention}
 \end{subfigure}
-\caption{Attention patterns. The standard model shows the expected diagonal local attention. The ablated model shows uniform or collapsed patterns with no structure.}
+\caption{Attention patterns in the ablated model lacking positional embeddings. The model shows completely uniform or collapsed vertical/horizontal band patterns with no diagonal or structural locality.}
 \end{figure}
 
 \begin{figure}[H]
