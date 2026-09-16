@@ -1,118 +1,78 @@
 # Phase 2: Monolingual Transformer Language Models (Hindi & Nepali)
 
-This repository contains the implementation, pretraining pipelines, and comprehensive evaluation suite for **Phase 2**: building and analyzing two completely independent decoder-only Transformer language models (~25M parameters each) from scratch in PyTorch.
+This repository contains the implementation, pretraining pipelines, and evaluation suite for building two independent ~25M parameter decoder-only Transformer language models from scratch in PyTorch.
 
-- **Model H (Higher-resource)**: Hindi
-- **Model L (Lower-resource)**: Nepali
-
----
-
-## 1. Repository Layout (as per Project Guidelines)
-
-```
-.
-├── README.md               # Reproduction steps, key results, and model download links
-├── requirements.txt        # Python package dependencies
-├── hindi/                  # Self-contained Hindi pipeline (Model H)
-│   ├── config/             # Model H hyperparameters (vocab 16,000, 6 layers, 8 heads, d_model 512)
-│   ├── tokenizer/          # Custom trained BPE tokenizer
-│   ├── model/              # Custom Transformer architecture (from scratch in PyTorch)
-│   ├── train/              # Training loop with AdamW, lr schedule, train_log.csv
-│   └── eval/               # Evaluation script for PPL, BPB, BLEU, chrF, ROUGE-L, Attention
-├── nepali/                 # Self-contained Nepali pipeline (Model L)
-│   ├── config/             # Model L hyperparameters (vocab 16,240, 6 layers, 8 heads, d_model 512)
-│   ├── tokenizer/          # Custom trained BPE tokenizer
-│   ├── model/              # Custom Transformer architecture (from scratch in PyTorch)
-│   ├── train/              # Training loop with AdamW, lr schedule, train_log.csv
-│   └── eval/               # Evaluation scripts & Devanagari ROUGE-L calculation
-├── report/                 # Graded Phase 2 deliverables
-│   ├── phase2_report.pdf   # Complete student-written scientific report
-│   ├── phase2_report.tex   # LaTeX source for report
-│   ├── report.md           # Markdown technical report
-│   ├── comparison_loss_curve.png
-│   ├── hindi/              # Loss curves, attention heatmaps, metric JSONs, generated samples
-│   └── nepali/             # Loss curves, attention heatmaps, metric JSONs, generated samples
-├── notebooks/              # Complete end-to-end training and evaluation notebooks
-│   ├── hindi_training_part1.ipynb
-│   ├── hindi_training_part2.ipynb
-│   ├── hindi_evaluation.ipynb
-│   ├── nepali_training.ipynb
-│   └── nepali_evaluation.ipynb
-└── phase2/                 # Backwards-compatible workspace copy
-```
+- **Model H (Hindi)**: Higher-resource
+- **Model L (Nepali)**: Lower-resource
+-  **Model Weights & Configs**: [Hugging Face (manyajain111/lma-phase2)](https://huggingface.co/manyajain111/lma-phase2)
 
 ---
 
-## 2. Model Checkpoints (Downloads)
+## Architecture Specifications
 
-The pretrained model weights and configurations for both **Model H** and **Model L** have been uploaded and released on Hugging Face:
-
-- **Hugging Face Model Hub**: [https://huggingface.co/manyajain111/lma-phase2](https://huggingface.co/manyajain111/lma-phase2)
-
-**Files available:**
-- `hindi/model_final.pt` (~98.4 MB) — Hindi model weights at step 61,036
-- `hindi/config.json` — Model H architecture config
-- `hindi/tokenizer.json` — Hindi BPE tokenizer
-- `nepali/model_final.pt` (~98.9 MB) — Nepali model weights at step 61,036
-- `nepali/config.json` — Model L architecture config
-- `nepali/tokenizer.json` — Nepali BPE tokenizer
-- `model.py` — Standalone PyTorch model class for inference
+Both models feature a custom PyTorch Transformer built entirely from scratch:
+- **Dimensions**: 6 Layers | 8 Heads ($d_k = 64$) | Hidden $d_{model} = 512$ | Feed-Forward = 1536
+- **Features**: Learned positional & token embeddings (weight-tied), pre-LayerNorm, GELU activation, and causal self-attention with upper-triangular masking.
+- **Model H (Hindi)**: ~24.22M parameters | 16,000 Vocab Size
+- **Model L (Nepali)**: ~24.34M parameters | 16,240 Vocab Size
 
 ---
 
-## 3. Architecture Specifications (~25M Parameters)
+## Key Results
 
-- **Input Representation**: Learned positional embeddings + token embeddings with weight tying.
-- **Attention**: Custom multi-head causal self-attention with scaled dot-product attention and upper-triangular masking.
-- **Blocks**: 6 Transformer layers, pre-LayerNorm, 8 heads ($d_k = 64$), hidden dimension 512, feed-forward dimension 1536 ($3 \times d_{\text{model}}$), GELU activation.
-- **Model H Parameters**: ~24.22M (Vocab: 16,000)
-- **Model L Parameters**: ~24.34M (Vocab: 16,240)
+*(All comprehensive plots, loss curves, and attention heatmaps are available in the [`report/`](report/) directory).*
 
----
-
-## 4. Key Results Summary
-
-| Language / Model | Validation Loss | Perplexity (PPL) | Bits-per-Byte (BPB) | Repetition Rate (Greedy) | Distinct-2 (Temp 1.0) |
+| Language / Model | Val Loss | Perplexity (PPL) | Bits-per-Byte | Repetition (Greedy) | Distinct-2 (Temp 1.0) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Hindi (Model H)** | 3.6487 | **39.11** | 0.5131 | 0.2659 | 0.9313 |
-| **Nepali (Model L)** | 3.5910 | **36.32** | 0.3939 | 0.6712 | 0.9586 |
-
-All plots, loss curves, and attention heatmaps are available in [`report/`](report/) and compiled into [`report/phase2_report.pdf`](report/phase2_report.pdf).
+| **Hindi (Model H)** | 3.65 | **39.11** | 0.513 | 0.266 | 0.931 |
+| **Nepali (Model L)** | 3.59 | **36.32** | 0.394 | 0.671 | 0.959 |
 
 ---
 
-## 5. Reproduction Instructions
+## Reproduction & Usage
 
-### Environment Setup
+### 1. Environment Setup
 ```bash
 pip install -r requirements.txt
 ```
 
-### Training from Scratch
-To train Hindi (Model H):
+### 2. Training from Scratch
 ```bash
-python hindi/train/train.py \
-    --train_bin <path_to_hindi_train.bin> \
-    --val_bin <path_to_hindi_val.bin> \
-    --config hindi/config/config.json \
-    --output_dir checkpoints/hindi
+# Train Hindi (Model H)
+python hindi/train/train.py --config hindi/config/config.json --train_bin <hindi_train.bin> --val_bin <hindi_val.bin> --output_dir checkpoints/hindi
+
+# Train Nepali (Model L)
+python nepali/train/train.py --config nepali/config/config.json --train_bin <nepali_train.bin> --val_bin <nepali_val.bin> --output_dir checkpoints/nepali
 ```
 
-To train Nepali (Model L):
+### 3. Evaluation
 ```bash
-python nepali/train/train.py \
-    --train_bin <path_to_nepali_train.bin> \
-    --val_bin <path_to_nepali_val.bin> \
-    --config nepali/config/config.json \
-    --output_dir checkpoints/nepali
-```
-
-### Evaluation
-To evaluate Model H (Hindi):
-```bash
+# Evaluate Hindi (Swap `hindi` for `nepali` in paths to evaluate Model L)
 python hindi/eval/evaluate.py \
     --checkpoint checkpoints/hindi/model_final.pt \
     --tokenizer hindi/tokenizer/tokenizer.json \
     --language hindi \
     --output_dir report/hindi
+```
+
+---
+
+## Repository Layout
+
+
+```text
+.
+├── hindi/ & nepali/          # Self-contained pipelines for Model H & Model L
+│   ├── config/               # Hyperparameters (vocab, layers, dimensions)
+│   ├── tokenizer/            # Custom trained BPE tokenizers
+│   ├── model/                # Transformer architecture (from scratch in PyTorch)
+│   ├── train/                # Training loop with AdamW, lr schedule, logs
+│   └── eval/                 # Evaluators (PPL, BPB, BLEU, chrF, ROUGE-L, Attention)
+├── report/                   # Graded deliverables
+│   ├── phase2_report.pdf     # Complete scientific report
+│   └── hindi/ & nepali/      # Loss curves, heatmaps, metric JSONs, generated samples
+├── notebooks/                # End-to-end training and evaluation Jupyter notebooks
+├── phase2/                   # Backwards-compatible workspace copy
+├── requirements.txt          # Python dependencies
+└── README.md                 # This file
 ```
