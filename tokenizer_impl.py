@@ -1,3 +1,8 @@
+import re
+import json
+
+PUNCT = "।॥!(),.?"
+WORD_PAT = re.compile(rf" ?[^{PUNCT}\s]+| ?[{PUNCT}]+", re.UNICODE)
 class CustomBPETokenizer:
     def __init__(self, vocab_size=32000):
         self.vocab_size = vocab_size
