@@ -1,0 +1,7 @@
+lang,epoch,train_loss,val_loss
+hindi,1,1.7760,1.1303
+hindi,2,0.6192,0.7186
+hindi,3,0.3782,0.7144
+nepali,1,0.9230,0.8083
+nepali,2,0.2943,0.8698
+nepali,3,0.2070,0.9503
