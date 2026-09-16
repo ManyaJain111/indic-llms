@@ -81,11 +81,15 @@ We compared attention heatmaps at **Layer 0 (early)** and **Layer 5 (late)** for
 
 Plots saved to `report/phase3_plots/hindi_attn_compare_layer0.png` and `hindi_attn_compare_layer5.png`.
 
+![Hindi Layer 0](phase3_plots/hindi_attn_compare_layer0.png)
+![Hindi Layer 5](phase3_plots/hindi_attn_compare_layer5.png)
+
 ### Nepali: Pre vs Post Finetune
 
 Similar patterns observed. The Nepali model's early layer attention (Layer 0) shifts toward the numeric value tokens and the entity names after finetuning. The late layer (Layer 5) develops a stronger binding between the question marker words ("को", "सँग") and the entity name tokens. Plots saved to `report/phase3_plots/nepali_attn_compare_layer0.png` and `nepali_attn_compare_layer5.png`.
 
-![Hindi Pre vs Post Attention](phase3_plots/plot_3.png)
+![Nepali Layer 0](phase3_plots/nepali_attn_compare_layer0.png)
+![Nepali Layer 5](phase3_plots/nepali_attn_compare_layer5.png)
 
 ---
 
