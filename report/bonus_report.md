@@ -33,12 +33,31 @@ The ablated model's loss plateaus around **4.14–4.17 nats** throughout trainin
 
 4. **Generation Metrics Collapse**: ROUGE-L drops to 0.0000 (greedy mode), confirming the ablated model cannot produce even marginally coherent continuations of reference sentences. chrF at 11.28 indicates the character n-grams match only superficially (the model still generates plausible-looking Devanagari characters, just in completely random order).
 
-### Attention Heatmaps (Layer 0 Early — Standard vs Ablated)
+### Attention Heatmaps (Standard vs. Ablated Model)
 
-| Standard Hindi | Ablated Hindi (No Positions) |
+| Standard Hindi (With Positions) | Ablated Hindi (No Positions) |
 |:---:|:---:|
-| Diagonal focus, local syntactic binding | Lower-triangular causal constraint only, no structural locality |
+| Broad context aggregation across sequence | Collapsed self-attention (identity mapping) along diagonal |
 
-See `report/plots/bonus_ablation_attn_layer0.png` and `attn_layer5.png`.
+#### Layer 0 (Early) Attention
+**Standard Hindi (Layer 0):**
+![Standard Layer 0](plots/phase2_hindi_attn_layer0.png)
+
+**Ablated Hindi (Layer 0 — No Positional Embeddings):**
 ![Ablated Layer 0](plots/bonus_ablation_attn_layer0.png)
+
+#### Layer 5 (Late) Attention
+**Standard Hindi (Layer 5):**
+![Standard Layer 5](plots/phase2_hindi_attn_layer5.png)
+
+**Ablated Hindi (Layer 5 — No Positional Embeddings):**
 ![Ablated Layer 5](plots/bonus_ablation_attn_layer5.png)
+
+### Entropy and Distance Analysis (Standard vs. Ablated)
+
+**Standard Hindi Model:**
+![Standard Entropy & Distance](plots/phase2_hindi_attn_entropy_distance.png)
+
+**Ablated Hindi Model:**
+![Ablated Entropy & Distance](plots/bonus_ablation_attn_entropy_distance.png)
+

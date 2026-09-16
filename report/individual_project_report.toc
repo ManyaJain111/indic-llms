@@ -17,7 +17,7 @@
 \contentsline {subsection}{\numberline {4.1}Motivation and Setup}{9}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}Ablation Results}{9}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}What Actually Broke}{10}{subsection.4.3}%
-\contentsline {section}{\numberline {5}Cross-Phase Comparison}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Model H vs. Model L Summary}{11}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Takeaways}{11}{subsection.5.2}%
+\contentsline {section}{\numberline {5}Cross-Phase Comparison}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Model H vs. Model L Summary}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Takeaways}{12}{subsection.5.2}%
 \contentsline {section}{\numberline {6}Conclusion}{12}{section.6}%

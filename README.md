@@ -140,19 +140,18 @@ python phase2/src/evaluate.py \
 ### 5. Reasoning Dataset Generation & Finetuning (Phase 3)
 1. **Generate Reasoning Dataset**:
    ```bash
-   cd phase3
-   python generate_reasoning_dataset.py
-   cd ..
+   python scripts/generate_reasoning_dataset.py
+   python scripts/generate_easy_test.py
    ```
-   This generates disjoint entity splits in `phase3/data/hi/` and `phase3/data/ne/` with zero leakage across train/val/test.
+   This generates disjoint entity splits in `data/hi/` and `data/ne/` with zero leakage across train/val/test.
 
 2. **Finetune the Models**:
-   Open and execute `phase3/notebooks/phase3_reasoning_finetuning.ipynb` (or `hindi/train/phase3_reasoning_finetuning.ipynb`) on Kaggle or a CUDA-enabled GPU.
+   Open and execute `notebooks/phase3_reasoning_finetuning.ipynb` on Kaggle or a CUDA-enabled GPU.
 
 ### 6. Bonus: Positional Embedding Ablation
 To train and evaluate the ablation model where positional embeddings are stripped:
-1. Run `phase3/bonus_training_final.ipynb` to train the ablated model for 60,000 steps (checkpoints are saved every 10,000 steps).
-2. Run `phase3/bonus_eval_final.ipynb` to compute ablation PPL, BPB, 4-gram repetition rate, and attention collapse heatmaps.
+1. Run `notebooks/bonus_training_final.ipynb` to train the ablated model for 60,000 steps (checkpoints are saved every 10,000 steps with full optimizer resumability).
+2. Run `notebooks/bonus_eval_final.ipynb` to compute ablation PPL, BPB, 4-gram repetition rate, and attention collapse heatmaps.
 
 ---
 
@@ -169,8 +168,8 @@ To train and evaluate the ablation model where positional embeddings are strippe
 
 | Metric | Model H (Hindi) | Model L (Nepali) |
 | :--- | :--- | :--- |
-| **Pretrained Baseline Accuracy** | 0.50% | 2.00% |
-| **Finetuned Full Test Accuracy** | **26.60%** | **25.20%** |
+| **Pretrained Baseline Accuracy** | 1.04% | 1.93% |
+| **Finetuned Full Test Accuracy** | **27.26%** | **26.67%** |
 | **Finetuned Easy Split Accuracy**| **50.00%** | — |
 
 ### Bonus Ablation Study (Impact of Positional Embeddings)
@@ -181,4 +180,4 @@ To train and evaluate the ablation model where positional embeddings are strippe
 | **Validation Loss** | 3.6487 | **4.0697** | Higher cross-entropy |
 | **4-gram Repetition** | 26.59% | **68.52%** | **Severe degeneration** |
 | **Distinct-1** | 0.4270 | **0.1703** | Vocabulary collapse |
-| **Attention Pattern**| Structured diagonal focus | Uniform / smearing | Complete loss of syntax |
+| **Attention Pattern**| Structured contextual attention | Self-attending diagonal collapse | Complete loss of relational context |
