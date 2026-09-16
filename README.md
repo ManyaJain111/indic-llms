@@ -26,9 +26,14 @@ The project spans:
 │   ├── ne/                               # Nepali train/val/test splits & stats
 │   └── simple/                           # Simplified evaluation prompts
 ├── notebooks/                            # All project Jupyter notebooks
-│   ├── phase3_reasoning_finetuning.ipynb # Reasoning finetuning loop & evaluation
+│   ├── phase3_reasoning_finetuning.ipynb # Resumable reasoning finetuning loop & evaluation
+│   ├── checkpoints-saved.ipynb           # Resumable checkpoint finetuning notebook
 │   ├── bonus_training_final.ipynb        # Positional embedding ablation training
 │   └── bonus_eval_final.ipynb            # Ablation evaluation & metrics extraction
+├── logs/                                 # Raw training and execution logs
+│   ├── bonus.log                         # Bonus ablation 60k-step training log
+│   ├── checkpoints-saved.log             # Phase 3 finetuning & evaluation run log
+│   └── phase3_finetuning.log             # Alias for Phase 3 finetuning log
 ├── scripts/                              # Core Python scripts
 │   ├── generate_reasoning_dataset.py     # Programmatic grammar-based reasoning generator
 │   ├── generate_easy_test.py             # 60-item simplified benchmark generator
