@@ -78,7 +78,10 @@ Hosted on [Hugging Face Hub: manyajain111/LMA-Individual-Project](https://huggin
 - **Hindi Finetuned Model**: [`finetuned/hindi_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/hindi_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/hindi/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/hindi))
 - **Nepali Finetuned Model**: [`finetuned/nepali_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/nepali_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/nepali/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/nepali))
 - **Epoch Checkpoints (Hindi)**: [Epoch 1](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_1.pt) · [Epoch 2](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_2.pt) · [Epoch 3](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_3.pt)
-- **Finetuning Training Logs**: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv)
+- **Epoch Checkpoints (Nepali)**: [Epoch 1](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/nepali/model_finetuned_epoch_1.pt) · [Epoch 2](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/nepali/model_finetuned_epoch_2.pt) · [Epoch 3](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/nepali/model_finetuned_epoch_3.pt)
+- **Finetuning Training Logs**: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv) (console logs at [`logs/checkpoints-saved.log`](logs/checkpoints-saved.log))
+
+> **Resumable Checkpoint Architecture**: In accordance with course guidelines, each intermediate epoch checkpoint is saved as a complete state dictionary (`model_state_dict`, `optimizer_state_dict`, `scheduler_state_dict`, `epoch`, `step`, `val_loss`, `train_loss`, `config`, `finetune_hyperparams`), allowing seamless mid-training resumption after disconnects or preemptions.
 
 ### 3. Bonus Ablation Checkpoints (No Positional Embeddings)
 All intermediate training checkpoints, final ablated weights, metrics, and visualization plots are hosted in the [`ablation/` directory on Hugging Face](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/ablation):
@@ -128,8 +131,18 @@ git checkout Phase-2
    ```
    This generates disjoint entity splits in `data/hi/` and `data/ne/` with zero leakage across train/val/test.
 
-2. **Finetune the Models**:
-   Open and execute `notebooks/phase3_reasoning_finetuning.ipynb` on Kaggle or a CUDA-enabled GPU.
+2. **Finetune the Models & Checkpoint Resumption**:
+   Open and execute `notebooks/phase3_reasoning_finetuning.ipynb` (or `notebooks/checkpoints-saved.ipynb`) on Kaggle or a CUDA-enabled GPU. Checkpoints are automatically saved after each epoch with complete optimizer and scheduler state.
+
+   To resume training from an intermediate epoch checkpoint:
+   ```python
+   # Load model, optimizer, scheduler, and epoch state
+   ckpt = torch.load("checkpoints/finetuned/hindi/model_finetuned_epoch_1.pt", map_location=device)
+   model.load_state_dict(ckpt["model_state_dict"])
+   optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+   scheduler.load_state_dict(ckpt["scheduler_state_dict"])
+   start_epoch = ckpt["epoch"] + 1  # Resumes smoothly from epoch 2
+   ```
 
 ### 6. Bonus: Positional Embedding Ablation
 To train and evaluate the ablation model where positional embeddings are stripped:
