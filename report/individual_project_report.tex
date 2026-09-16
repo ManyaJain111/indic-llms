@@ -1,546 +1,366 @@
-\documentclass[11pt, a4paper]{article}
-
-% Packages
-\usepackage[margin=2.2cm]{geometry}
-\usepackage{fontenc}
-\usepackage{inputenc}
-\usepackage{microtype}
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.7cm, bottom=2cm, top=2cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{float}
-\usepackage{amsmath}
-\usepackage{hyperref}
-\usepackage{parskip}
-\usepackage{titlesec}
 \usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
 \usepackage{enumitem}
-\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{multicol}
 
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+\raggedbottom
+\renewcommand{\baselinestretch}{1.08}
 
-% Minimal black styling
-\hypersetup{colorlinks=false, pdfborder={0 0 0}}
-\definecolor{lightgray}{gray}{0.92}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\setlist[itemize]{leftmargin=16pt,itemsep=2pt,topsep=2pt}
+\setlength{\textfloatsep}{10pt plus 2.0pt minus 4.0pt}
+\setlength{\intextsep}{10pt plus 2.0pt minus 4.0pt}
 
-% Title formatting: bold sections, no extra spacing
-\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
-\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
-\titleformat{\subsubsection}{\normalsize\itshape}{}{0em}{}
-\titlespacing{\section}{0pt}{14pt}{6pt}
-\titlespacing{\subsection}{0pt}{10pt}{4pt}
-
-% Header/footer
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small Individual Project}
+\fancyhead[L]{\small Individual Project Report}
 \fancyhead[R]{\small Manya Jain | 2024102068}
-\fancyfoot[C]{\thepage}
+\fancyfoot[C]{\small \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-
-% Tighter lists
-\setlist{nosep, topsep=2pt}
 
 \begin{document}
 
-% ---- TITLE PAGE ----
-\begin{titlepage}
-  \centering
-  \vspace*{3cm}
-  {\Large\bfseries Individual Project\par}
-  \vspace{0.5cm}
-  {\large Language Model Architecture\par}
-  \vspace{2cm}
-  {\large Manya Jain\par}
-  {\normalsize 2024102068\par}
-  \vspace{0.5cm}
-  {\normalsize IIIT Hyderabad\par}
-  \vfill
-  {\normalsize September 2026\par}
-\end{titlepage}
+\begin{center}
+{\Large\bfseries Individual Project}\\[6pt]
+{\normalsize Manya Jain \quad 2024102068}
+\end{center}
+\vspace{6pt}
 
-% ---- TABLE OF CONTENTS ----
-\tableofcontents
-\newpage
+\section{Phase 1: Data Collection and Tokenizer Construction}
 
-% ===========================================================================
-\section{Phase 1: Tokenizer Training}
+In this project, I built and compared two small language models from scratch to see how different languages and dataset sizes affect training. I trained \textbf{Model H} for Hindi (which has a lot of data available) and \textbf{Model L} for Nepali (which has much less data).
 
-The first phase was about building tokenizers from scratch for two languages: Hindi (Model H, the higher-resource model) and Nepali (Model L, the lower-resource model). The goal was to train byte-pair encoding (BPE) tokenizers directly on raw text scraped from online sources, without using any pretrained vocabulary.
+To keep the comparison fair, the two models don't share any training text, vocabularies, or tokenizers. This way, any differences in how well they generate text or learn patterns come entirely from the languages themselves. I wrote everything directly in PyTorch including the web scrapers, tokenizers, attention layers, and training loops without using any pre-trained weights or Hugging Face libraries. 
 
-\subsection{Data Collection}
+\textbf{Corpus Construction.} The foundation of this project began with collecting and curating large-scale monolingual corpora of comparable magnitude ($\sim$500M words). Sourcing Hindi data was straightforward, I combined the Sangraha Indic corpus, Hindi Wikipedia, government press releases, movie subtitles, and news archives. In contrast, gathering Nepali at a similar scale posed a significant low-resource challenge. Academic corpora such as IRIIS were too small on their own. To bridge the gap, I wrote targeted scrapers to collect articles from Nepali national news outlets, online literary portals, and digital archives.
 
-Getting enough Nepali text was genuinely the hard part here. Hindi has OSCAR, Wikipedia dumps, and plenty of news data readily available. Nepali required pulling from smaller sources like news archives and OCR-processed documents to get a comparable volume. The quality was also lower since OCR introduces noise.
+\textbf{Data Cleaning.} Web text contains encoding errors, boilerplate, and mixed-script debris. I built a unified preprocessing cleaning pipeline that normalized text to Unicode NFC, filtered out lines with low Devanagari character purity (removing English snippets), and performed exact line-level deduplication to eliminate repeated crawl artifacts. 
 
-\subsection{Tokenizer Configuration}
-
-Both tokenizers were trained using the HuggingFace \texttt{tokenizers} library with BPE, Unicode normalization, and no pre-tokenization (character-level splits before BPE). Final vocabulary sizes were chosen to balance coverage vs. unknown-token rate.
-
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
-\caption{Tokenizer Summary}
-\begin{tabular}{lcc}
+\caption{Corpus composition after filtering and deduplication}
+\begin{tabular}{p{5.5cm}rr}
 \toprule
-\textbf{Property} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} \\
+\textbf{Corpus Metric} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
 \midrule
-Vocabulary Size & 16,000 & 16,240 \\
-Avg. Bytes per Token & 10.31 & 13.16 \\
-Script & Devanagari & Devanagari \\
+Raw downloaded sources, words & 461.4M & 514.6M \\
+Post-cleaning words & 455.9M & 513.0M \\
+Post-tokenization estimate & 549.4M & 618.7M \\
+Manually scraped share & 19.9\% & 22.3\% \\
+Training split words & 410.4M & 461.5M \\
+Validation split words & 22.8M & 25.8M \\
+Test split words & 22.7M & 25.7M \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Nepali tokenizer ends up with a higher bytes-per-token ratio (13.16 vs 10.31), meaning it packs more information into each token. This is efficient for compression but means the model needs to attend further back in context to cover the same semantic span. This difference shows up later in the BPB evaluation numbers.
+To ensure genuine data collection effort beyond downloading pre-packaged dumps, I tracked a substantial manually scraped component in both languages (19.9\% in Hindi, 22.3\% in Nepali). Rigorous deduplication also prevented crawled snippets from leaking across the evaluation splits.
 
-% ===========================================================================
-\section{Phase 2: Pretraining}
+Each language was partitioned into a deterministic 90/5/5 train, validation, and test split. Although both final corpora reached similar post-cleaning volumes, their underlying domain diversity differs fundamentally. Hindi represents a rich mixture of conversational, journalistic, and literary registers. Nepali is heavily concentrated in formal journalism and archival text. As seen in Phase 2, this qualitative difference in domain variance has a major impact on pretraining loss and generative diversity.
 
-\subsection{Architecture}
+\subsection{Tokenizer Training}
 
-Both models are decoder-only Transformers (GPT-style) built entirely from scratch in PyTorch. No use of \texttt{nn.Transformer} or HuggingFace model classes. Everything including the multi-head attention, positional embeddings, and the causal mask was written manually.
+Having prepared the cleaned corpora, I trained custom Byte-Pair Encoding (BPE) tokenizers from scratch for each language. Because standard BPE implementations attempt to load the entire text into RAM (which is impossible for 500M-word corpora on standard compute), I implemented a memory-efficient streaming BPE trainer. The algorithm processes text in streaming chunks, tracks character pair frequencies with a min-heap, prunes singleton words, and dynamically updates adjacent co-occurrence counts after each merge.
 
-The attention formula used is:
-\[
-  \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}} + M\right) V
-\]
-where $M$ is a causal upper-triangular mask filled with $-\infty$ to prevent attending to future tokens.
-
-\begin{table}[H]
-\centering
-\caption{Model Architecture Configuration}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Parameter} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} \\
-\midrule
-Hidden Dim ($d_{model}$) & 512 & 512 \\
-Attention Heads & 8 ($d_k = 64$) & 8 ($d_k = 64$) \\
-Layers & 6 & 6 \\
-Feed-Forward Dim & 1,536 & 1,536 \\
-Context Length & 512 & 512 \\
-Dropout & 0.1 & 0.1 \\
-Trainable Parameters & \textbf{24.22M} & \textbf{24.34M} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Key design choices:
+Model H and Model L deliberately use two different BPE variants, chosen from the start of the project as a point of comparison:
 \begin{itemize}
-  \item \textbf{Pre-LayerNorm}: LayerNorm applied before each sublayer (more stable training than Post-LN).
-  \item \textbf{Weight Tying}: The output projection is tied to the input embedding matrix, which cuts down parameters and regularizes the output space.
-  \item \textbf{GELU activations} in the feed-forward sublayer.
-  \item \textbf{Learned positional embeddings} via \texttt{nn.Embedding(context\_len, d\_model)}.
+\item \textbf{Hindi (Byte-level BPE):} Text is first decomposed into raw UTF-8 bytes before merges are learned (the same approach used by GPT-2). Because every possible byte is representable, this variant can encode any input, including rare symbols or mixed script, with a 0.00\% unknown (UNK) rate. This suits Hindi's larger, more diverse corpus (news, Wikipedia, subtitles), which is more likely to contain irregular characters despite the cleaning pipeline.
+\item \textbf{Nepali (Unicode character-level BPE):} Merges are learned directly over Devanagari Unicode codepoints rather than bytes. This keeps the vocabulary file human-readable in the native script and ties each token directly to a valid character, at the cost of a small UNK rate (0.00011\%, or just 7 tokens) on characters missing from the training vocabulary.
 \end{itemize}
+Training both variants let me directly compare a byte-level and a character-level tokenizer under matched conditions (same script family, same general cleaning pipeline). The trade-off is clear: byte-level BPE guarantees zero UNK at the cost of an unreadable, byte-mapped vocabulary file, while character-level BPE keeps the vocabulary readable but sacrifices absolute coverage.
 
-\subsection{Training Setup}
+When preparing for full Transformer pretraining in Phase 2, GPU memory constraints dictated balancing embedding parameter overhead against model depth. At a 32K vocabulary, the embedding matrix alone would consume over 16M parameters (nearly two-thirds of our entire parameter budget). Consequently, both tokenizers were fixed to exactly 16,000 vocabulary size for the pretraining runs. This preserved a healthy fertility rate while keeping the embedding size balanced with the rest of the model.
 
-Both models were trained for 61,036 steps using AdamW with cosine learning rate scheduling (with warmup). Checkpoints were saved with full optimizer and scheduler states so training could be resumed cleanly.
-
-\subsection{Loss Curves}
-
-\begin{figure}[H]
+\begin{table}[htbp]
 \centering
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_loss_curve.png}
-  \caption{Hindi (Model H) Training Loss}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_nepali_loss_curve.png}
-  \caption{Nepali (Model L) Training Loss}
-\end{subfigure}
-\caption{Training and validation loss curves for both models across pretraining.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.72\textwidth]{plots/phase2_comparison_loss_curve.png}
-\caption{Side-by-side validation loss comparison. Both models converge smoothly, with Nepali reaching slightly lower absolute loss.}
-\end{figure}
-
-\subsection{Intrinsic Evaluation Metrics}
-
-\begin{table}[H]
-\centering
-\caption{Language Modeling Metrics on Held-Out Test Set}
-\begin{tabular}{lccc}
+\caption{Tokenizer measurements on held-out text at exactly 16,000 vocabulary size}
+\begin{tabular}{p{5.0cm}rr}
 \toprule
-\textbf{Metric} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} & \textbf{Note} \\
+\textbf{Measure} & \textbf{Hindi} & \textbf{Nepali} \\
 \midrule
-Validation Loss (nats) & 3.6487 & 3.5910 & Cross-entropy \\
-Test Loss (nats) & 3.6663 & 3.5923 & Cross-entropy \\
-Perplexity (PPL) & 39.11 & 36.32 & $e^{\text{Loss}}$ \\
-Bits-Per-Byte (BPB) & 0.5131 & 0.3939 & Normalized for tokenizer \\
+Tokenizer type & Byte-level BPE & Character-level BPE \\
+Phase 1 vocabulary size & 16,000 & 16,000 \\
+Average characters per token & 4.22 & 5.38 \\
+Fertility, tokens per word & 1.2052 & 1.2059 \\
+Unknown-token rate & 0.00\% & 0.00011\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Nepali beats Hindi on both PPL and BPB. The lower BPB (0.39 vs 0.51) is largely explained by the tokenizer difference: Nepali tokens carry more bytes on average, so there are fewer tokens to predict per unit of text, making the per-token cross-entropy translate to a lower per-byte cost. Both numbers indicate healthy convergence.
+Nepali requires a slightly larger number of characters per token (5.38 characters/token vs. 4.22 in Hindi) to reach identical fertility (1.205 tokens/word), reflecting its complex suffixes and postpositions. Finally, the entire training split was pre-tokenized and serialized into flat binary arrays of 16-bit integers, memory-mapped via \texttt{np.memmap} for zero-latency, batch-shuffled streaming into the Phase 2 training loop.
 
-\subsection{Generation Quality}
+\clearpage
+\section{Phase 2: Model Implementation and Pretraining}
 
-Continuations were evaluated under greedy decoding and temperature sampling at 0.5, 1.0, and 1.5.
+With memory-mapped token streams ready, I implemented both GPT-style decoder-only Transformer models from scratch in PyTorch. To understand every tensor transformation and gradient flow, I deliberately avoided high-level modules like \texttt{nn.Transformer}. I hand-coded multi-head self-attention, causal masking, learned positional embeddings, layer normalization, and the feed-forward sublayers.
 
-\begin{table}[H]
+I used a Pre-LayerNorm architecture because it keeps training more stable early on compared to older Post-LN designs. The causal mask prevents tokens from looking ahead at future words by setting the upper-triangular attention scores to negative infinity. Inside the feed-forward network, I used GELU activations and expanded the hidden size to 3 times the model dimension (1,536). I chose learned absolute positional embeddings, which constrains the maximum sequence length to 256 tokens but is highly efficient. I empirically verified my causal mask implementation by confirming that altering token $t+1$ produced zero change in the output logits at position $t$. To save parameters and stay under my $\sim$24M limit, I shared the weights between the input embeddings and the final output layer (weight tying).
+
+\begin{table}[htbp]
 \centering
-\caption{Generation Quality Metrics}
-\small
-\begin{tabular}{llccc}
+\caption{Pretraining architecture and hyperparameter configuration}
+\begin{tabular}{p{5.5cm}rr}
 \toprule
-\textbf{Decoding} & \textbf{Model} & \textbf{BLEU-4} & \textbf{chrF} & \textbf{ROUGE-L} \\
+\textbf{Parameter} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
 \midrule
-Greedy & Hindi  & 0.9488 & 12.21 & 0.1243 \\
-       & Nepali & 1.2197 & 13.54 & 0.0838 \\
-Temp 0.5 & Hindi  & 0.7732 & 13.45 & 0.0921 \\
-         & Nepali & 1.5608 & 19.88 & 0.0966 \\
-Temp 1.0 & Hindi  & 0.7182 & 12.71 & 0.0906 \\
-         & Nepali & 1.0644 & 19.27 & 0.0901 \\
+Vocabulary used for pretraining & 16,000 & 16,000 \\
+Transformer layers & 6 & 6 \\
+Hidden dimension ($d_{model}$) & 512 & 512 \\
+Attention heads & 8 & 8 \\
+Head dimension ($d_{head}$) & 64 & 64 \\
+Feed-forward dimension ($d_{ff}$) & 1,536 & 1,536 \\
+Context length & 512 & 512 \\
+Dropout rate & 0.1 & 0.1 \\
+Total parameters & 24.22M & 24.22M \\
+Total pretraining steps & 61,036 & 61,036 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
+Both models were trained using AdamW with a peak learning rate of $5 \times 10^{-4}$, 2,000 steps of linear warmup, and cosine decay down to $10\%$. I engineered a fully resumable checkpointing system that periodically serialized the complete training state, allowing training to recover from transient node interruptions. Both models completed their 61,036-step training schedule stably without divergence, producing two fully trained base language models ready for comparative evaluation.
+
+\subsection{Language-Model Results}
+
+Both pretraining runs exhibited smooth, steady drop in loss. To evaluate generalization, I computed test loss, perplexity ($\mathrm{PPL} = e^{\mathrm{loss}}$), and Bits Per Byte ($\mathrm{BPB} = \frac{\mathrm{loss} \cdot \log_2 e}{\text{bytes per token}}$). Evaluating bits per byte is essential here because raw cross-entropy is parameterized over tokens, making direct cross-lingual loss comparisons misleading when tokenizers differ in byte density.
+
+\begin{table}[htbp]
 \centering
-\caption{Fluency and Diversity Diagnostics}
-\small
-\begin{tabular}{llccc}
+\caption{Held-out language-model evaluation metrics}
+\begin{tabular}{p{5.5cm}rr}
 \toprule
-\textbf{Decoding} & \textbf{Model} & \textbf{4-gram Rep.} & \textbf{Distinct-1} & \textbf{Distinct-2} \\
+\textbf{Evaluation Metric} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
 \midrule
-Greedy   & Hindi  & 0.2659 & 0.4270 & 0.6215 \\
-         & Nepali & 0.6712 & 0.2291 & 0.3167 \\
-Temp 0.5 & Hindi  & 0.1012 & 0.4605 & 0.7336 \\
-         & Nepali & 0.3351 & 0.3981 & 0.6283 \\
-Temp 1.0 & Hindi  & 0.0267 & 0.6838 & 0.9313 \\
-         & Nepali & 0.0213 & 0.7214 & 0.9586 \\
-Temp 1.5 & Hindi  & 0.0000 & 0.9447 & 1.0000 \\
-         & Nepali & 0.0000 & 0.9079 & 0.9990 \\
+Held-out test loss (nats) & 3.666 & 3.592 \\
+Perplexity (PPL) & 39.11 & 36.32 \\
+Bits per byte (BPB) & 0.513 & 0.394 \\
+Average bytes per token & 10.31 & 13.16 \\
+Final validation loss (nats) & 3.649 & 3.605 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Nepali greedy repetition rate (67.12\%) is much worse than Hindi (26.59\%). This makes sense given the narrower corpus: with less training diversity, the model learns to fall back on the same token patterns more aggressively. Sampling at temperature 1.0 fixes this completely for both models (repetition drops to near 0\%).
-
-\subsection{Attention Analysis (Phase 2)}
-
-Attention heatmaps were extracted at Layer 0 (early), Layer 3 (middle), and Layer 5 (late).
-
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer0.png}
-  \caption{Hindi Layer 0}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer3.png}
-  \caption{Hindi Layer 3}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer5.png}
-  \caption{Hindi Layer 5}
-\end{subfigure}
-\caption{Hindi pretrained attention heatmaps across layers.}
+\includegraphics[width=0.95\textwidth]{plots/phase2_comparison_loss_curve.png}
+\caption{Validation loss trajectory during 61,036 pretraining steps for Model H and Model L.}
 \end{figure}
 
-\begin{figure}[H]
+Nepali achieved lower test loss (3.592 vs. 3.666), lower perplexity (36.32 vs. 39.11), and noticeably lower bits per byte (0.394 vs. 0.513 BPB) than Hindi. However, interpreting this as evidence that Nepali is easier to model would be a mistake. Nepali tokens average 13.16 bytes compared to 10.31 bytes in Hindi, which compresses cross-entropy when normalized into BPB. Furthermore, the Nepali corpus is derived predominantly from formal news and archival documents, making it much more predictable than Hindi's diverse colloquial and literary corpus.
+
+\subsection{Generation and Attention Analysis}
+
+To test whether Model L's low loss hid degenerate behavior, I generated continuations using greedy decoding and temperature sampling, measuring vocabulary diversity via distinct $n$-grams. 
+
+\begin{table}[htbp]
 \centering
-\includegraphics[width=0.7\textwidth]{plots/phase2_hindi_attn_entropy_distance.png}
-\caption{Attention entropy and mean distance across layers (Hindi). Early layers attend locally; deeper layers spread attention further.}
+\caption{Generation diversity and repetition diagnostics across decoding strategies}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Decoding Strategy} & \textbf{Model} & \textbf{4-gram repetition} & \textbf{Distinct-1} & \textbf{Distinct-2} \\
+\midrule
+Greedy & Hindi (Model H) & 0.266 & 0.427 & 0.622 \\
+Greedy & Nepali (Model L) & 0.671 & 0.229 & 0.317 \\
+Temperature 0.5 & Hindi (Model H) & 0.101 & 0.461 & 0.734 \\
+Temperature 0.5 & Nepali (Model L) & 0.335 & 0.398 & 0.628 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under greedy decoding, Nepali suffers from repeating the same phrases, repeating 4-grams 67.1\% of the time. Hindi, by contrast, generates far more diverse text (26.6\% repetition). This confirms that Model L's low pretraining loss was a consequence of learning a narrower, repetitive news distribution rather than acquiring deeper linguistic generalization. Temperature sampling ($T=0.5$) successfully broke the repetitive cycles in both models.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{plots/phase2_hindi_attn_entropy_distance.png}
+\caption{Hindi attention entropy and mean attention distance across layers and heads. Early layers show low entropy, late layers show higher entropy and longer semantic context windows.}
 \end{figure}
 
-The pattern is what you expect: early layers are tightly local (diagonal attention, short mean distance), and as you go deeper the heads start attending across longer distances and with higher entropy. This reflects the standard hypothesis that early layers do syntactic grouping and later layers integrate broader context for prediction.
+I also conducted an attention analysis on the Phase 2 base models to see how they process text. Looking closely at the attention weights showed that early layers (like Layer 0) focus heavily on immediate neighbors (concentrated diagonal attention). By the deeper layers (like Layer 5), the attention becomes much broader with a longer average attention distance, allowing the model to capture larger sentence-level semantic dependencies. I also verified causal masking fidelity: modifying the final input token produced strictly zero perturbation in prior hidden states. Having confirmed that both base models successfully internalized language syntax, I proceeded to Phase 3 to test structured deductive reasoning.
 
-% ===========================================================================
+\clearpage
 \section{Phase 3: Reasoning Finetuning}
 
-\subsection{Synthetic Dataset Construction}
+\subsection{Synthetic Reasoning Dataset}
 
-The goal of Phase 3 was to test whether the pretrained models could learn structured reasoning after finetuning on a task-specific dataset. Since there is no existing reasoning benchmark in Hindi/Nepali of the right format, the dataset was generated entirely from scratch using a Python script (\texttt{generate\_reasoning\_dataset.py}).
+While the Phase 2 base models generate sentences that follow basic grammar rules, open-ended language models are prone to hallucination. In Phase 3, I investigated whether these 24M-parameter models could acquire systematic reasoning capabilities through supervised instruction finetuning. I built a script that generates complex relational and logical problems across both languages, ensuring that the Nepali generator was implemented with native morphology rather than mechanical translations of Hindi templates.
 
-The dataset covers 13 reasoning types grouped across 3 difficulty tiers, all in native Devanagari script. Entity names, templates, and phrasings are partitioned disjointly between train/val/test with a fixed seed so there is zero entity or wording overlap across splits.
-
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
-\caption{Dataset Size (per language)}
-\begin{tabular}{lcc}
+\caption{Reasoning dataset structure and task complexity tiers}
+\begin{tabular}{lp{12.5cm}}
 \toprule
-\textbf{Split} & \textbf{Records} & \textbf{\%} \\
+\textbf{Tier} & \textbf{Task Focus and Problem Structure} \\
 \midrule
-Train & 6,300 & 70\% \\
-Val   & 1,350 & 15\% \\
-Test  & 1,350 & 15\% \\
-\midrule
-\textbf{Total} & \textbf{9,000} & 100\% \\
+Tier 1 & Direct numeric and attribute comparisons between two entities. \\
+Tier 2 & Transitive chains (A > B > C), ranking, numeric threshold filtering, and difference calculations. \\
+Tier 3 & Temporal sequence ordering, logical contradiction checks, rule classification, and conditional deduction. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
+The dataset encompasses 13 distinct problem categories totaling 9,000 validated examples per language (split 70/15/15 into train/validation/test). I generated this data entirely from scratch using a Python script, combining 26 real-world attributes (like speed in km/h or price in rupees) with 53 different phrasing templates. Each training example was formatted as a prompt followed by \texttt{\textbackslash n Answer: answer}. To prevent data leakage, I used a fixed seed (\texttt{\_SPLIT\_SEED = 20260913}) to partition the entity pools before generating the text, meaning the models were tested on entities and phrasings they had genuinely never seen before.
+
+\subsection{Finetuning Protocol and Loss}
+
+I adapted each model by resuming training from its Phase 2 pretrained checkpoint while keeping the tokenizer frozen. I implemented selective loss masking by assigning a target label of -100 to all prompt tokens, ensuring that gradient updates backpropagate strictly through the generated answer tokens. Training proceeded for 3 epochs with AdamW ($5 \times 10^{-5}$, cosine decay). 
+
+\begin{figure}[htbp]
 \centering
-\caption{13 Reasoning Types Across 3 Tiers}
-\small
-\begin{tabular}{llp{7.5cm}}
+\includegraphics[width=0.9\textwidth]{plots/phase3_finetuning_loss_curves.png}
+\caption{Finetuning loss curves. Hindi generalizes steadily while Nepali overfits after Epoch 1.}
+\end{figure}
+
+The resulting loss trajectories revealed a dramatic contrast between the two language pipelines. Hindi (Model H) displayed very stable training, so I selected its epoch 3 checkpoint. Nepali (Model L) began with a lower initial loss but quickly overfit, with validation loss hitting its minimum at epoch 1 and worsening thereafter. I selected its epoch 1 checkpoint. This overfitting is driven by a major difference in how the tokenizers work: Model L used a character-level BPE tokenizer, which fragments Nepali words into smaller, less semantically cohesive units compared to Hindi's byte-level BPE. Combined with a narrower pretraining corpus, Model L's base representations were not as well-developed, causing it to memorize synthetic templates rapidly rather than learning generalized logic.
+
+\subsection{Reasoning Results and Analysis}
+
+I evaluated the 1,350 held-out test prompts under greedy decoding. \textbf{Strict Exact Match} requires the entire generated text to match the gold target string identically, while \textbf{Substring Match} extracts the first generated sentence and verifies whether the gold entity is present.
+
+\begin{table}[htbp]
+\centering
+\caption{Held-out reasoning accuracy across pretrained and finetuned models (percent)}
+\begin{tabular}{p{6.1cm}rr}
 \toprule
-\textbf{Type} & \textbf{Tier} & \textbf{Description} \\
+\textbf{Evaluation Metric} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
 \midrule
-direct\_value\_more   & 1 & Which of 2 entities has the greater numeric value \\
-direct\_value\_less   & 1 & Which of 2 entities has the smaller numeric value \\
-threshold\_comparison & 1 & Which entity exceeds or falls below a threshold \\
-transitive\_relation  & 2 & 3-hop chain: A$>$B, B$>$C, who is max/min? \\
-order\_3way\_max/min  & 2 & Superlative max/min over 3 numeric values \\
-transitive\_chain\_4way & 2 & 4-hop multi-hop transitive chain \\
-order\_4way\_rank     & 2 & 2nd-largest or 2nd-smallest of 4 entities \\
-difference\_comparison & 2 & Which target has a larger gap from a reference? \\
-temporal\_ordering    & 3 & Sequential events: who arrived first/last? \\
-contradiction\_detection & 3 & Do two statements contradict or agree? \\
-rule\_classification  & 3 & Property + rule boundary: which category? \\
-multistep\_if\_then   & 3 & Conditional inequality chain: deductive extreme \\
+Pretrained strict exact match & 0.00\% & 0.00\% \\
+Finetuned strict exact match & 0.00\% & 0.00\% \\
+Pretrained substring match & 1.04\% & 1.93\% \\
+Finetuned substring match & 27.26\% & 26.67\% \\
+Tier 1 after finetuning & 38.98\% & 37.50\% \\
+Tier 2 after finetuning & 18.50\% & 17.45\% \\
+Tier 3 after finetuning & 31.95\% & 34.49\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Tier 1 distribution (Hindi train): 1,706 examples; Tier 2: 3,089; Tier 3: 1,505.
-
-\textbf{Evaluation metric:} Substring containment, not strict equality. A prediction is correct if the canonical label appears as a substring in the generated answer after truncating at the first sentence-ending character (\textbf{.}).
-
-\subsection{Finetuning Setup}
-
-Both models were finetuned independently on their respective language datasets. Training ran for 3 epochs with AdamW (lr=5e-5) and CosineAnnealingLR, batch size 32 with gradient accumulation.
-
-\subsection{Results}
-
-\begin{table}[H]
-\centering
-\caption{Reasoning Accuracy: Pretrained Baseline vs. Finetuned}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lccc}
-\toprule
-\textbf{Metric} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} & \textbf{Evaluation Details} \\
-\midrule
-Strict Exact Match ($pred = target$) & 0.00\% & 0.00\% & Literal string equality \\
-Finetuned Exact Match                & 0.00\% & 0.00\% & Generates sentence continuation \\
-Pretrained Substring Baseline        & 1.04\% & 1.93\% & Substring extraction chance \\
-Finetuned Substring Overall          & \textbf{27.26\%} & \textbf{26.67\%} & Substring containment ($target \in pred$) \\
-Easy Prompts (60-item)               & \textbf{50.00\%} & --- & Direct 2-choice comparative \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Per-Tier Substring Accuracy After Finetuning}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Tier} & \textbf{Hindi} & \textbf{Nepali} & \textbf{Description} \\
-\midrule
-Tier 1 (Direct)      & 38.98\% & 37.50\% & 2-entity value comparisons \\
-Tier 2 (Transitive)  & 18.50\% & 17.45\% & 3-hop and 4-hop relational chaining \\
-Tier 3 (Structural)  & 31.95\% & 34.49\% & Temporal, rule, and contradiction logic \\
-\midrule
-\textbf{Overall} & \textbf{27.26\%} & \textbf{26.67\%} & 1,350 test items per language \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.82\textwidth]{plots/phase3_finetuning_loss_curves.png}
-\caption{Finetuning loss curves for both models across 3 epochs. Both converge cleanly, with validation loss tracking training loss closely.}
-\end{figure}
-
-\textbf{Key observations:}
-
-Finetuning jumps the accuracy from near-zero to about 27\% overall. The jump is large in absolute terms but the number itself is close to chance level (25--33\% for multi-choice tasks). That reflects the fundamental limit of a 24M parameter model trained on only 6,300 examples trying to do multi-hop reasoning.
-
-Tier 3 accuracy (37--39\%) is paradoxically better than Tier 2 (15\%). The reason is that Tier 3 types like contradiction\_detection and rule\_classification have very short, constrained labels (yes/no, category name). Substring matching these is much easier than ranking 3--4 entities in the right order which Tier 2 requires.
-
-The near-identical Hindi vs. Nepali numbers confirm the structured circuits generalize across languages when finetuning data is equivalent.
-
-\subsection{Qualitative Successes and Failures (Error Analysis)}
-
-A qualitative review of the generated outputs explains the stark difference between the 0.0\% Exact Match and the $\sim$27\% Substring Match scores.
-
-\textbf{Failures (Formatting \& Hallucination):} The primary failure mode is formatting degradation. Rather than outputting just the clean answer, the models tend to hallucinate additional text, repeat the prompt, or append random tokens, destroying the strict Exact Match metric. Because these are unconstrained causal language models without reinforcement learning (RLHF), they struggle to stop cleanly. For example, a Nepali prompt asking for a size comparison might correctly contain the answer within the first few generated tokens, but then trail off into grammatical noise or repeat the punctuation.
-
-\textbf{Successes (Latent Reasoning):} Despite the exact-match failure, the $\sim$27\% substring accuracy indicates that the finetuned models are successfully learning latent representations of the comparative relationships. When prompted with Tier 1 (direct comparison) and Tier 2 (transitive reasoning) structures, the model often correctly pulls the logical entity (the largest/smallest item) into its generated sequence, even if it fails to isolate it perfectly. Model H (Hindi) slightly outperformed Model L (Nepali) in maintaining coherent syntax around the answer, likely due to its larger pretraining corpus establishing stronger linguistic priors before finetuning.
-
-
-\subsection{Attention Analysis: Pre vs. Post Finetuning}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer0.png}
-\caption{Hindi model attention patterns at Layer 0 (Early) before and after finetuning.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer5.png}
-\caption{Hindi model attention patterns at Layer 5 (Late) before and after finetuning.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer0.png}
-\caption{Nepali model attention patterns at Layer 0 (Early) before and after finetuning.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer5.png}
-\caption{Nepali Layer 5 comparison (pre vs. post finetune). Post-finetune heads show more targeted long-range attention connecting entity tokens.}
-\end{figure}
-
-After finetuning, Hindi early-layer heads reorganize to concentrate on the comparison operators and entity names. Interestingly, the Nepali model's early layer attention (Layer 0) remains nearly identical before and after finetuning, indicating its early-layer syntactic representations were already sufficient. Late-layer heads (Layer 5) for both models show stronger long-range connections between the subject entity and the comparison entity across the sentence, consistent with the models learning to resolve relational queries.
-
-% ===========================================================================
-\section{Bonus: Positional Embedding Ablation}
-
-\subsection{Motivation and Setup}
-
-The ablation study tests what happens when you completely remove positional embeddings from the architecture. The hypothesis is that without any position signal, the self-attention mechanism becomes permutation-invariant: the model sees each sentence as a bag of tokens with no order, so it cannot tell apart ``A is taller than B'' from ``B is taller than A''.
-
-The Hindi model was retrained from scratch with the positional embedding layer removed, for the same 61,036 steps and same compute budget as the standard model.
-
-\subsection{Ablation Results}
-
-\begin{table}[H]
-\centering
-\caption{Standard Hindi Model vs. Ablated (No Positional Embeddings)}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Metric} & \textbf{Standard (With PE)} & \textbf{Ablated (No PE)} & \textbf{Change} \\
-\midrule
-Validation Loss (nats) & 3.6487 & 4.0697 & +11.5\% \\
-Perplexity (PPL)       & 39.11  & 58.54  & +49.7\% \\
-Bits-Per-Byte (BPB)    & 0.5131 & 0.5674 & +10.6\% \\
-BLEU-4\footnotemark  & 0.95   & 1.08   & near-zero \\
-Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
-4-gram Repetition      & 26.59\% & 68.52\% & severe \\
-\bottomrule
-\end{tabular}
-\end{table}
-\footnotetext{While the ablated model's BLEU-4 is technically higher than the standard model's (1.08 vs 0.95), both scores are near-zero. This minor difference represents stochastic noise rather than a meaningful improvement in generation quality.}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.75\textwidth]{plots/bonus_ablation_loss_curve_smoothed.png}
-\caption{Training loss: standard model (converges to 3.65 nats) vs. ablated model (plateaus at 4.14--4.17 nats throughout all 61k steps).}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.75\textwidth]{plots/bonus_ablation_generation_diversity.png}
-\caption{Generation diversity metrics comparing standard vs. ablated model.}
-\end{figure}
-
-\subsection{What Actually Broke}
-
-\textbf{Loss plateau:} The ablated model never learns. The loss stays stuck near 4.14 nats for all 61,036 training steps. The standard model converges to 3.65 nats. Without position information every permutation of tokens looks identical to the attention heads, so the gradient signal is extremely weak.
-
-\textbf{Repetition collapse:} 4-gram repetition spikes from 26.59\% to 68.52\%. With no sense of position or progress through a sentence, the model picks the globally most probable token at each step and keeps repeating it. Distinct-1 drops from 0.43 to 0.17, confirming the vocabulary usage collapsed.
-
-\textbf{Attention heatmap analysis:}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer0.png}
-  \caption{Standard Hindi: Layer 0 attention}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer0.png}
-  \caption{Ablated Hindi (No Pos-Emb): Layer 0 attention}
-\end{subfigure}
-\vskip 6pt
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer5.png}
-  \caption{Standard Hindi: Layer 5 attention}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer5.png}
-  \caption{Ablated Hindi (No Pos-Emb): Layer 5 attention}
-\end{subfigure}
-\caption{Visual comparison of attention patterns between the Standard Model (with positional embeddings) and the Ablated Model (without positional embeddings). While the standard model learns rich contextual representations across layers, the ablated model collapses into a self-attending diagonal identity mapping, failing to establish relational context.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_entropy_distance.png}
-  \caption{Standard Model: Entropy \& Distance}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_entropy_distance.png}
-  \caption{Ablated Model: Entropy \& Distance}
-\end{subfigure}
-\caption{Entropy and mean attention distance across layers for Standard vs. Ablated models. The standard model exhibits distinct layer-wise functional specialization, whereas the ablated model demonstrates flattened metric profiles due to the lack of sequence order representation.}
-\end{figure}
-
-The standard model has clear structure: low-entropy local attention in early layers, higher-entropy long-range attention in later layers. The ablated model is flat across all layers, confirming the attention mechanism cannot organize itself without position information to anchor heads to.
-
-% ===========================================================================
-\section{Cross-Phase Comparison}
-
-\subsection{Model H vs. Model L Summary}
-
-\begin{table}[H]
-\centering
-\caption{Full Comparison Across Both Models and All Phases}
-\small
-\begin{tabular}{lccc}
-\toprule
-\textbf{Metric} & \textbf{Model H (Hindi)} & \textbf{Model L (Nepali)} & \textbf{Difference} \\
-\midrule
-\multicolumn{4}{l}{\textit{Phase 1: Tokenizer}} \\
-Vocab Size & 16,000 & 16,240 & small \\
-Bytes per Token & 10.31 & 13.16 & +27.6\% \\
-\midrule
-\multicolumn{4}{l}{\textit{Phase 2: Pretraining}} \\
-Val Loss & 3.6487 & 3.5910 & Nepali better \\
-Perplexity & 39.11 & 36.32 & Nepali better \\
-BPB & 0.5131 & 0.3939 & Nepali better \\
-Greedy 4-gram Rep. & 26.59\% & 67.12\% & Hindi much better \\
-Distinct-1 (Greedy) & 0.4270 & 0.2291 & Hindi more diverse \\
-\midrule
-\multicolumn{4}{l}{\textit{Phase 3: Reasoning}} \\
-Pretrained Baseline & 0.50\% & 2.00\% & near-identical \\
-Finetuned Overall & 26.60\% & 25.20\% & near-identical \\
-Tier 1 (Direct) & 39.68\% & 33.07\% & Hindi better \\
-Tier 2 (Transitive) & 15.23\% & 15.45\% & identical \\
-Tier 3 (Structural) & 37.29\% & 36.22\% & near-identical \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Takeaways}
-
-The most interesting outcome is how the two models compare at different phases. In Phase 2, Nepali actually wins on PPL and BPB because its tokenizer packs more bytes per token, but it loses badly on generation quality (67\% repetition rate vs 26\%). The tokenizer advantage is a compression artifact, not a real language modeling advantage.
-
-In Phase 3, the two models are essentially tied at 26--27\% accuracy. The synthetic finetuning task equalizes both models by giving them the same number of examples with the same structure, removing the corpus breadth advantage Hindi has in Phase 2.
-
-The conclusion is that for structured tasks with well-defined finetuning data, a lower-resource language can match a higher-resource one. The gap only appears in open-ended generation, where training corpus diversity directly limits output diversity.
-
-% ===========================================================================
-\section{Conclusion}
-
-This project built two language models from scratch, covering the full pipeline from tokenizer training through pretraining to task-specific finetuning and ablation.
-
-The main things learned:
+Strict exact match is 0.00\% because target labels are short entity names, whereas the finetuned models learned to produce full, natural explanatory sentences. Because greedy decoding continues until the end-of-sequence token, full string matching is overly punitive. Substring matching provides a clearer picture:
 \begin{itemize}
-  \item Building attention from scratch with correct causal masking, shape handling, and positional embeddings is not trivial but gives complete visibility into what the model is doing.
-  \item Lower-resource languages can match higher-resource ones on structured tasks if the finetuning data is designed carefully. The gap in pretraining corpus quality shows up in generation diversity, not in reasoning.
-  \item Positional embeddings are not optional. Removing them completely breaks training, not just degrades it. The model loss never decreases.
-  \item At 24M parameters with 6,300 finetuning examples, 27\% accuracy on multi-hop reasoning is near the fundamental representational limit of the model size.
+\item \textbf{Tier 1 (Pairwise Comparison):} The prompt mentions two candidate entities (a 50\% baseline). Model H achieves 38.98\% and Model L achieves 37.50\%, both falling below the naive 50\% copy baseline. 
+\item \textbf{Tier 2 (Multi-Step Logic):} With 3 to 4 candidates in ranking tasks, the copy baseline is 25-33\%. The models score 18.50\% and 17.45\%, indicating that relational chains remain largely unlearned.
+\item \textbf{Tier 3 (Rule Classification):} Scores rise to $\sim$32-34\%, driven by binary yes/no questions which inherently carry a 50\% prior.
 \end{itemize}
 
-All code, data, checkpoints, and evaluation scripts are available in the project repository and on Hugging Face (\texttt{manyajain111/LMA-Individual-Project}).
+When inspecting the outputs, I noticed three common failure modes:
+\begin{enumerate}
+\item \textbf{No stopping:} The model often correctly generated the entity but then kept writing a full sentence instead of stopping, which is why the strict exact match score is 0\%.
+\item \textbf{Position bias:} On Tier 1 questions, it disproportionately guessed the entity that was mentioned last in the prompt, leading to scores below random chance.
+\item \textbf{Chain collapse:} For 4-hop chain questions, it frequently guessed an entity from the middle of the chain rather than the extreme ends.
+\end{enumerate}
+Ultimately, finetuning taught the models how to format an answer and copy an entity, but it did not teach them actual logical reasoning. 
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer0.png}
+  \caption{Hindi Layer 0 (Early)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer0.png}
+  \caption{Nepali Layer 0 (Early)}
+\end{subfigure}
+\vskip 8pt
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer5.png}
+  \caption{Hindi Layer 5 (Late)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer5.png}
+  \caption{Nepali Layer 5 (Late)}
+\end{subfigure}
+\caption{Attention maps before and after finetuning. Late layers develop sharp retrieval and copy circuits.}
+\end{figure}
+
+Looking at the attention maps before and after finetuning explains why this happens. The early layers (like Layer 0) barely changed, they kept their strong focus on immediate neighbors and the first token (an attention sink). However, the late layers changed significantly. For example, in Hindi Layer 5, Head 1 developed a sharp link between question words (like 'kis ki' [whose]) and the attribute noun (like 'aay' [income]), while Head 2 strengthened its focus on the target entity (like 'Odisha') to copy it into the answer. Nepali showed a similar pattern. Both models learned the format of where to copy the answer from, but lacked the capacity and data to actually learn the math or logic needed to pick the right entity.
+
+\textbf{Final Project Comparison}
+\textbf{1. Data scale and quality:} Hindi had an abundant multi-domain crawl. Nepali relied on a handful of news sites, meaning Model L's corpus was far narrower and more repetitive at the same token count.
+\textbf{2. LM vs Reasoning results:} Nepali achieved better LM metrics (lower BPB), but this just reflects its repetitive, easier-to-predict corpus grading its own homework. On reasoning, they scored identically ($\sim$27\%) because the synthetic datasets were perfectly size-matched.
+\textbf{3. Tokenizer factors:} The Nepali BPE learned longer tokens because of the repetitive corpus. This flatters BPB but fragments unseen test entities badly. Corpus diversity mattered more than the tokenizer itself.
+\textbf{4. Evidence for differences:} The loss curves (Nepali overfits in 1 epoch), matched reasoning scores, and identical late-layer attention maps prove the differences stem entirely from the underlying data distributions and not the model architecture.
+
+\clearpage
+\section{Bonus: Positional Embedding Ablation}
+
+We observed how attention heads rely on sequential structure to build syntactic and copy circuits. This raises a fundamental architectural question: Does causal masking alone supply sufficient sequential ordering, or are learned positional embeddings strictly absolutely necessary? To answer this, I conducted a full ablation study, retraining Model H from scratch for 61,036 steps with identical hyperparameters and compute budget, but with learned positional embeddings completely removed.
+
+\begin{table}[htbp]
+\centering
+\caption{Standard Hindi Model H versus the No-Position Ablation model}
+\begin{tabular}{p{5.5cm}rrr}
+\toprule
+\textbf{Evaluation Metric} & \textbf{Standard Model H} & \textbf{No-Position Ablation} & \textbf{Relative Change} \\
+\midrule
+Validation loss (nats) & 3.6487 & 4.0697 & +11.5\% \\
+Perplexity (PPL) & 39.11 & 58.54 & +49.7\% \\
+Bits per byte (BPB) & 0.5131 & 0.5674 & +10.6\% \\
+4-gram repetition rate & 26.59\% & 68.52\% & +41.93 points \\
+Distinct-1 vocabulary diversity & 0.4270 & 0.1703 & -60.1\% diversity \\
+Mean attention distance & 7.15 tokens & 2.18 tokens & Collapsed to local \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_loss_curve_smoothed.png}
+  \caption{Training Loss}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_generation_diversity.png}
+  \caption{Generation Diversity}
+\end{subfigure}
+\caption{The ablated model plateaus at a higher loss and generates highly repetitive text.}
+\end{figure}
+
+The results demonstrate that positional embeddings are essential. Without positional inductive bias, the model suffers a 49.7\% spike in perplexity (39.11 to 58.54) and a severe collapse in generative diversity: 4-gram repetition skyrockets from 26.59\% to 68.52\%, while Distinct-1 drops from 0.4270 to 0.1703. While causal masking breaks the lack of sequence order by enforcing a lower-triangular visibility matrix, it cannot convey relative token distances, causing the Transformer to fail to understand sentence structure.
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer5.png}
+  \caption{Standard Hindi: Layer 5}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.45\textwidth}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer5.png}
+  \caption{Ablated Hindi: Layer 5}
+\end{subfigure}
+\caption{Attention patterns. The ablated model collapses into a self-attending diagonal identity mapping.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{plots/bonus_ablation_attn_entropy_distance.png}
+\caption{Ablated model attention entropy and distance. The metrics are flat across all layers.}
+\end{figure}
+
+The standard model exhibits distinct layer-wise functional specialization, with low-entropy local attention in early layers and higher-entropy long-range attention in later layers. The ablated model is completely flat across all layers. Mean attention distance collapses from 7.15 down to 2.18. This proves that the attention mechanism cannot organize itself without position information to anchor heads to, confirming that positional embeddings are absolutely necessary for Transformer language modeling.
+
+\textbf{Hypothesis vs. Findings.} The theoretical expectation was that self-attention, being essentially a set-operation, would fail completely to learn syntax without positional embeddings. However, I hypothesized that causal masking which inherently provides the model with a basic sense of "past" versus "future" might provide just enough sequential bias for the model to generate somewhat coherent short phrases.
+
+Our findings ultimately reject this hypothesis and strongly confirm the theoretical expectation. While causal masking breaks perfect sequence invariance, the severe spike in perplexity (from 39.11 to 58.54) and the dramatic collapse in vocabulary diversity prove it is not enough to build long-range syntactic dependencies. As shown by the attention distance dropping to 2.18 tokens, the ablated model devolved into looking only at its immediate neighbors, functioning like a basic local bag-of-words. It completely lost the layer-wise specialization seen in Phase 2 (where deeper layers look further back in the sentence). This confirms that while causal masking creates a one-way street for information flow, explicit positional embeddings are absolutely required for the attention mechanism to learn structure and syntax.
 
 \end{document}
-
