@@ -65,7 +65,7 @@ Both models were independently finetuned on their respective reasoning datasets 
 
 ### Finetuning Loss Curves
 
-![Finetuning Loss Curves](phase3_plots/notebook_cell21_img1.png)
+![Finetuning Loss Curves](plots/phase3_finetuning_loss_curves.png)
 
 ---
 
@@ -79,17 +79,17 @@ We compared attention heatmaps at **Layer 0 (early)** and **Layer 5 (late)** for
 
 **Observation (Layer 5):** The pretrained late layer has a characteristic diagonal band (attending to recent context). After finetuning, certain heads show long-range attention spikes connecting the subject entities to each other across the full sentence, consistent with the model learning to "look back" and resolve the transitive comparison.
 
-Plots saved to `report/phase3_plots/hindi_attn_compare_layer0.png` and `hindi_attn_compare_layer5.png`.
+Plots saved to `report/plots/phase3_hindi_attn_compare_layer0.png` and `hindi_attn_compare_layer5.png`.
 
-![Hindi Layer 0](phase3_plots/hindi_attn_compare_layer0.png)
-![Hindi Layer 5](phase3_plots/hindi_attn_compare_layer5.png)
+![Hindi Layer 0](plots/phase3_hindi_attn_compare_layer0.png)
+![Hindi Layer 5](plots/phase3_hindi_attn_compare_layer5.png)
 
 ### Nepali: Pre vs Post Finetune
 
-Similar patterns observed. Note that the Nepali model's early layer attention (Layer 0) is nearly identical before and after finetuning, indicating that early-layer syntactic representations were already well-formed during pretraining and require little to no modification for the reasoning task. Conversely, the late layer (Layer 5) develops a significantly stronger binding between the question marker words ("को", "सँग") and the entity name tokens. Plots saved to `report/phase3_plots/nepali_attn_compare_layer0.png` and `nepali_attn_compare_layer5.png`.
+Similar patterns observed. Note that the Nepali model's early layer attention (Layer 0) is nearly identical before and after finetuning, indicating that early-layer syntactic representations were already well-formed during pretraining and require little to no modification for the reasoning task. Conversely, the late layer (Layer 5) develops a significantly stronger binding between the question marker words ("को", "सँग") and the entity name tokens. Plots saved to `report/plots/phase3_nepali_attn_compare_layer0.png` and `nepali_attn_compare_layer5.png`.
 
-![Nepali Layer 0](phase3_plots/nepali_attn_compare_layer0.png)
-![Nepali Layer 5](phase3_plots/nepali_attn_compare_layer5.png)
+![Nepali Layer 0](plots/phase3_nepali_attn_compare_layer0.png)
+![Nepali Layer 5](plots/phase3_nepali_attn_compare_layer5.png)
 
 ---
 

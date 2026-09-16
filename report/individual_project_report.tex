@@ -141,12 +141,12 @@ Both models were trained for 61,036 steps using AdamW with cosine learning rate 
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{hindi/loss_curve.png}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_loss_curve.png}
   \caption{Hindi (Model H) Training Loss}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{nepali/loss_curve.png}
+  \includegraphics[width=\textwidth]{plots/phase2_nepali_loss_curve.png}
   \caption{Nepali (Model L) Training Loss}
 \end{subfigure}
 \caption{Training and validation loss curves for both models across pretraining.}
@@ -154,7 +154,7 @@ Both models were trained for 61,036 steps using AdamW with cosine learning rate 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\textwidth]{comparison_loss_curve.png}
+\includegraphics[width=0.72\textwidth]{plots/phase2_comparison_loss_curve.png}
 \caption{Side-by-side validation loss comparison. Both models converge smoothly, with Nepali reaching slightly lower absolute loss.}
 \end{figure}
 
@@ -228,17 +228,17 @@ Attention heatmaps were extracted at Layer 0 (early), Layer 3 (middle), and Laye
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{hindi/attn_layer0.png}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer0.png}
   \caption{Hindi Layer 0}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{hindi/attn_layer3.png}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer3.png}
   \caption{Hindi Layer 3}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.31\textwidth}
-  \includegraphics[width=\textwidth]{hindi/attn_layer5.png}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer5.png}
   \caption{Hindi Layer 5}
 \end{subfigure}
 \caption{Hindi pretrained attention heatmaps across layers.}
@@ -246,7 +246,7 @@ Attention heatmaps were extracted at Layer 0 (early), Layer 3 (middle), and Laye
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{hindi/attn_entropy_distance.png}
+\includegraphics[width=0.7\textwidth]{plots/phase2_hindi_attn_entropy_distance.png}
 \caption{Attention entropy and mean distance across layers (Hindi). Early layers attend locally; deeper layers spread attention further.}
 \end{figure}
 
@@ -343,7 +343,7 @@ Tier 3 (Structural)  & 37.29\% & 36.22\% \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.82\textwidth]{../phase3/report/phase3_plots/notebook_cell21_img1.png}
+\includegraphics[width=0.82\textwidth]{plots/phase3_finetuning_loss_curves.png}
 \caption{Finetuning loss curves for both models across 3 epochs. Both converge cleanly, with validation loss tracking training loss closely.}
 \end{figure}
 
@@ -359,25 +359,25 @@ The near-identical Hindi vs. Nepali numbers confirm the structured circuits gene
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/hindi_attn_compare_layer0.png}
+\includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer0.png}
 \caption{Hindi model attention patterns at Layer 0 (Early) before and after finetuning.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/hindi_attn_compare_layer5.png}
+\includegraphics[width=\textwidth]{plots/phase3_hindi_attn_compare_layer5.png}
 \caption{Hindi model attention patterns at Layer 5 (Late) before and after finetuning.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/nepali_attn_compare_layer0.png}
+\includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer0.png}
 \caption{Nepali model attention patterns at Layer 0 (Early) before and after finetuning.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{../phase3/report/phase3_plots/nepali_attn_compare_layer5.png}
+\includegraphics[width=\textwidth]{plots/phase3_nepali_attn_compare_layer5.png}
 \caption{Nepali Layer 5 comparison (pre vs. post finetune). Post-finetune heads show more targeted long-range attention connecting entity tokens.}
 \end{figure}
 
@@ -414,13 +414,13 @@ Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{ablation/bonus_loss_curve_smoothed.png}
+\includegraphics[width=0.75\textwidth]{plots/bonus_ablation_loss_curve_smoothed.png}
 \caption{Training loss: standard model (converges to 3.65 nats) vs. ablated model (plateaus at 4.14--4.17 nats throughout all 61k steps).}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{ablation/generation_diversity_metrics.png}
+\includegraphics[width=0.75\textwidth]{plots/bonus_ablation_generation_diversity.png}
 \caption{Generation diversity metrics comparing standard vs. ablated model.}
 \end{figure}
 
@@ -435,12 +435,12 @@ Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{ablation/attn_layer0.png}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer0.png}
   \caption{Ablated model: Layer 0 attention}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.48\textwidth}
-  \includegraphics[width=\textwidth]{ablation/attn_layer5.png}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer5.png}
   \caption{Ablated model: Layer 5 attention}
 \end{subfigure}
 \caption{Attention patterns in the ablated model lacking positional embeddings. The model shows a lower-triangular pattern strictly constrained by the causal mask, completely lacking any diagonal or structural locality that would indicate tracking relative word positions.}
@@ -448,7 +448,7 @@ Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.73\textwidth]{ablation/attn_entropy_distance.png}
+\includegraphics[width=0.73\textwidth]{plots/bonus_ablation_attn_entropy_distance.png}
 \caption{Entropy and mean attention distance across layers. The ablated model has uniformly high entropy (no focused patterns) while the standard model shows clear layer-wise specialization.}
 \end{figure}
 

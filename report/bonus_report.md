@@ -19,7 +19,7 @@ To isolate the impact of position information, we retrained the Hindi model with
 
 ### Training Loss Curve (Bonus Ablation)
 
-![Bonus Ablation Loss Curve](ablation/bonus_loss_curve.png)
+![Bonus Ablation Loss Curve](plots/bonus_ablation_loss_curve.png)
 
 The ablated model's loss plateaus around **4.14–4.17 nats** throughout training (vs the standard model converging to 3.65 nats). It never decreases meaningfully because the self-attention mechanism, without any position signal, is completely permutation-invariant and cannot learn to distinguish "dog bites man" from "man bites dog."
 
@@ -29,7 +29,7 @@ The ablated model's loss plateaus around **4.14–4.17 nats** throughout trainin
 
 2. **Infinite Looping (Degeneration)**: Without position information, the model has no concept of "progress" through a sentence. `Distinct-1` vocabulary usage drops to 0.17 (from 0.43), and 4-gram repetition spikes to **68.52%**. The model gets stuck outputting the same high-probability token loops endlessly.
 
-3. **Attention Collapse**: In the ablation attention heatmaps (`report/ablation/`), the typical diagonal "local attention" lines completely vanish. Because every token lacks a position identifier, attention heads smear weights uniformly across the sequence or collapse into static patterns, destroying the model's ability to track syntax. See `report/ablation/attn_entropy_distance.png` for quantitative entropy and mean-distance analysis.
+3. **Attention Collapse**: In the ablation attention heatmaps (`report/plots/bonus_ablation_`), the typical diagonal "local attention" lines completely vanish. Because every token lacks a position identifier, attention heads smear weights uniformly across the sequence or collapse into static patterns, destroying the model's ability to track syntax. See `report/plots/bonus_ablation_attn_entropy_distance.png` for quantitative entropy and mean-distance analysis.
 
 4. **Generation Metrics Collapse**: ROUGE-L drops to 0.0000 (greedy mode), confirming the ablated model cannot produce even marginally coherent continuations of reference sentences. chrF at 11.28 indicates the character n-grams match only superficially (the model still generates plausible-looking Devanagari characters, just in completely random order).
 
@@ -39,6 +39,6 @@ The ablated model's loss plateaus around **4.14–4.17 nats** throughout trainin
 |:---:|:---:|
 | Diagonal focus, local syntactic binding | Lower-triangular causal constraint only, no structural locality |
 
-See `report/ablation/attn_layer0.png` and `attn_layer5.png`.
-![Ablated Layer 0](ablation/attn_layer0.png)
-![Ablated Layer 5](ablation/attn_layer5.png)
+See `report/plots/bonus_ablation_attn_layer0.png` and `attn_layer5.png`.
+![Ablated Layer 0](plots/bonus_ablation_attn_layer0.png)
+![Ablated Layer 5](plots/bonus_ablation_attn_layer5.png)

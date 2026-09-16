@@ -25,3 +25,5 @@ test_load.py
 *.zip
 .env
 hindi_scraper_data/
+checkpoints/
+checkpoints/
