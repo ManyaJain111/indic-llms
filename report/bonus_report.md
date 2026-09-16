@@ -9,11 +9,13 @@ To isolate the impact of position information, we retrained the Hindi model with
 | **Validation Loss** | 3.6487 | **4.0697** | +11.5% higher loss |
 | **Perplexity (PPL)** | 39.11 | **58.54** | **+49.7% degradation** |
 | **Bits-Per-Byte (BPB)** | 0.5131 | **0.5674** | +10.6% worse |
-| **BLEU-4** | 0.95 | 1.08 | Near-zero (vs greedy) |
+| **BLEU-4** | 0.95 | 1.08* | Near-zero (vs greedy) |
 | **chrF** | 12.21 | 11.28 | — |
 | **Distinct-1** | 0.4270 | **0.1703** | Vocabulary collapse |
 | **Distinct-2** | 0.62 | **0.2412** | — |
-| **4-gram Repetition** | 26.59% | **68.52%** | **Severe degeneration** |
+| **4-gram Repetition** | 26.59% | **68.52%** | Severe looping |
+
+*Note: While the ablated model technically scores a slightly higher BLEU-4 (1.08) compared to the standard model (0.95), both are effectively near-zero stochastic noise and do not represent a meaningful improvement in generation quality.*
 
 ### Training Loss Curve (Bonus Ablation)
 
@@ -35,7 +37,7 @@ The ablated model's loss plateaus around **4.14–4.17 nats** throughout trainin
 
 | Standard Hindi | Ablated Hindi (No Positions) |
 |:---:|:---:|
-| Diagonal focus, local syntactic binding | Uniform smearing, no structure |
+| Diagonal focus, local syntactic binding | Lower-triangular causal constraint only, no structural locality |
 
 See `report/ablation/attn_layer0.png` and `attn_layer5.png`.
 ![Ablated Layer 0](ablation/attn_layer0.png)
