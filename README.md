@@ -103,38 +103,16 @@ cd individual-project-ManyaJain111
 pip install -r requirements.txt
 ```
 
-### 2. Dataset Collection & Tokenizer Training (Phase 1)
-To collect and preprocess the corpora and train the custom BPE tokenizers:
+> **Branch Organization Note**: In accordance with submission requirements, this branch (`Phase-3`) contains the final consolidated Phase 3 and Bonus Ablation codebase, report, and metrics. Complete source pipelines for Phase 1 (scraping & tokenizers) and Phase 2 (pretraining & benchmark suites) are archived in their respective branches `Phase-1` and `Phase-2`.
+
+### 2. Phase 1 & 2 Historical Pipelines (Archived on `Phase-1` and `Phase-2`)
+The data collection, custom BPE training, and pretraining scripts reside on their dedicated phase branches:
 ```bash
-# Hindi
-python hindi/data_collection/collect_hindi_wiki.py
-python hindi/preprocessing/clean_corpus.py
-python hindi/tokenizer_training/train_tokenizer.py
+# Checkout Phase 1 branch for crawlers & tokenizer trainers
+git checkout Phase-1
 
-# Nepali
-python nepali/data_collection/wikepedia_scraper.py
-python nepali/preprocessing/clean_corpus.py
-python nepali/tokenizer_training/train_tokenizer.py
-```
-
-### 3. Model Pretraining (Phase 2)
-To run the pretraining loop locally or on GPU:
-```bash
-# Hindi Model H Pretraining
-python hindi/train/train.py --config hindi/config/model_h_config.json
-
-# Nepali Model L Pretraining
-python nepali/train/train.py --config nepali/config/model_l_config.json
-```
-
-### 4. Evaluation & Diagnostics (Phase 2)
-To compute Perplexity, Bits-per-Byte (BPB), BLEU, chrF, ROUGE-L, Distinct-N, and extract attention heatmaps:
-```bash
-python phase2/src/evaluate.py \
-    --model_path checkpoints/phase3/checkpoints/pretrained/hindi/model_final.pt \
-    --tokenizer_path phase2/tokenizers/hindi_tokenizer_16000.json \
-    --test_data data/hindi_test.bin \
-    --output_dir report/hindi/
+# Checkout Phase 2 branch for pretraining loops & evaluation scripts
+git checkout Phase-2
 ```
 
 ### 5. Reasoning Dataset Generation & Finetuning (Phase 3)
@@ -166,18 +144,27 @@ To train and evaluate the ablation model where positional embeddings are strippe
 
 ### Reasoning Finetuning Results (Phase 3)
 
-| Metric | Model H (Hindi) | Model L (Nepali) |
-| :--- | :--- | :--- |
-| **Pretrained Baseline Accuracy** | 1.04% | 1.93% |
-| **Finetuned Full Test Accuracy** | **27.26%** | **26.67%** |
-| **Finetuned Easy Split Accuracy**| **50.00%** | — |
+### Reasoning Finetuning Results (Phase 3)
+
+We report both **Strict Exact Match** (literal string equality $pred = target$) and **Answer Substring Match** ($target \in pred$):
+
+| Metric | Model H (Hindi) | Model L (Nepali) | Evaluation Methodology / Notes |
+| :--- | :--- | :--- | :--- |
+| **Strict Exact Match (Pretrained)** | 0.00% | 0.00% | Generates unconstrained sequence |
+| **Strict Exact Match (Finetuned)** | 0.00% | 0.00% | Model generates full sentence continuation |
+| **Answer Substring Match (Pretrained)** | 1.04% | 1.93% | Pretrained baseline chance rate |
+| **Answer Substring Match (Finetuned)** | **27.26%** | **26.67%** | Structured multi-hop reasoning |
+| **Simplified Prompts (60-item test)** | **50.00%** | — | Direct comparative 2-choice questions |
+
+> **Note on Exact Match vs. Substring Match**: As documented in `report/eval_results.json`, literal exact string match is 0.0% because unconstrained autoregressive decoders generate full sentence completions (e.g., `उत्तर: ओडिशा की आय अधिक है।`) rather than terminating immediately after the isolated entity name (`ओडिशा`). Under substring containment, finetuning lifts answer extraction from ~1% to ~27% overall.
 
 ### Bonus Ablation Study (Impact of Positional Embeddings)
 
-| Metric | Standard Hindi (With Positions) | Ablated Model (No Positions) | Relative Impact |
+| Metric | Standard Hindi (With Positions) | Ablated Model (No Positions) | Relative Impact & Analysis |
 | :--- | :--- | :--- | :--- |
 | **Perplexity (PPL)** | 39.11 | **58.54** | **+49.7% degradation** |
-| **Validation Loss** | 3.6487 | **4.0697** | Higher cross-entropy |
-| **4-gram Repetition** | 26.59% | **68.52%** | **Severe degeneration** |
-| **Distinct-1** | 0.4270 | **0.1703** | Vocabulary collapse |
-| **Attention Pattern**| Structured contextual attention | Self-attending diagonal collapse | Complete loss of relational context |
+| **Validation Loss** | 3.6487 | **4.0697** | Higher cross-entropy loss |
+| **4-gram Repetition** | 26.59% | **68.52%** | **Severe looping degeneration** |
+| **Distinct-1** | 0.4270 | **0.1703** | Severe vocabulary collapse |
+| **Layer 0 Attention** | Broad contextual diffusion | Sharp diagonal collapse | Model collapses to self-attention identity |
+| **Avg Attention Distance**| 7.15 tokens (broad) | 2.18 tokens (ultra-local) | Cannot attend across long distances |
