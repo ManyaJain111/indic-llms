@@ -1,170 +1,174 @@
 # Language Models and Agents — Individual Project
-**Student**: Manya Jain  
-**Repository**: [Language Models and Agents — Monolingual Hindi & Nepali Transformers](https://github.com/manyajain111/individual-project-ManyaJain111)  
-**Model Hub (Hugging Face)**: [manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project)
+
+**Manya Jain**
+
+- Code: [github.com/manyajain111/individual-project-ManyaJain111](https://github.com/manyajain111/individual-project-ManyaJain111)
+- Checkpoints: [huggingface.co/manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project)
 
 ---
 
-## Executive Summary
-This repository contains the end-to-end implementation for building, training, and evaluating two independent, monolingual autoregressive Transformer language models implemented from scratch in PyTorch (without using Hugging Face `transformers` or `torch.nn.Transformer` primitives):
-- **Model H (Higher-resource)**: Hindi (~16,000 subword BPE vocabulary, 6 layers, 8 heads, $d_{model}=256$, $d_{ff}=1024$, context length 256, ~24.6M parameters)
-- **Model L (Lower-resource)**: Nepali (~16,000 character/byte-level BPE vocabulary, 6 layers, 8 heads, $d_{model}=256$, $d_{ff}=1024$, context length 256, ~24.6M parameters)
 
-The project spans:
-1. **Phase 1**: Web crawling, dataset collection, cleaning/preprocessing, and custom BPE tokenizer training.
-2. **Phase 2**: First-principles GPT-style pretraining, evaluation (Perplexity, Bits-per-Byte, BLEU, chrF, ROUGE-L, repetition diagnostics), and multi-head attention analysis.
-3. **Phase 3**: Grammar-based programmatic reasoning dataset synthesis, instruction/reasoning finetuning, transitive logic evaluation, and pre- vs. post-finetuning attention comparison.
-4. **Bonus Task**: Positional embedding ablation study investigating representational collapse and degenerate sequence generation without positional inductive bias.
+| | Model H | Model L |
+| :--- | :--- | :--- |
+| Language | Hindi (higher-resource) | Nepali (lower-resource) |
+| Vocab | ~16k BPE | ~16k BPE |
+| Layers / heads | 6 / 8 | 6 / 8 |
+| d_model / d_ff | 256 / 1024 | 256 / 1024 |
+| Context length | 256 | 256 |
+| Parameters | ~24.6M | ~24.6M |
+
+The work is split into three phases plus a bonus experiment:
+
+1. **Phase 1** — crawling and cleaning the corpora, then training the BPE tokenizers.
+2. **Phase 2** — pretraining both models and evaluating them (perplexity, bits-per-byte, BLEU, chrF, ROUGE-L, repetition stats) plus a look at what the attention heads are doing.
+3. **Phase 3** — generating a synthetic reasoning dataset with a grammar, finetuning both models on it, and testing whether they can do transitive comparisons. I also compared attention maps before and after finetuning.
+4. **Bonus** — retrained the Hindi model with the positional embeddings removed, to see how badly it breaks.
 
 ---
 
-### Repository Structure
+## Repository layout
 
 ```
-├── data/                                 # Reasoning datasets
-│   ├── hi/                               # Hindi train/val/test splits & stats
-│   ├── ne/                               # Nepali train/val/test splits & stats
-│   └── simple/                           # Simplified evaluation prompts
-├── notebooks/                            # All project Jupyter notebooks
-│   ├── phase3_reasoning_finetuning.ipynb # Reasoning finetuning loop & evaluation
-│   ├── bonus_training_final.ipynb        # Positional embedding ablation training
-│   └── bonus_eval_final.ipynb            # Ablation evaluation & metrics extraction
-├── scripts/                              # Core Python scripts
-│   ├── generate_reasoning_dataset.py     # Programmatic grammar-based reasoning generator
-│   ├── generate_easy_test.py             # 60-item simplified benchmark generator
-│   ├── vocab_hi.py & vocab_ne.py         # Hindi and Nepali lexicon modules
-│   └── generate_all_plots.py             # Multi-head attention & entropy plotting toolkit
-├── report/                               # Reports, metrics, logs, and plots
-│   ├── individual_project_report.pdf     # Consolidated final PDF submission report
-│   ├── individual_project_report.tex     # Master LaTeX report source
-│   ├── phase3_report.md                  # Detailed Phase 3 report
-│   ├── bonus_report.md                   # Detailed Bonus Ablation report
-│   ├── eval_results.json                 # Comprehensive reasoning evaluation metrics
-│   ├── finetune_log_combined.csv         # Finetuning loss logs
-│   ├── bonus_train_log.csv               # Ablation training loss logs
-│   └── plots/                            # All plots clearly named
-│       ├── phase2_hindi_loss_curve.png
-│       ├── phase2_nepali_loss_curve.png
-│       ├── phase2_comparison_loss_curve.png
-│       ├── phase2_hindi_attn_layer*.png
-│       ├── phase2_nepali_attn_layer*.png
-│       ├── phase3_finetuning_loss_curves.png
-│       ├── phase3_hindi_attn_compare_layer*.png
-│       ├── phase3_nepali_attn_compare_layer*.png
-│       ├── bonus_ablation_loss_curve*.png
-│       ├── bonus_ablation_attn_layer*.png
-│       └── bonus_ablation_generation_diversity.png
+├── data/                                 # reasoning datasets
+│   ├── hi/                               # Hindi train/val/test + stats
+│   ├── ne/                               # Nepali train/val/test + stats
+│   └── simple/                           # the easier eval prompts
+├── notebooks/
+│   ├── phase3_reasoning_finetuning.ipynb # finetuning + eval
+│   ├── bonus_training_final.ipynb        # ablation training
+│   └── bonus_eval_final.ipynb            # ablation eval
+├── scripts/
+│   ├── generate_reasoning_dataset.py     # grammar-based dataset generator
+│   ├── generate_easy_test.py             # 60-item simplified benchmark
+│   ├── vocab_hi.py, vocab_ne.py          # Hindi and Nepali lexicons
+│   └── generate_all_plots.py             # attention + entropy plots
+└── report/
+    ├── individual_project_report.pdf     # final submission report
+    ├── individual_project_report.tex     # LaTeX source
+    ├── phase3_report.md
+    ├── bonus_report.md
+    ├── eval_results.json                 # all reasoning eval numbers
+    ├── finetune_log_combined.csv
+    ├── bonus_train_log.csv
+    └── plots/                            # named by phase, e.g.
+        ├── phase2_hindi_loss_curve.png
+        ├── phase2_*_attn_layer*.png
+        ├── phase3_finetuning_loss_curves.png
+        ├── phase3_*_attn_compare_layer*.png
+        └── bonus_ablation_*.png
 ```
 
----
-
-## Model Checkpoints & Training Logs
-
-All finetuned models, bonus ablation checkpoints, and logs are hosted on [Hugging Face Hub: manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project):
-
-### 1. Pretrained Checkpoints (Phase 2)
-Hosted on [Hugging Face Hub: manyajain111/lma-phase2](https://huggingface.co/manyajain111/lma-phase2):
-- **Hindi Pretrained Model H (`model_final.pt`)**: [`hindi/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/hindi/model_final.pt)
-- **Nepali Pretrained Model L (`model_final.pt`)**: [`nepali/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/nepali/model_final.pt)
-- **Pretraining Logs**: `hindi/train/train_log.csv` and `nepali/train/train_log.csv` on the repo; also on HF at [`logs/hindi_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/hindi_pretrain_log.csv) / [`logs/nepali_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/nepali_pretrain_log.csv).
-
-### 2. Finetuned Reasoning Checkpoints (Phase 3)
-Hosted on [Hugging Face Hub: manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project):
-- **Hindi Finetuned Model**: [`finetuned/hindi_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/hindi_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/hindi/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/hindi))
-- **Nepali Finetuned Model**: [`finetuned/nepali_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/nepali_model_finetuned.pt) (also in [`checkpoints/phase3/finetuned/nepali/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/nepali))
-- **Epoch Checkpoints (Hindi)**: [Epoch 1](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_1.pt) · [Epoch 2](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_2.pt) · [Epoch 3](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_3.pt)
-- **Finetuning Training Logs**: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv)
-
-### 3. Bonus Ablation Checkpoints (No Positional Embeddings)
-All intermediate training checkpoints, final ablated weights, metrics, and visualization plots are hosted in the [`ablation/` directory on Hugging Face](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/ablation):
-- **Final Ablated Checkpoint**: [`ablation/model_ablated.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated.pt)
-- **Step 10,000**: [`ablation/model_ablated_step_10000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_10000.pt)
-- **Step 20,000**: [`ablation/model_ablated_step_20000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_20000.pt)
-- **Step 30,000**: [`ablation/model_ablated_step_30000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_30000.pt)
-- **Step 40,000**: [`ablation/model_ablated_step_40000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_40000.pt)
-- **Step 50,000**: [`ablation/model_ablated_step_50000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_50000.pt)
-- **Step 60,000**: [`ablation/model_ablated_step_60000.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_60000.pt)
-- **Ablation Training Log**: [`ablation/bonus_ablation_train_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/bonus_ablation_train_log.csv) (also at [`logs/bonus_ablation_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/bonus_ablation_log.csv))
-- **Evaluation Results & Metrics**: [`ablation/results.json`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/results.json)
-- **Diagnostic Plots**:
-  - [Loss Curve (`bonus_loss_curve.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/bonus_loss_curve.png)
-  - [Attention Diagnostics (`attn_entropy_distance.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/attn_entropy_distance.png)
-  - [Generation & Diversity Metrics (`generation_diversity_metrics.png`)](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/generation_diversity_metrics.png)
+**A note on branches**: this branch (`Phase-3`) holds the final Phase 3 and bonus code, report and metrics, as the submission asked for. The Phase 1 scrapers and tokenizer trainers live on `Phase-1`, and the Phase 2 pretraining and eval scripts live on `Phase-2`.
 
 ---
 
-## Step-by-Step Reproduction Guide
+## Checkpoints and logs
 
-### 1. Environment Setup
-Clone the repository and install the verified dependencies:
+The `.pt` files are too big for git, so they are on the Hugging Face Hub.
+
+**Phase 2 pretrained** ([manyajain111/lma-phase2](https://huggingface.co/manyajain111/lma-phase2)):
+
+- Hindi: [`hindi/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/hindi/model_final.pt)
+- Nepali: [`nepali/model_final.pt`](https://huggingface.co/manyajain111/lma-phase2/blob/main/nepali/model_final.pt)
+- Logs: `hindi/train/train_log.csv` and `nepali/train/train_log.csv` in the repo, mirrored on HF as [`logs/hindi_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/hindi_pretrain_log.csv) and [`logs/nepali_pretrain_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/nepali_pretrain_log.csv)
+
+**Phase 3 finetuned** ([manyajain111/LMA-Individual-Project](https://huggingface.co/manyajain111/LMA-Individual-Project)):
+
+- Hindi: [`finetuned/hindi_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/hindi_model_finetuned.pt)
+- Nepali: [`finetuned/nepali_model_finetuned.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/finetuned/nepali_model_finetuned.pt)
+- Per-epoch Hindi checkpoints: [epoch 1](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_1.pt), [epoch 2](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_2.pt), [epoch 3](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/checkpoints/phase3/finetuned/hindi/model_finetuned_epoch_3.pt)
+- Both models are also mirrored under [`checkpoints/phase3/finetuned/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/checkpoints/phase3/finetuned/hindi)
+- Log: [`logs/phase3_reasoning_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/logs/phase3_reasoning_log.csv)
+
+**Bonus ablation** (everything under [`ablation/`](https://huggingface.co/manyajain111/LMA-Individual-Project/tree/main/ablation)):
+
+- Final weights: [`ablation/model_ablated.pt`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated.pt)
+- Intermediate checkpoints every 10k steps: [10k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_10000.pt) · [20k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_20000.pt) · [30k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_30000.pt) · [40k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_40000.pt) · [50k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_50000.pt) · [60k](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/model_ablated_step_60000.pt)
+- Log: [`ablation/bonus_ablation_train_log.csv`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/bonus_ablation_train_log.csv)
+- Metrics: [`ablation/results.json`](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/results.json)
+- Plots: [loss curve](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/bonus_loss_curve.png) · [attention entropy and distance](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/attn_entropy_distance.png) · [generation diversity](https://huggingface.co/manyajain111/LMA-Individual-Project/blob/main/ablation/plots/generation_diversity_metrics.png)
+
+---
+
+## How to reproduce
+
+### Setup
+
 ```bash
 git clone https://github.com/manyajain111/individual-project-ManyaJain111.git
 cd individual-project-ManyaJain111
 pip install -r requirements.txt
 ```
 
-> **Branch Organization Note**: In accordance with submission requirements, this branch (`Phase-3`) contains the final consolidated Phase 3 and Bonus Ablation codebase, report, and metrics. Complete source pipelines for Phase 1 (scraping & tokenizers) and Phase 2 (pretraining & benchmark suites) are archived in their respective branches `Phase-1` and `Phase-2`.
+### Phases 1 and 2
 
-### 2. Phase 1 & 2 Historical Pipelines (Archived on `Phase-1` and `Phase-2`)
-The data collection, custom BPE training, and pretraining scripts reside on their dedicated phase branches:
+These are on their own branches:
+
 ```bash
-# Checkout Phase 1 branch for crawlers & tokenizer trainers
-git checkout Phase-1
-
-# Checkout Phase 2 branch for pretraining loops & evaluation scripts
-git checkout Phase-2
+git checkout Phase-1   # crawlers and tokenizer training
+git checkout Phase-2   # pretraining loop and eval scripts
 ```
 
-### 5. Reasoning Dataset Generation & Finetuning (Phase 3)
-1. **Generate Reasoning Dataset**:
-   ```bash
-   python scripts/generate_reasoning_dataset.py
-   python scripts/generate_easy_test.py
-   ```
-   This generates disjoint entity splits in `data/hi/` and `data/ne/` with zero leakage across train/val/test.
+### Phase 3: reasoning data and finetuning
 
-2. **Finetune the Models**:
-   Open and execute `notebooks/phase3_reasoning_finetuning.ipynb` on Kaggle or a CUDA-enabled GPU.
+Generate the datasets:
 
-### 6. Bonus: Positional Embedding Ablation
-To train and evaluate the ablation model where positional embeddings are stripped:
-1. Run `notebooks/bonus_training_final.ipynb` to train the ablated model for 60,000 steps (checkpoints are saved every 10,000 steps with full optimizer resumability).
-2. Run `notebooks/bonus_eval_final.ipynb` to compute ablation PPL, BPB, 4-gram repetition rate, and attention collapse heatmaps.
+```bash
+python scripts/generate_reasoning_dataset.py
+python scripts/generate_easy_test.py
+```
+
+This writes the splits into `data/hi/` and `data/ne/`. The entity sets across train, val and test are disjoint, so nothing leaks between splits.
+
+Then run `notebooks/phase3_reasoning_finetuning.ipynb`. I ran it on Kaggle; any CUDA GPU should work.
+
+### Bonus: positional embedding ablation
+
+1. `notebooks/bonus_training_final.ipynb` trains the model with positional embeddings stripped out, for 60,000 steps. It checkpoints every 10,000 steps and saves the optimizer state, so you can resume if the session dies (which it did, twice).
+2. `notebooks/bonus_eval_final.ipynb` computes the PPL, BPB, 4-gram repetition rate and the attention heatmaps.
 
 ---
 
-## Key Experimental Results Summary
+## Results
 
-### Pretraining Results (Phase 2)
+### Pretraining (Phase 2)
 
-| Model | Language | Vocab Size | Validation Loss | Perplexity (PPL) | Bits-per-Byte (BPB) |
+| Model | Language | Vocab | Val loss | PPL | BPB |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Model H** | Hindi | 16,000 | 3.6487 | **39.11** | 0.5131 |
-| **Model L** | Nepali | 16,000 | 3.5210 | **33.82** | **0.3939** |
+| H | Hindi | 16,000 | 3.6487 | 39.11 | 0.5131 |
+| L | Nepali | 16,000 | 3.5210 | 33.82 | 0.3939 |
 
-### Reasoning Finetuning Results (Phase 3)
+Nepali came out with the lower perplexity, which surprised me given it's the lower-resource language. I think this is mostly a property of the corpus rather than the model: the Nepali data I could crawl is narrower in domain and more repetitive, so it's easier to predict. The BPB gap points the same way. This is worth keeping in mind before reading the numbers as "Nepali is easier".
 
-### Reasoning Finetuning Results (Phase 3)
+### Reasoning finetuning (Phase 3)
 
-We report both **Strict Exact Match** (literal string equality $pred = target$) and **Answer Substring Match** ($target \in pred$):
+I report two numbers. **Strict exact match** is literal string equality between prediction and target. **Substring match** checks whether the target answer appears anywhere in the generated text.
 
-| Metric | Model H (Hindi) | Model L (Nepali) | Evaluation Methodology / Notes |
+| Metric | Model H (Hindi) | Model L (Nepali) |
+| :--- | :--- | :--- |
+| Strict exact match, pretrained | 0.00% | 0.00% |
+| Strict exact match, finetuned | 0.00% | 0.00% |
+| Substring match, pretrained | 1.04% | 1.93% |
+| Substring match, finetuned | 27.26% | 26.67% |
+| Simplified 60-item test | 50.00% | — |
+
+Strict exact match is 0% everywhere, and that's a measurement artefact rather than a total failure. The model is an unconstrained autoregressive decoder, so it keeps generating a full sentence instead of stopping after the entity name. It produces `उत्तर: ओडिशा की आय अधिक है।` when the target is just `ओडिशा`. The string never matches even when the answer is right. The raw generations are in `report/eval_results.json` if you want to check this.
+
+Under substring match, finetuning takes both models from roughly chance (~1-2%) to around 27%. That's a real gain but still well below what I'd want, and the 50% on the simplified two-choice test is exactly chance, so I can't claim the Hindi model is genuinely doing the comparison there. At 24.6M parameters on synthetic data this is about what I'd expect; a proper constrained decoder or a scoring-based eval would give a much cleaner read on what the model actually knows.
+
+### Bonus: what happens without positional embeddings
+
+I retrained the Hindi model with the positional embedding table removed entirely, keeping everything else identical.
+
+| Metric | With positions | Without positions | Change |
 | :--- | :--- | :--- | :--- |
-| **Strict Exact Match (Pretrained)** | 0.00% | 0.00% | Generates unconstrained sequence |
-| **Strict Exact Match (Finetuned)** | 0.00% | 0.00% | Model generates full sentence continuation |
-| **Answer Substring Match (Pretrained)** | 1.04% | 1.93% | Pretrained baseline chance rate |
-| **Answer Substring Match (Finetuned)** | **27.26%** | **26.67%** | Structured multi-hop reasoning |
-| **Simplified Prompts (60-item test)** | **50.00%** | — | Direct comparative 2-choice questions |
+| PPL | 39.11 | 58.54 | +49.7% |
+| Val loss | 3.6487 | 4.0697 | worse |
+| 4-gram repetition | 26.59% | 68.52% | much worse |
+| Distinct-1 | 0.4270 | 0.1703 | much worse |
+| Avg attention distance | 7.15 tokens | 2.18 tokens | far more local |
+| Layer 0 attention | spread out | sharp diagonal | collapsed |
 
-> **Note on Exact Match vs. Substring Match**: As documented in `report/eval_results.json`, literal exact string match is 0.0% because unconstrained autoregressive decoders generate full sentence completions (e.g., `उत्तर: ओडिशा की आय अधिक है।`) rather than terminating immediately after the isolated entity name (`ओडिशा`). Under substring containment, finetuning lifts answer extraction from ~1% to ~27% overall.
+The perplexity hit is the least interesting part. The generation quality is where it really shows: the ablated model loops, repeating the same 4-grams two thirds of the time, and its distinct-1 drops by more than half. The attention plots explain why. Without positional information, layer 0 collapses onto the diagonal and the model attends mostly to the current token, so average attention distance falls from about 7 tokens to about 2. It can still learn which tokens co-occur, but it has no way to represent the order they came in, so it can't tell a repeat from a continuation.
 
-### Bonus Ablation Study (Impact of Positional Embeddings)
-
-| Metric | Standard Hindi (With Positions) | Ablated Model (No Positions) | Relative Impact & Analysis |
-| :--- | :--- | :--- | :--- |
-| **Perplexity (PPL)** | 39.11 | **58.54** | **+49.7% degradation** |
-| **Validation Loss** | 3.6487 | **4.0697** | Higher cross-entropy loss |
-| **4-gram Repetition** | 26.59% | **68.52%** | **Severe looping degeneration** |
-| **Distinct-1** | 0.4270 | **0.1703** | Severe vocabulary collapse |
-| **Layer 0 Attention** | Broad contextual diffusion | Sharp diagonal collapse | Model collapses to self-attention identity |
-| **Avg Attention Distance**| 7.15 tokens (broad) | 2.18 tokens (ultra-local) | Cannot attend across long distances |
+Full write-ups for Phase 3 and the ablation are in `report/phase3_report.md` and `report/bonus_report.md`, and everything is consolidated in `report/individual_project_report.pdf`.
