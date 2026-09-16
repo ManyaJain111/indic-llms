@@ -86,7 +86,7 @@ Plots saved to `report/phase3_plots/hindi_attn_compare_layer0.png` and `hindi_at
 
 ### Nepali: Pre vs Post Finetune
 
-Similar patterns observed. The Nepali model's early layer attention (Layer 0) shifts toward the numeric value tokens and the entity names after finetuning. The late layer (Layer 5) develops a stronger binding between the question marker words ("को", "सँग") and the entity name tokens. Plots saved to `report/phase3_plots/nepali_attn_compare_layer0.png` and `nepali_attn_compare_layer5.png`.
+Similar patterns observed. Note that the Nepali model's early layer attention (Layer 0) is nearly identical before and after finetuning, indicating that early-layer syntactic representations were already well-formed during pretraining and require little to no modification for the reasoning task. Conversely, the late layer (Layer 5) develops a significantly stronger binding between the question marker words ("को", "सँग") and the entity name tokens. Plots saved to `report/phase3_plots/nepali_attn_compare_layer0.png` and `nepali_attn_compare_layer5.png`.
 
 ![Nepali Layer 0](phase3_plots/nepali_attn_compare_layer0.png)
 ![Nepali Layer 5](phase3_plots/nepali_attn_compare_layer5.png)
