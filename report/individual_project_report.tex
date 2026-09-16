@@ -435,21 +435,39 @@ Distinct-1             & 0.4270 & 0.1703 & vocab collapse \\
 \begin{figure}[H]
 \centering
 \begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer0.png}
+  \caption{Standard Hindi: Layer 0 attention}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer0.png}
-  \caption{Ablated model: Layer 0 attention}
+  \caption{Ablated Hindi (No Pos-Emb): Layer 0 attention}
+\end{subfigure}
+\vskip 6pt
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_layer5.png}
+  \caption{Standard Hindi: Layer 5 attention}
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.48\textwidth}
   \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_layer5.png}
-  \caption{Ablated model: Layer 5 attention}
+  \caption{Ablated Hindi (No Pos-Emb): Layer 5 attention}
 \end{subfigure}
-\caption{Attention patterns in the ablated model lacking positional embeddings. The model shows a lower-triangular pattern strictly constrained by the causal mask, completely lacking any diagonal or structural locality that would indicate tracking relative word positions.}
+\caption{Visual comparison of attention patterns between the Standard Model (with positional embeddings) and the Ablated Model (without positional embeddings). While the standard model learns rich contextual representations across layers, the ablated model collapses into a self-attending diagonal identity mapping, failing to establish relational context.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.73\textwidth]{plots/bonus_ablation_attn_entropy_distance.png}
-\caption{Entropy and mean attention distance across layers. The ablated model has uniformly high entropy (no focused patterns) while the standard model shows clear layer-wise specialization.}
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/phase2_hindi_attn_entropy_distance.png}
+  \caption{Standard Model: Entropy \& Distance}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/bonus_ablation_attn_entropy_distance.png}
+  \caption{Ablated Model: Entropy \& Distance}
+\end{subfigure}
+\caption{Entropy and mean attention distance across layers for Standard vs. Ablated models. The standard model exhibits distinct layer-wise functional specialization, whereas the ablated model demonstrates flattened metric profiles due to the lack of sequence order representation.}
 \end{figure}
 
 The standard model has clear structure: low-entropy local attention in early layers, higher-entropy long-range attention in later layers. The ablated model is flat across all layers, confirming the attention mechanism cannot organize itself without position information to anchor heads to.

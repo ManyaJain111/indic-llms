@@ -73,13 +73,13 @@ def plot_attention_comparison_multihead(tok, pre_model, ft_model, text, lang, la
         
     plt.suptitle(f'{lang} {layer_str} Attention: Pretrained vs Finetuned', fontsize=15, fontweight='bold', y=1.02)
     plt.tight_layout()
-    filename = f"{lang.lower()}_attn_compare_layer{'0' if is_early else '5'}.png"
-    os.makedirs('phase3/report/phase3_plots', exist_ok=True)
-    plt.savefig(f'phase3/report/phase3_plots/{filename}', dpi=300, bbox_inches='tight')
+    filename = f"phase3_{lang.lower()}_attn_compare_layer{'0' if is_early else '5'}.png"
+    os.makedirs('report/plots', exist_ok=True)
+    plt.savefig(f'report/plots/{filename}', dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Saved phase3/report/phase3_plots/{filename}")
+    print(f"Saved report/plots/{filename}")
 
-def plot_attention_multihead(tok, model, text, layer_idx=0, save_dir='report/ablation', title_prefix='Ablated'):
+def plot_attention_multihead(tok, model, text, layer_idx=0, prefix='phase2_hindi', title_prefix='Standard Hindi'):
     tokens = tok.encode(text)
     input_ids = torch.tensor([tokens])
     model.eval()
@@ -103,11 +103,11 @@ def plot_attention_multihead(tok, model, text, layer_idx=0, save_dir='report/abl
         
     plt.suptitle(f'{title_prefix} Layer {layer_idx}', fontsize=15, fontweight='bold', y=1.05)
     plt.tight_layout()
-    filename = f"attn_layer{layer_idx}.png"
-    os.makedirs(save_dir, exist_ok=True)
-    plt.savefig(f'{save_dir}/{filename}', dpi=300, bbox_inches='tight')
+    filename = f"{prefix}_attn_layer{layer_idx}.png"
+    os.makedirs('report/plots', exist_ok=True)
+    plt.savefig(f'report/plots/{filename}', dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Saved {save_dir}/{filename}")
+    print(f"Saved report/plots/{filename}")
 
 def calc_entropy_distance(model, tok, text):
     tokens = tok.encode(text)
@@ -135,7 +135,7 @@ def calc_entropy_distance(model, tok, text):
             
     return entropy, distance
 
-def plot_entropy_distance(entropy, distance, save_dir='report/hindi', prefix='Standard Hindi'):
+def plot_entropy_distance(entropy, distance, filename='phase2_hindi_attn_entropy_distance.png', prefix='Standard Hindi'):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     sns.heatmap(entropy, annot=True, fmt=".2f", cmap="viridis", ax=ax1)
@@ -149,10 +149,10 @@ def plot_entropy_distance(entropy, distance, save_dir='report/hindi', prefix='St
     ax2.set_ylabel('Layer', fontsize=11)
     
     plt.tight_layout()
-    os.makedirs(save_dir, exist_ok=True)
-    plt.savefig(f'{save_dir}/attn_entropy_distance.png', dpi=300, bbox_inches='tight')
+    os.makedirs('report/plots', exist_ok=True)
+    plt.savefig(f'report/plots/{filename}', dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Saved {save_dir}/attn_entropy_distance.png")
+    print(f"Saved report/plots/{filename}")
 
 def create_model_from_sd(sd):
     vocab_size, d_model = sd['token_emb.weight'].shape
@@ -179,11 +179,11 @@ def main():
     plot_attention_comparison_multihead(tok_h, model_h_pre, model_h_ft, sample_text_h, "Hindi", layer_idx=0, is_early=True)
     plot_attention_comparison_multihead(tok_h, model_h_pre, model_h_ft, sample_text_h, "Hindi", layer_idx=5, is_early=False)
     
-    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=0, save_dir='report/hindi', title_prefix='Standard Hindi')
-    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=3, save_dir='report/hindi', title_prefix='Standard Hindi')
-    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=5, save_dir='report/hindi', title_prefix='Standard Hindi')
+    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=0, prefix='phase2_hindi', title_prefix='Standard Hindi')
+    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=3, prefix='phase2_hindi', title_prefix='Standard Hindi')
+    plot_attention_multihead(tok_h, model_h_pre, sample_text_h, layer_idx=5, prefix='phase2_hindi', title_prefix='Standard Hindi')
     ent_std_h, dist_std_h = calc_entropy_distance(model_h_pre, tok_h, sample_text_h)
-    plot_entropy_distance(ent_std_h, dist_std_h, save_dir='report/hindi', prefix='Standard Hindi')
+    plot_entropy_distance(ent_std_h, dist_std_h, filename='phase2_hindi_attn_entropy_distance.png', prefix='Standard Hindi')
     
     print("\n--- 2. Nepali Models ---")
     tok_n = TokenizerWrapper('checkpoints/phase3/checkpoints/pretrained/nepali/tokenizer.json')
@@ -199,22 +199,22 @@ def main():
     plot_attention_comparison_multihead(tok_n, model_n_pre, model_n_ft, sample_text_n, "Nepali", layer_idx=0, is_early=True)
     plot_attention_comparison_multihead(tok_n, model_n_pre, model_n_ft, sample_text_n, "Nepali", layer_idx=5, is_early=False)
     
-    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=0, save_dir='report/nepali', title_prefix='Standard Nepali')
-    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=3, save_dir='report/nepali', title_prefix='Standard Nepali')
-    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=5, save_dir='report/nepali', title_prefix='Standard Nepali')
+    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=0, prefix='phase2_nepali', title_prefix='Standard Nepali')
+    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=3, prefix='phase2_nepali', title_prefix='Standard Nepali')
+    plot_attention_multihead(tok_n, model_n_pre, sample_text_n, layer_idx=5, prefix='phase2_nepali', title_prefix='Standard Nepali')
     ent_std_n, dist_std_n = calc_entropy_distance(model_n_pre, tok_n, sample_text_n)
-    plot_entropy_distance(ent_std_n, dist_std_n, save_dir='report/nepali', prefix='Standard Nepali')
+    plot_entropy_distance(ent_std_n, dist_std_n, filename='phase2_nepali_attn_entropy_distance.png', prefix='Standard Nepali')
     
     print("\n--- 3. Ablated Model ---")
     sd_ablated = load_sd('checkpoints/bonus/bonus_ablation_output/model_ablated.pt', map_location='cpu')
     model_ablated = create_model_from_sd(sd_ablated)
     model_ablated.load_state_dict(sd_ablated)
     
-    plot_attention_multihead(tok_h, model_ablated, sample_text_h, layer_idx=0, save_dir='report/ablation', title_prefix='Ablated Hindi')
-    plot_attention_multihead(tok_h, model_ablated, sample_text_h, layer_idx=5, save_dir='report/ablation', title_prefix='Ablated Hindi')
+    plot_attention_multihead(tok_h, model_ablated, sample_text_h, layer_idx=0, prefix='bonus_ablation', title_prefix='Ablated Hindi')
+    plot_attention_multihead(tok_h, model_ablated, sample_text_h, layer_idx=5, prefix='bonus_ablation', title_prefix='Ablated Hindi')
     
     ent_abl, dist_abl = calc_entropy_distance(model_ablated, tok_h, sample_text_h)
-    plot_entropy_distance(ent_abl, dist_abl, save_dir='report/ablation', prefix='Ablated Hindi')
+    plot_entropy_distance(ent_abl, dist_abl, filename='bonus_ablation_attn_entropy_distance.png', prefix='Ablated Hindi')
 
 if __name__ == "__main__":
     main()
