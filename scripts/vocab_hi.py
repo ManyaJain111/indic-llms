@@ -664,6 +664,7 @@ def answer_sentence_pair(name, attr, comparative):
 
 
 def answer_sentence_rank(name, attr, rank):
+    """Function/Class for answer_sentence_rank."""
     poss = _poss(attr)
     gender = ATTR_GENDER.get(attr, "f")
     if rank == "2nd_max":
@@ -674,29 +675,35 @@ def answer_sentence_rank(name, attr, rank):
 
 
 def answer_sentence_threshold(name, attr, cond):
+    """Function/Class for answer_sentence_threshold."""
     word = "अधिक" if cond == "above" else "कम"
     return f"{name} का मान मानक सीमा से {word} है।"
 
 
 def answer_sentence_diff(name, attr, mode):
+    """Function/Class for answer_sentence_diff."""
     word = "अधिक" if mode == "larger_gap" else "कम"
     return f"संदर्भ की तुलना में {name} का अंतर {word} है।"
 
 
 def answer_sentence_temporal(name, ask):
+    """Function/Class for answer_sentence_temporal."""
     pos = "सबसे पहले" if ask == "first" else "सबसे अंत में"
     return f"{name} {pos} रहा।"
 
 
 def answer_sentence_contradiction(has_conflict):
+    """Function/Class for answer_sentence_contradiction."""
     return "हाँ, इन कथनों में विरोधाभास है।" if has_conflict else "नहीं, इन कथनों में विरोधाभास नहीं है।"
 
 
 def answer_sentence_rule(name, category):
+    """Function/Class for answer_sentence_rule."""
     return f"{name} '{category}' में आता है।"
 
 
 def answer_sentence_multistep(winner, attr, ask):
+    """Function/Class for answer_sentence_multistep."""
     poss = _poss(attr)
     word = "अधिक" if ask == "more" else "कम"
     return f"{winner} {poss} {attr} {word} होगा।"
@@ -706,6 +713,7 @@ EQUAL_LABEL = "बराबर"
 
 
 def answer_sentence_equal(attr):
+    """Function/Class for answer_sentence_equal."""
     poss = _poss(attr)
     return f"दोनों {poss} {attr} बराबर है।"
 

@@ -129,6 +129,7 @@ PREFIXES_NE = [
 ]
 
 def get_entities_for_domain(domain: str, split: str, lang: str) -> List[str]:
+    """Function/Class for get_entities_for_domain."""
     vocab = vocab_hi if lang == "hi" else vocab_ne
     if domain == "person":
         return vocab.PERSON_NAMES_SPLIT[split]
@@ -149,6 +150,7 @@ def get_entities_for_domain(domain: str, split: str, lang: str) -> List[str]:
 # ---------------------------------------------------------------------------
 
 def generate_split(
+    """Function/Class for generate_split."""
     lang: str,
     split: str,
     target_count: int,
@@ -652,6 +654,7 @@ def recompute_label(item: Dict) -> str:
 # ---------------------------------------------------------------------------
 
 def build_dataset(
+    """Function/Class for build_dataset."""
     lang: str,
     out_dir: str,
     n_train: int = 6300,
@@ -702,6 +705,7 @@ def build_dataset(
 
 
 def main():
+    """Function/Class for main."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--n_train", type=int, default=30000)
     parser.add_argument("--n_val", type=int, default=1350)
