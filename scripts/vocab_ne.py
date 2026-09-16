@@ -570,6 +570,7 @@ TEMPLATES_SPLIT = {qtype: _split(tmpls, 100 + i)
 # ---------------------------------------------------------------------------
 
 def answer_sentence_single(name, attr, superlative):
+    """Function/Class for answer_sentence_single."""
     word = "सबैभन्दा बढी" if superlative == "max" else "सबैभन्दा कम"
     return f"{name} को {attr} {word} छ।"
 
@@ -581,34 +582,41 @@ def answer_sentence_pair(name, attr, comparative):
 
 
 def answer_sentence_rank(name, attr, rank):
+    """Function/Class for answer_sentence_rank."""
     word = "दोस्रो सबैभन्दा बढी" if rank == "2nd_max" else "दोस्रो सबैभन्दा कम"
     return f"{name} को {attr} {word} छ।"
 
 
 def answer_sentence_threshold(name, attr, cond):
+    """Function/Class for answer_sentence_threshold."""
     word = "बढी" if cond == "above" else "कम"
     return f"{name} को मान मानक सीमा भन्दा {word} छ।"
 
 
 def answer_sentence_diff(name, attr, mode):
+    """Function/Class for answer_sentence_diff."""
     word = "बढी" if mode == "larger_gap" else "कम"
     return f"सन्दर्भको तुलनामा {name} को अन्तर {word} छ।"
 
 
 def answer_sentence_temporal(name, ask):
+    """Function/Class for answer_sentence_temporal."""
     pos = "सबैभन्दा पहिले" if ask == "first" else "सबैभन्दा पछि"
     return f"{name} {pos} भयो।"
 
 
 def answer_sentence_contradiction(has_conflict):
+    """Function/Class for answer_sentence_contradiction."""
     return "हो, यी भनाइहरूमा विरोधाभास छ।" if has_conflict else "होइन, यी भनाइहरूमा विरोधाभास छैन।"
 
 
 def answer_sentence_rule(name, category):
+    """Function/Class for answer_sentence_rule."""
     return f"{name} '{category}' मा पर्छ।"
 
 
 def answer_sentence_multistep(winner, attr, ask):
+    """Function/Class for answer_sentence_multistep."""
     word = "बढी" if ask == "more" else "कम"
     return f"{winner} को {attr} {word} हुन्छ।"
 
@@ -617,5 +625,6 @@ EQUAL_LABEL = "बराबर"
 
 
 def answer_sentence_equal(attr):
+    """Function/Class for answer_sentence_equal."""
     return f"दुवैको {attr} बराबर छ।"
 

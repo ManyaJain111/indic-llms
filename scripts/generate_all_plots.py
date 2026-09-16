@@ -15,7 +15,9 @@ plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Liberation Sans', 'sans-serif']
 
 class GPTLanguageModelAblated(nn.Module):
+    """Function/Class for GPTLanguageModelAblated."""
     def __init__(self, vocab_size, d_model=512, n_heads=8, n_layers=6, d_ff=1536, context_len=512, dropout=0.1, pad_token_id=0):
+        """Function/Class for __init__."""
         super().__init__()
         self.context_len = context_len
         self.token_emb = nn.Embedding(vocab_size, d_model, padding_idx=pad_token_id)
@@ -25,6 +27,7 @@ class GPTLanguageModelAblated(nn.Module):
         self.head = nn.Linear(d_model, vocab_size, bias=False)
         self.head.weight = self.token_emb.weight
     def forward(self, idx, targets=None, return_attention=False):
+        """Function/Class for forward."""
         x = self.drop(self.token_emb(idx))
         attention_maps = []
         for block in self.blocks:
@@ -36,6 +39,7 @@ class GPTLanguageModelAblated(nn.Module):
         return logits, None
 
 def plot_attention_comparison_multihead(tok, pre_model, ft_model, text, lang, layer_idx=-1, is_early=False):
+    """Function/Class for plot_attention_comparison_multihead."""
     tokens = tok.encode(text)
     input_ids = torch.tensor([tokens])
     pre_model.eval()
@@ -80,6 +84,7 @@ def plot_attention_comparison_multihead(tok, pre_model, ft_model, text, lang, la
     print(f"Saved report/plots/{filename}")
 
 def plot_attention_multihead(tok, model, text, layer_idx=0, prefix='phase2_hindi', title_prefix='Standard Hindi'):
+    """Function/Class for plot_attention_multihead."""
     tokens = tok.encode(text)
     input_ids = torch.tensor([tokens])
     model.eval()
@@ -110,6 +115,7 @@ def plot_attention_multihead(tok, model, text, layer_idx=0, prefix='phase2_hindi
     print(f"Saved report/plots/{filename}")
 
 def calc_entropy_distance(model, tok, text):
+    """Function/Class for calc_entropy_distance."""
     tokens = tok.encode(text)
     input_ids = torch.tensor([tokens])
     model.eval()
@@ -136,6 +142,7 @@ def calc_entropy_distance(model, tok, text):
     return entropy, distance
 
 def plot_entropy_distance(entropy, distance, filename='phase2_hindi_attn_entropy_distance.png', prefix='Standard Hindi'):
+    """Function/Class for plot_entropy_distance."""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     sns.heatmap(entropy, annot=True, fmt=".2f", cmap="viridis", ax=ax1)
@@ -155,6 +162,7 @@ def plot_entropy_distance(entropy, distance, filename='phase2_hindi_attn_entropy
     print(f"Saved report/plots/{filename}")
 
 def create_model_from_sd(sd):
+    """Function/Class for create_model_from_sd."""
     vocab_size, d_model = sd['token_emb.weight'].shape
     d_ff = sd['blocks.0.ffn.linear1.weight'].shape[0]
     try:
@@ -164,6 +172,7 @@ def create_model_from_sd(sd):
         return GPTLanguageModelAblated(vocab_size=vocab_size, d_model=d_model, n_heads=8, n_layers=6, d_ff=d_ff, context_len=256)
 
 def main():
+    """Function/Class for main."""
     print("--- 1. Hindi Models ---")
     tok_h = TokenizerWrapper('checkpoints/phase3/checkpoints/pretrained/hindi/tokenizer.json')
     sd_h_pre = load_sd('checkpoints/phase3/checkpoints/pretrained/hindi/model_final.pt', map_location='cpu')

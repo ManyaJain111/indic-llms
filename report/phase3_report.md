@@ -113,3 +113,13 @@ The near-identical reasoning accuracy despite the data gap is explained by the f
 
 ---
 
+
+### Qualitative Successes and Failures (Error Analysis)
+
+A qualitative review of the generated outputs explains the stark difference between the 0.0% Exact Match and the ~27% Substring Match scores. 
+
+**Failures (Formatting & Hallucination):**
+The primary failure mode is formatting degradation. Rather than outputting just the clean answer, the models tend to hallucinate additional text, repeat the prompt, or append random tokens, destroying the strict Exact Match metric. Because these are unconstrained causal language models without reinforcement learning (RLHF), they struggle to stop cleanly. For example, a Nepali prompt asking for a size comparison might correctly contain the answer within the first few generated tokens, but then trail off into grammatical noise or repeat the punctuation.
+
+**Successes (Latent Reasoning):**
+Despite the exact-match failure, the ~27% substring accuracy indicates that the finetuned models are successfully learning latent representations of the comparative relationships. When prompted with Tier 1 (direct comparison) and Tier 2 (transitive reasoning) structures, the model often correctly pulls the logical entity (the largest/smallest item) into its generated sequence, even if it fails to isolate it perfectly. Model H (Hindi) slightly outperformed Model L (Nepali) in maintaining coherent syntax around the answer, likely due to its larger pretraining corpus establishing stronger linguistic priors before finetuning.

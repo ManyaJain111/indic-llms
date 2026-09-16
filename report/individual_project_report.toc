@@ -12,10 +12,11 @@
 \contentsline {subsection}{\numberline {3.1}Synthetic Dataset Construction}{5}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Finetuning Setup}{6}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Results}{6}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Attention Analysis: Pre vs. Post Finetuning}{7}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.4}Qualitative Successes and Failures (Error Analysis)}{7}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Attention Analysis: Pre vs. Post Finetuning}{8}{subsection.3.5}%
 \contentsline {section}{\numberline {4}Bonus: Positional Embedding Ablation}{9}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Motivation and Setup}{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Ablation Results}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.2}Ablation Results}{10}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}What Actually Broke}{10}{subsection.4.3}%
 \contentsline {section}{\numberline {5}Cross-Phase Comparison}{12}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Model H vs. Model L Summary}{12}{subsection.5.1}%
