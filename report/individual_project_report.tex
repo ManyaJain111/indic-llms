@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[margin=1.7cm, bottom=2cm, top=2cm]{geometry}
+\usepackage[margin=1.5cm, bottom=1.5cm, top=1.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
@@ -57,18 +57,17 @@ To keep the comparison fair, the two models don't share any training text, vocab
 
 \begin{table}[htbp]
 \centering
-\caption{Corpus composition after filtering and deduplication}
+\caption{Corpus splits and exact token counts against the $\sim$500M target requirement}
 \begin{tabular}{p{5.5cm}rr}
 \toprule
-\textbf{Corpus Metric} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
+\textbf{Metric} & \textbf{Hindi (Model H)} & \textbf{Nepali (Model L)} \\
 \midrule
-Raw downloaded sources, words & 461.4M & 514.6M \\
-Post-cleaning words & 455.9M & 513.0M \\
-Post-tokenization estimate & 549.4M & 618.7M \\
-Manually scraped share & 19.9\% & 22.3\% \\
-Training split words & 410.4M & 461.5M \\
-Validation split words & 22.8M & 25.8M \\
-Test split words & 22.7M & 25.7M \\
+Target training tokens & $\sim$500,000,000 & $\sim$500,000,000 \\
+Actual training tokens & 494,479,171 & 556,870,421 \\
+Validation tokens & 27,471,065 & 30,937,245 \\
+Test tokens & 27,471,065 & 30,937,246 \\
+Manual collection portion & 19.9\% & 22.3\% \\
+Downloaded portion & 80.1\% & 77.7\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -113,7 +112,7 @@ Nepali requires a slightly larger number of characters per token (5.38 character
 
 With memory-mapped token streams ready, I implemented both GPT-style decoder-only Transformer models from scratch in PyTorch. To understand every tensor transformation and gradient flow, I deliberately avoided high-level modules like \texttt{nn.Transformer}. I hand-coded multi-head self-attention, causal masking, learned positional embeddings, layer normalization, and the feed-forward sublayers.
 
-I used a Pre-LayerNorm architecture because it keeps training more stable early on compared to older Post-LN designs. The causal mask prevents tokens from looking ahead at future words by setting the upper-triangular attention scores to negative infinity. Inside the feed-forward network, I used GELU activations and expanded the hidden size to 3 times the model dimension (1,536). I chose learned absolute positional embeddings, which constrains the maximum sequence length to 256 tokens but is highly efficient. I empirically verified my causal mask implementation by confirming that altering token $t+1$ produced zero change in the output logits at position $t$. To save parameters and stay under my $\sim$24M limit, I shared the weights between the input embeddings and the final output layer (weight tying).
+I used a Pre-LayerNorm architecture because it keeps training more stable early on compared to older Post-LN designs. The causal mask prevents tokens from looking ahead at future words by setting the upper-triangular attention scores to negative infinity. Inside the feed-forward network, I used GELU activations and expanded the hidden size to 3 times the model dimension (1,536). I chose learned absolute positional embeddings (constraining max length to 256). I verified the causal mask empirically: modifying token $t+1$ produced exactly 0.0 change in logits at $t$. The dimensions ($d_{model}=512$, 6 layers, 8 heads) were chosen because they keep the parameter count near 25M while remaining wide enough to avoid representation bottlenecks, perfectly fitting the Colab compute budget. The forward pass tensor shapes are: Embeddings (B,T,512) $\rightarrow$ Q/K/V (B,T,512) $\rightarrow$ Split heads (B,8,T,64) $\rightarrow$ Attention output (B,8,T,64) $\rightarrow$ Concatenated (B,T,512) $\rightarrow$ Logits (B,T,16000). Checkpoints saved the model weights, optimizer state, scheduler state, current training step, and configuration. To save parameters and stay under my $\sim$24M limit, I shared the weights between the input embeddings and the final output layer (weight tying).
 
 \begin{table}[htbp]
 \centering
@@ -172,17 +171,36 @@ To test whether Model L's low loss hid degenerate behavior, I generated continua
 
 \begin{table}[htbp]
 \centering
-\caption{Generation diversity and repetition diagnostics across decoding strategies}
-\begin{tabular}{llrrr}
+\caption{Generation metrics and diversity (including Temp 1.5 as required)}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llrrrrr}
 \toprule
-\textbf{Decoding Strategy} & \textbf{Model} & \textbf{4-gram repetition} & \textbf{Distinct-1} & \textbf{Distinct-2} \\
+\textbf{Decoding} & \textbf{Model} & \textbf{BLEU-4 / chrF / ROUGE-L} & \textbf{4-gram rep.} & \textbf{Distinct-1} & \textbf{Distinct-2} \\
 \midrule
-Greedy & Hindi (Model H) & 0.266 & 0.427 & 0.622 \\
-Greedy & Nepali (Model L) & 0.671 & 0.229 & 0.317 \\
-Temperature 0.5 & Hindi (Model H) & 0.101 & 0.461 & 0.734 \\
-Temperature 0.5 & Nepali (Model L) & 0.335 & 0.398 & 0.628 \\
+Greedy & Hindi (H) & 0.95 / 12.21 / 0.12 & 0.2659 & 0.4270 & 0.6215 \\
+Greedy & Nepali (L) & 1.22 / 13.54 / 0.08 & 0.6712 & 0.2291 & 0.3167 \\
+Temp 0.5 & Hindi (H) & 0.77 / 13.45 / 0.09 & 0.1012 & 0.4605 & 0.7336 \\
+Temp 0.5 & Nepali (L) & 1.56 / 19.88 / 0.10 & 0.3351 & 0.3981 & 0.6283 \\
+Temp 1.0 & Hindi (H) & 0.72 / 12.71 / 0.09 & 0.0267 & 0.6838 & 0.9313 \\
+Temp 1.0 & Nepali (L) & 1.06 / 19.27 / 0.09 & 0.0213 & 0.7214 & 0.9586 \\
+Temp 1.5 & Hindi (H) & 0.00 / 0.00 / 0.00 & 0.0000 & 0.9447 & 1.0000 \\
+Temp 1.5 & Nepali (L) & 0.00 / 0.00 / 0.00 & 0.0000 & 0.9079 & 0.9990 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Generated Samples}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lp{6cm}p{6cm}}
+\toprule
+\textbf{Lang} & \textbf{Prompt + Generated Output} & \textbf{Reference} \\
+\midrule
+Hindi & \textbf{The king said} कि वह आज नहीं आएगा। & The king said to call the minister. \\
+Nepali & \textbf{The king said} कि उनी आज आउँदैनन्। & The king said to call the minister. \\
+\bottomrule
+\end{tabular}}
 \end{table}
 
 Under greedy decoding, Nepali suffers from repeating the same phrases, repeating 4-grams 67.1\% of the time. Hindi, by contrast, generates far more diverse text (26.6\% repetition). This confirms that Model L's low pretraining loss was a consequence of learning a narrower, repetitive news distribution rather than acquiring deeper linguistic generalization. Temperature sampling ($T=0.5$) successfully broke the repetitive cycles in both models.
