@@ -107,6 +107,18 @@ Unknown-token rate & 0.00\% & 0.00011\% \\
 
 Nepali requires a slightly larger number of characters per token (5.38 characters/token vs. 4.22 in Hindi) to reach identical fertility (1.205 tokens/word), reflecting its complex suffixes and postpositions. Finally, the entire training split was pre-tokenized and serialized into flat binary arrays of 16-bit integers, memory-mapped via \texttt{np.memmap} for zero-latency, batch-shuffled streaming into the Phase 2 training loop.
 
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/hindi_freq.png}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{plots/nepali_freq.png}
+\end{subfigure}
+\caption{Top 5 token frequencies for Hindi (left) and Nepali (right) showing a Zipfian distribution.}
+\end{figure}
+
 \clearpage
 \section{Phase 2: Model Implementation and Pretraining}
 
@@ -189,19 +201,7 @@ Temp 1.5 & Nepali (L) & 0.00 / 0.00 / 0.00 & 0.0000 & 0.9079 & 0.9990 \\
 \end{tabular}}
 \end{table}
 
-\begin{table}[htbp]
-\centering
-\caption{Generated Samples}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lp{6cm}p{6cm}}
-\toprule
-\textbf{Lang} & \textbf{Prompt + Generated Output} & \textbf{Reference} \\
-\midrule
-Hindi & \textbf{The king said} कि वह आज नहीं आएगा। & The king said to call the minister. \\
-Nepali & \textbf{The king said} कि उनी आज आउँदैनन्। & The king said to call the minister. \\
-\bottomrule
-\end{tabular}}
-\end{table}
+
 
 Under greedy decoding, Nepali suffers from repeating the same phrases, repeating 4-grams 67.1\% of the time. Hindi, by contrast, generates far more diverse text (26.6\% repetition). This confirms that Model L's low pretraining loss was a consequence of learning a narrower, repetitive news distribution rather than acquiring deeper linguistic generalization. Temperature sampling ($T=0.5$) successfully broke the repetitive cycles in both models.
 
