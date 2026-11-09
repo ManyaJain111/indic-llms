@@ -1,0 +1,63 @@
+# Bonus: Ablation Study (No Positional Embeddings)
+
+To isolate the impact of position information, we retrained the Hindi model with absolute positional embeddings entirely removed from the architecture. Trained for **61,036 steps** (same compute budget as the standard model). See `phase3/bonus_training_final.ipynb` for training code and `phase3/bonus_eval_final.ipynb` for evaluation.
+
+## Ablation Results
+
+| Metric | Standard Hindi (With Positions) | Ablated Hindi (No Positions) | Relative Impact |
+|:---|:---|:---|:---|
+| **Validation Loss** | 3.6487 | **4.0697** | +11.5% higher loss |
+| **Perplexity (PPL)** | 39.11 | **58.54** | **+49.7% degradation** |
+| **Bits-Per-Byte (BPB)** | 0.5131 | **0.5674** | +10.6% worse |
+| **BLEU-4** | 0.95 | 1.08* | Near-zero (vs greedy) |
+| **chrF** | 12.21 | 11.28 | — |
+| **Distinct-1** | 0.4270 | **0.1703** | Vocabulary collapse |
+| **Distinct-2** | 0.62 | **0.2412** | — |
+| **4-gram Repetition** | 26.59% | **68.52%** | Severe looping |
+
+*Note: While the ablated model technically scores a slightly higher BLEU-4 (1.08) compared to the standard model (0.95), both are effectively near-zero stochastic noise and do not represent a meaningful improvement in generation quality.*
+
+### Training Loss Curve (Bonus Ablation)
+
+![Bonus Ablation Loss Curve](plots/bonus_ablation_loss_curve.png)
+
+The ablated model's loss plateaus around **4.14–4.17 nats** throughout training (vs the standard model converging to 3.65 nats). It never decreases meaningfully because the self-attention mechanism, without any position signal, is completely permutation-invariant and cannot learn to distinguish "dog bites man" from "man bites dog."
+
+## What Breaks Without Position Information?
+
+1. **Severe Perplexity Degradation**: The model loses its inductive bias for sequence order. Sentences become purely a "bag of words" to the attention heads, driving Perplexity up from 39.11 to 58.54 (+49.7%).
+
+2. **Infinite Looping (Degeneration)**: Without position information, the model has no concept of "progress" through a sentence. `Distinct-1` vocabulary usage drops to 0.17 (from 0.43), and 4-gram repetition spikes to **68.52%**. The model gets stuck outputting the same high-probability token loops endlessly.
+
+3. **Attention Collapse**: In the ablation attention heatmaps (`report/plots/bonus_ablation_`), the typical diagonal "local attention" lines completely vanish. Because every token lacks a position identifier, attention heads smear weights uniformly across the sequence or collapse into static patterns, destroying the model's ability to track syntax. See `report/plots/bonus_ablation_attn_entropy_distance.png` for quantitative entropy and mean-distance analysis.
+
+4. **Generation Metrics Collapse**: ROUGE-L drops to 0.0000 (greedy mode), confirming the ablated model cannot produce even marginally coherent continuations of reference sentences. chrF at 11.28 indicates the character n-grams match only superficially (the model still generates plausible-looking Devanagari characters, just in completely random order).
+
+### Attention Heatmaps (Standard vs. Ablated Model)
+
+| Standard Hindi (With Positions) | Ablated Hindi (No Positions) |
+|:---:|:---:|
+| Broad context aggregation across sequence | Collapsed self-attention (identity mapping) along diagonal |
+
+#### Layer 0 (Early) Attention
+**Standard Hindi (Layer 0):**
+![Standard Layer 0](plots/phase2_hindi_attn_layer0.png)
+
+**Ablated Hindi (Layer 0 — No Positional Embeddings):**
+![Ablated Layer 0](plots/bonus_ablation_attn_layer0.png)
+
+#### Layer 5 (Late) Attention
+**Standard Hindi (Layer 5):**
+![Standard Layer 5](plots/phase2_hindi_attn_layer5.png)
+
+**Ablated Hindi (Layer 5 — No Positional Embeddings):**
+![Ablated Layer 5](plots/bonus_ablation_attn_layer5.png)
+
+### Entropy and Distance Analysis (Standard vs. Ablated)
+
+**Standard Hindi Model:**
+![Standard Entropy & Distance](plots/phase2_hindi_attn_entropy_distance.png)
+
+**Ablated Hindi Model:**
+![Ablated Entropy & Distance](plots/bonus_ablation_attn_entropy_distance.png)
+

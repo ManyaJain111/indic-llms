@@ -1,0 +1,310 @@
+{
+  "hindi": {
+    "pretrained": {
+      "overall_exact": 0.0,
+      "overall_contains": 1.04,
+      "n": 1350,
+      "by_tier": {
+        "1": {
+          "exact": 0.0,
+          "contains": 0.0,
+          "n": 372
+        },
+        "2": {
+          "exact": 0.0,
+          "contains": 1.65,
+          "n": 665
+        },
+        "3": {
+          "exact": 0.0,
+          "contains": 0.96,
+          "n": 313
+        }
+      },
+      "by_type": {
+        "contradiction_detection": {
+          "exact": 0.0,
+          "n": 76
+        },
+        "difference_comparison": {
+          "exact": 0.0,
+          "n": 89
+        },
+        "direct_value_less": {
+          "exact": 0.0,
+          "n": 109
+        },
+        "direct_value_more": {
+          "exact": 0.0,
+          "n": 167
+        },
+        "multistep_if_then": {
+          "exact": 0.0,
+          "n": 77
+        },
+        "order_3way_max": {
+          "exact": 0.0,
+          "n": 102
+        },
+        "order_3way_min": {
+          "exact": 0.0,
+          "n": 113
+        },
+        "order_4way_rank": {
+          "exact": 0.0,
+          "n": 84
+        },
+        "rule_classification": {
+          "exact": 0.0,
+          "n": 73
+        },
+        "temporal_ordering": {
+          "exact": 0.0,
+          "n": 87
+        },
+        "threshold_comparison": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "transitive_chain_4way": {
+          "exact": 0.0,
+          "n": 113
+        },
+        "transitive_relation": {
+          "exact": 0.0,
+          "n": 164
+        }
+      }
+    },
+    "finetuned": {
+      "overall_exact": 0.0,
+      "overall_contains": 27.26,
+      "n": 1350,
+      "by_tier": {
+        "1": {
+          "exact": 0.0,
+          "contains": 38.98,
+          "n": 372
+        },
+        "2": {
+          "exact": 0.0,
+          "contains": 18.5,
+          "n": 665
+        },
+        "3": {
+          "exact": 0.0,
+          "contains": 31.95,
+          "n": 313
+        }
+      },
+      "by_type": {
+        "contradiction_detection": {
+          "exact": 0.0,
+          "n": 76
+        },
+        "difference_comparison": {
+          "exact": 0.0,
+          "n": 89
+        },
+        "direct_value_less": {
+          "exact": 0.0,
+          "n": 109
+        },
+        "direct_value_more": {
+          "exact": 0.0,
+          "n": 167
+        },
+        "multistep_if_then": {
+          "exact": 0.0,
+          "n": 77
+        },
+        "order_3way_max": {
+          "exact": 0.0,
+          "n": 102
+        },
+        "order_3way_min": {
+          "exact": 0.0,
+          "n": 113
+        },
+        "order_4way_rank": {
+          "exact": 0.0,
+          "n": 84
+        },
+        "rule_classification": {
+          "exact": 0.0,
+          "n": 73
+        },
+        "temporal_ordering": {
+          "exact": 0.0,
+          "n": 87
+        },
+        "threshold_comparison": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "transitive_chain_4way": {
+          "exact": 0.0,
+          "n": 113
+        },
+        "transitive_relation": {
+          "exact": 0.0,
+          "n": 164
+        }
+      }
+    }
+  },
+  "nepali": {
+    "pretrained": {
+      "overall_exact": 0.0,
+      "overall_contains": 1.93,
+      "n": 1350,
+      "by_tier": {
+        "1": {
+          "exact": 0.0,
+          "contains": 0.0,
+          "n": 352
+        },
+        "2": {
+          "exact": 0.0,
+          "contains": 0.88,
+          "n": 682
+        },
+        "3": {
+          "exact": 0.0,
+          "contains": 6.33,
+          "n": 316
+        }
+      },
+      "by_type": {
+        "contradiction_detection": {
+          "exact": 0.0,
+          "n": 67
+        },
+        "difference_comparison": {
+          "exact": 0.0,
+          "n": 79
+        },
+        "direct_value_less": {
+          "exact": 0.0,
+          "n": 112
+        },
+        "direct_value_more": {
+          "exact": 0.0,
+          "n": 140
+        },
+        "multistep_if_then": {
+          "exact": 0.0,
+          "n": 73
+        },
+        "order_3way_max": {
+          "exact": 0.0,
+          "n": 121
+        },
+        "order_3way_min": {
+          "exact": 0.0,
+          "n": 110
+        },
+        "order_4way_rank": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "rule_classification": {
+          "exact": 0.0,
+          "n": 80
+        },
+        "temporal_ordering": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "threshold_comparison": {
+          "exact": 0.0,
+          "n": 100
+        },
+        "transitive_chain_4way": {
+          "exact": 0.0,
+          "n": 114
+        },
+        "transitive_relation": {
+          "exact": 0.0,
+          "n": 162
+        }
+      }
+    },
+    "finetuned": {
+      "overall_exact": 0.0,
+      "overall_contains": 26.67,
+      "n": 1350,
+      "by_tier": {
+        "1": {
+          "exact": 0.0,
+          "contains": 37.5,
+          "n": 352
+        },
+        "2": {
+          "exact": 0.0,
+          "contains": 17.45,
+          "n": 682
+        },
+        "3": {
+          "exact": 0.0,
+          "contains": 34.49,
+          "n": 316
+        }
+      },
+      "by_type": {
+        "contradiction_detection": {
+          "exact": 0.0,
+          "n": 67
+        },
+        "difference_comparison": {
+          "exact": 0.0,
+          "n": 79
+        },
+        "direct_value_less": {
+          "exact": 0.0,
+          "n": 112
+        },
+        "direct_value_more": {
+          "exact": 0.0,
+          "n": 140
+        },
+        "multistep_if_then": {
+          "exact": 0.0,
+          "n": 73
+        },
+        "order_3way_max": {
+          "exact": 0.0,
+          "n": 121
+        },
+        "order_3way_min": {
+          "exact": 0.0,
+          "n": 110
+        },
+        "order_4way_rank": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "rule_classification": {
+          "exact": 0.0,
+          "n": 80
+        },
+        "temporal_ordering": {
+          "exact": 0.0,
+          "n": 96
+        },
+        "threshold_comparison": {
+          "exact": 0.0,
+          "n": 100
+        },
+        "transitive_chain_4way": {
+          "exact": 0.0,
+          "n": 114
+        },
+        "transitive_relation": {
+          "exact": 0.0,
+          "n": 162
+        }
+      }
+    }
+  }
+}

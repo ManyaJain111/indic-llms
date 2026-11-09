@@ -1,0 +1,26 @@
+{
+  "greedy": {
+    "bleu4": 0.9488,
+    "chrf": 12.2143,
+    "rougeL": 0.1243,
+    "n_scored": 5
+  },
+  "temp_0.5": {
+    "bleu4": 0.7732,
+    "chrf": 13.4463,
+    "rougeL": 0.0921,
+    "n_scored": 5
+  },
+  "temp_1.0": {
+    "bleu4": 0.7182,
+    "chrf": 12.7101,
+    "rougeL": 0.0906,
+    "n_scored": 5
+  },
+  "temp_1.5": {
+    "bleu4": 0.8372,
+    "chrf": 11.5556,
+    "rougeL": 0.0955,
+    "n_scored": 5
+  }
+}
